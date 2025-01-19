@@ -178,63 +178,173 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Managing inside sales operations and customer relationships.',
     projects: ['Inside Sales', 'Customer Success'],
     reportsTo: '7'
+  },
+  {
+    id: '12',
+    name: 'Richard Chen',
+    role: 'Teacher',
+    department: 'Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Richard',
+    email: 'richard.chen@company.com',
+    phone: '+1 (555) 0112',
+    bio: 'Experienced science educator with a focus on practical applications.',
+    projects: ['Data Analytics 2025', 'STEM Initiative'],
+    reportsTo: '3'
+  },
+  {
+    id: '13',
+    name: 'Maria Garcia',
+    role: 'Teacher',
+    department: 'Mathematics',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+    email: 'maria.garcia@company.com',
+    phone: '+1 (555) 0113',
+    bio: 'Mathematics specialist with expertise in advanced calculus.',
+    projects: ['Advanced Mathematics', 'Data Analytics 2025'],
+    reportsTo: '3'
+  },
+  {
+    id: '14',
+    name: 'David Kim',
+    role: 'Director',
+    department: 'Computer Science',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+    email: 'david.kim@company.com',
+    phone: '+1 (555) 0114',
+    bio: 'Leading computer science initiatives and curriculum development.',
+    projects: ['Cloud Computing', 'Programming Fundamentals'],
+    reportsTo: '1'
+  },
+  {
+    id: '15',
+    name: 'Sophie Anderson',
+    role: 'Teacher',
+    department: 'Computer Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
+    email: 'sophie.anderson@company.com',
+    phone: '+1 (555) 0115',
+    bio: 'Web development and software engineering instructor.',
+    projects: ['Cloud Computing'],
+    reportsTo: '14'
   }
 ];
 
-export const mockStudents = [
+interface Student {
+  id: string;
+  name: string;
+  scores: {
+    mathematics: number;
+    science: number;
+    programming: number;
+  };
+  avatar: string;
+}
+
+export const mockStudents: Student[] = [
   {
     id: '1',
     name: 'John Smith',
-    grade: '10th Grade',
+    scores: {
+      mathematics: 85,
+      science: 92,
+      programming: 88
+    },
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
   },
   {
     id: '2',
     name: 'Emily Brown',
-    grade: '11th Grade',
+    scores: {
+      mathematics: 95,
+      science: 88,
+      programming: 91
+    },
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
   },
   {
     id: '3',
     name: 'Michael Johnson',
-    grade: '10th Grade',
+    scores: {
+      mathematics: 78,
+      science: 85,
+      programming: 94
+    },
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael'
   },
   {
     id: '4',
     name: 'Sarah Davis',
-    grade: '12th Grade',
+    scores: {
+      mathematics: 92,
+      science: 90,
+      programming: 87
+    },
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+  },
+  {
+    id: '5',
+    name: 'Alex Martinez',
+    scores: {
+      mathematics: 88,
+      science: 91,
+      programming: 85
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'
+  },
+  {
+    id: '6',
+    name: 'Lisa Wang',
+    scores: {
+      mathematics: 94,
+      science: 89,
+      programming: 92
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa'
   }
 ];
+
+const calculateAverageScore = (students: Student[]) => {
+  const totalScores = students.reduce((acc, student) => {
+    const studentAvg = (student.scores.mathematics + student.scores.science + student.scores.programming) / 3;
+    return acc + studentAvg;
+  }, 0);
+  return Math.round(totalScores / students.length);
+};
 
 export const mockProjects = [
   {
     id: '1',
     name: 'Data Analytics 2025',
     progress: 65,
-    team: mockTeamMembers.slice(0, 2),
+    team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
     director: mockTeamMembers[0],
     studentCount: 45,
-    students: mockStudents
+    students: mockStudents.slice(0, 3),
+    avgScore: calculateAverageScore(mockStudents.slice(0, 3))
   },
   {
     id: '2',
     name: 'Cloud Computing',
     progress: 40,
-    team: mockTeamMembers.slice(1, 3),
-    director: mockTeamMembers[1],
+    team: mockTeamMembers.filter(m => ['14', '15'].includes(m.id)),
+    director: mockTeamMembers[13],
     studentCount: 32,
-    students: mockStudents.slice(1, 3)
+    students: mockStudents.slice(3),
+    avgScore: calculateAverageScore(mockStudents.slice(3))
   },
   {
     id: '3',
     name: 'Design Research',
     progress: 85,
-    team: mockTeamMembers.slice(2, 4),
+    team: mockTeamMembers.filter(m => ['3', '4'].includes(m.id)),
     director: mockTeamMembers[2],
     studentCount: 28,
-    students: mockStudents.slice(2)
+    students: mockStudents.slice(2, 5),
+    avgScore: calculateAverageScore(mockStudents.slice(2, 5))
   }
 ];
 
