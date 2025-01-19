@@ -14,6 +14,7 @@ import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
 import FinancialDashboard from "@/pages/FinancialDashboard";
 import Analytics from "@/pages/Analytics";
 import Organization from "@/pages/Organization";
+import SkillsMatrix from "@/pages/SkillsMatrix";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/qr-tracking" component={QRTrackingDashboard} />
       <Route path="/financial-dashboard" component={FinancialDashboard} />
       <Route path="/analytics" component={Analytics} />
+      <Route path="/skills-matrix" component={SkillsMatrix} />
       <Route component={NotFound} />
     </Switch>
   );

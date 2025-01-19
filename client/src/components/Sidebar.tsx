@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, PieChart, Settings, LogOut, FolderKanban, Receipt, QrCode, BarChart, Network } from 'lucide-react';
+import { Home, Calendar, Users, PieChart, Settings, LogOut, FolderKanban, Receipt, QrCode, BarChart, Network, Award } from 'lucide-react';
 import { Link } from 'wouter';
 
 const navigationItems = [
@@ -7,6 +7,7 @@ const navigationItems = [
   { icon: Calendar, label: 'Calendar', href: '/calendar' },
   { icon: Users, label: 'People', href: '/people' },
   { icon: Network, label: 'Organization', href: '/organization' },
+  { icon: Award, label: 'Skills Matrix', href: '/skills-matrix' },
   { icon: Receipt, label: 'Invoices', href: '/invoices' },
   { icon: QrCode, label: 'QR Tracking', href: '/qr-tracking' },
   { icon: BarChart, label: 'Financial', href: '/financial-dashboard' },
