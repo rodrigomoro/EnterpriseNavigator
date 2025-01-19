@@ -1,0 +1,130 @@
+As a UI/UX developer build a website using the latests React and Bootstrap libraries to create an ERP using the following attached designs. All date must be hardcoded or mock.
+
+Software Architecture: UI/UX Perspective (React and Bootstrap)
+
+1. File Organization
+The application uses a modular structure for organizing files, adhering to React and Bootstrap principles.
+
+- Shared Components:
+  - Reusable components stored in a `components/` folder.
+  - Examples:
+    - Dropdowns
+    - Buttons
+    - Modals
+    - Forms
+  - Follow camelCase or PascalCase naming conventions for file names (e.g., `DataRefDropdown.js` or `StatusIcon.jsx`).
+
+- Core Components:
+  - Located in `src/components/` or equivalent directories.
+  - Examples:
+    - Header
+    - Footer
+    - Navigation
+    - Loading Spinners
+
+- Pages:
+  - High-level components representing app views (e.g., `HomePage`, `Dashboard`).
+  - Stored in a `pages/` folder.
+
+- Configuration Files:
+  - Centralized in a `config/` folder.
+  - Stores constants, environment variables, or settings.
+
+- Routing:
+  - Handled by libraries like React Router in a dedicated `routes.js` file.
+  - Manages navigation and dynamic route generation.
+
+2. Component Structure
+Each React component follows a structured hierarchy:
+- Component Files:
+  - `.jsx` or `.js`: Contains functional or class-based React components.
+  - `.css` or `.scss`: Contains styles for individual components.
+
+- Component Communication:
+  - Props: Passed from parent to child components for configuration.
+  - Context or State Management (e.g., Redux, Context API): For global or shared state.
+
+3. Style Management
+- Global Styles:
+  - Managed in `src/styles/` or directly in a `styles.css` file.
+  - Includes app-wide Bootstrap theming, typography, and utility classes.
+
+- Component-Specific Styles:
+  - Scoped `.css` or `.scss` files for modularity and encapsulation.
+  - Styled-components or CSS-in-JS solutions may be used for dynamic styling.
+
+- Bootstrap Integration:
+  - Include Bootstrap styles via CDN or npm package (`bootstrap`).
+  - Custom overrides written in `custom.scss` to ensure theme consistency.
+
+4. Component and Style Import Patterns
+- Component Imports:
+  - Modular imports with relative paths:
+    ```javascript
+    import DataRefDropdown from './components/DataRefDropdown';
+    ```
+
+- Styles Imports:
+  - Import Bootstrap in `index.js` or `App.js`:
+    ```javascript
+    import 'bootstrap/dist/css/bootstrap.min.css';
+    ```
+  - Custom styles imported alongside components:
+    ```javascript
+    import './styles/CustomStyles.css';
+    ```
+
+5. Component Usage
+- Reusable Components:
+  - Designed to work with props for flexibility.
+  - Example:
+    ```javascript
+    <Button variant="primary" onClick={handleClick}>Click Me</Button>
+    ```
+
+- Bootstrap Elements:
+  - Leverage built-in components like grids, cards, or alerts:
+    ```javascript
+    <div className="container">
+      <div className="row">
+        <div className="col-md-6">Column 1</div>
+        <div className="col-md-6">Column 2</div>
+      </div>
+    </div>
+    ```
+
+6. UI/UX Principles
+- Consistency:
+  - Use Bootstrap's predefined styles for consistency in spacing, colors, and typography.
+- Responsiveness:
+  - Grid system and responsive utilities ensure layouts adapt to various screen sizes.
+- Accessibility:
+  - Utilize ARIA roles and Bootstrap's accessible components (e.g., modals, forms).
+
+7. Workflow for New Component Creation
+1. Scaffold the Component:
+   - Create a new file in the `components/` folder:
+     ```javascript
+     src/components/MyNewComponent.jsx
+     ```
+
+2. Add Logic and UI:
+   - Use functional or class-based React component structure.
+   - Add Bootstrap elements for styling.
+
+3. Add Styles:
+   - Write `.css` or `.scss` files for component-specific styles.
+
+4. Import into Application:
+   - Import the component in the relevant file (e.g., `App.js`):
+     ```javascript
+     import MyNewComponent from './components/MyNewComponent';
+     ```
+
+5. Integrate:
+   - Add the component to the JSX structure:
+     ```javascript
+     <MyNewComponent prop1="value" />
+     ```
+
+This architecture ensures a scalable and reusable approach for building React applications with Bootstrap.
