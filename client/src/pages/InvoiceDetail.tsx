@@ -187,7 +187,7 @@ export default function InvoiceDetail() {
                             <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
                           </div>
 
-                          {/* New: Encryption Details */}
+                          {/* Encryption Details */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function InvoiceDetail() {
                             </div>
                           </div>
 
-                          {/* New: Certificate Information */}
+                          {/* Certificate Information */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
@@ -223,7 +223,7 @@ export default function InvoiceDetail() {
                             </div>
                           </div>
 
-                          {/* New: Security Alerts */}
+                          {/* Security Alerts */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
