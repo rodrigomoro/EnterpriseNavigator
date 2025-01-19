@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'wouter';
 
-export default function ProgramDirectory() {
+export default function ProjectDirectory() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
