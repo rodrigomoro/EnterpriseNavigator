@@ -53,6 +53,33 @@ export const mockTeamMembers = [
   }
 ];
 
+export const mockStudents = [
+  {
+    id: '1',
+    name: 'John Smith',
+    grade: '10th Grade',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
+  },
+  {
+    id: '2',
+    name: 'Emily Brown',
+    grade: '11th Grade',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
+  },
+  {
+    id: '3',
+    name: 'Michael Johnson',
+    grade: '10th Grade',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael'
+  },
+  {
+    id: '4',
+    name: 'Sarah Davis',
+    grade: '12th Grade',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+  }
+];
+
 export const mockProjects = [
   {
     id: '1',
@@ -60,7 +87,8 @@ export const mockProjects = [
     progress: 65,
     team: mockTeamMembers.slice(0, 2),
     director: mockTeamMembers[0],
-    studentCount: 45
+    studentCount: 45,
+    students: mockStudents
   },
   {
     id: '2',
@@ -68,7 +96,8 @@ export const mockProjects = [
     progress: 40,
     team: mockTeamMembers.slice(1, 3),
     director: mockTeamMembers[1],
-    studentCount: 32
+    studentCount: 32,
+    students: mockStudents.slice(1, 3)
   },
   {
     id: '3',
@@ -76,7 +105,8 @@ export const mockProjects = [
     progress: 85,
     team: mockTeamMembers.slice(2, 4),
     director: mockTeamMembers[2],
-    studentCount: 28
+    studentCount: 28,
+    students: mockStudents.slice(2)
   }
 ];
 

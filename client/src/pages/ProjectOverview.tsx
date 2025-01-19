@@ -1,14 +1,20 @@
 import { ArrowLeft } from 'lucide-react';
-import { Link } from 'wouter';
-import { mockTeamMembers } from '@/data/mockData';
+import { Link, useRoute } from 'wouter';
+import { mockProjects } from '@/data/mockData';
 import Calendar from '@/components/Calendar';
 import TasksByUser from '@/components/TasksByUser';
 import Sidebar from '@/components/Sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
+import { Card } from '@/components/ui/card';
 
 export default function ProjectOverview() {
+  const [, params] = useRoute('/program/:id');
+  const project = mockProjects.find(p => p.id === params?.id);
+
+  if (!project) return <div>Project not found</div>;
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -26,9 +32,9 @@ export default function ProjectOverview() {
                     </a>
                   </Link>
                   <span>/</span>
-                  <span className="text-foreground">Market research 2024</span>
+                  <span className="text-foreground">{project.name}</span>
                 </div>
-                <h1 className="text-2xl font-bold">Program overview / Market research 2024</h1>
+                <h1 className="text-2xl font-bold">Program overview / {project.name}</h1>
               </div>
 
               <UserAvatar />
@@ -44,7 +50,7 @@ export default function ProjectOverview() {
                 <div className="bg-card rounded-lg shadow-sm p-4">
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Assigned Teachers</h3>
-                    {mockTeamMembers.slice(0, 4).map((member) => (
+                    {project.team.map((member) => (
                       <div key={member.id} className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={member.avatar} alt={member.name} />
@@ -65,27 +71,42 @@ export default function ProjectOverview() {
                 <div className="bg-card rounded-lg shadow-sm p-4">
                   <h3 className="text-lg font-semibold mb-4">Program Progress</h3>
                   <div className="space-y-4">
-                    {/* Simple progress display since we removed the timeline component */}
-                    {mockTeamMembers.slice(0, 3).map((member, index) => (
-                      <div key={member.id} className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium">{member.name}</span>
-                          <span className="text-sm text-muted-foreground">{65 - index * 15}%</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full">
-                          <div
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${65 - index * 15}%` }}
-                          />
-                        </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Overall Progress</span>
+                        <span className="text-sm text-muted-foreground">{project.progress}%</span>
                       </div>
-                    ))}
+                      <div className="h-2 bg-muted rounded-full">
+                        <div
+                          className="h-full bg-primary rounded-full"
+                          style={{ width: `${project.progress}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="bg-card rounded-lg shadow-sm p-4">
                   <TasksByUser />
                 </div>
+
+                <Card className="p-4">
+                  <h3 className="text-lg font-semibold mb-4">Students ({project.studentCount})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {project.students.map((student) => (
+                      <div key={student.id} className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={student.avatar} alt={student.name} />
+                          <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{student.name}</p>
+                          <p className="text-sm text-muted-foreground">{student.grade}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
               </div>
             </div>
           </main>

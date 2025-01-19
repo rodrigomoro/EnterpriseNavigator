@@ -8,7 +8,7 @@ export default function PeopleDirectory() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">People Directory</h3>
-        <Link href="/team">
+        <Link href="/people">
           <Button variant="outline" size="sm">See all people</Button>
         </Link>
       </div>
