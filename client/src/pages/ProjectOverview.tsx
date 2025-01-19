@@ -41,34 +41,36 @@ export default function ProjectOverview() {
 
             <div className="grid grid-cols-12 gap-6">
               {/* Left Column */}
-              <div className="col-span-12 lg:col-span-5">
-                <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
-                  <Calendar />
-                </div>
+              <div className="col-span-12 lg:col-span-4">
+                <div className="bg-card rounded-lg shadow-sm p-6">
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <h2 className="text-xl font-semibold">{project.name}</h2>
+                  </div>
 
-                <div className="bg-card rounded-lg shadow-sm p-4">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Assigned Teachers</h3>
-                    {project.team.map((member) => (
-                      <Link key={member.id} href={`/people/${member.id}`}>
-                        <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={member.avatar} alt={member.name} />
-                            <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium text-sm">{member.name}</p>
-                            <p className="text-xs text-muted-foreground">{member.role}</p>
-                          </div>
-                        </a>
-                      </Link>
-                    ))}
+                    <div>
+                      <h3 className="text-lg font-semibold">Assigned Teachers</h3>
+                      {project.team.map((member) => (
+                        <Link key={member.id} href={`/people/${member.id}`}>
+                          <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={member.avatar} alt={member.name} />
+                              <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium text-sm">{member.name}</p>
+                              <p className="text-xs text-muted-foreground">{member.role}</p>
+                            </div>
+                          </a>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column */}
-              <div className="col-span-12 lg:col-span-7 space-y-6">
+              <div className="col-span-12 lg:col-span-8 space-y-6">
                 <div className="bg-card rounded-lg shadow-sm p-4">
                   <h3 className="text-lg font-semibold mb-4">Program Progress</h3>
                   <div className="space-y-4">
@@ -91,16 +93,18 @@ export default function ProjectOverview() {
                   <h3 className="text-lg font-semibold mb-4">Students ({project.studentCount})</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {project.students.map((student) => (
-                      <div key={student.id} className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={student.avatar} alt={student.name} />
-                          <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{student.name}</p>
-                          <p className="text-sm text-muted-foreground">{student.grade}</p>
-                        </div>
-                      </div>
+                      <Link key={student.id} href={`/people/${student.id}`}>
+                        <a className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={student.avatar} alt={student.name} />
+                            <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{student.name}</p>
+                            <p className="text-sm text-muted-foreground">{student.grade}</p>
+                          </div>
+                        </a>
+                      </Link>
                     ))}
                   </div>
                 </Card>
