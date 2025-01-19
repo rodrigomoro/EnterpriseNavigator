@@ -1,0 +1,41 @@
+import { Home, Calendar, Users, PieChart, Settings, LogOut } from 'lucide-react';
+import { Link } from 'wouter';
+
+const navigationItems = [
+  { icon: Home, label: 'Home', href: '/' },
+  { icon: Calendar, label: 'Calendar', href: '/calendar' },
+  { icon: Users, label: 'Team', href: '/team' },
+  { icon: PieChart, label: 'Analytics', href: '/analytics' },
+];
+
+export default function Sidebar() {
+  return (
+    <aside className="w-16 md:w-64 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
+      <div className="p-4">
+        <h2 className="text-xl font-bold hidden md:block">ERP System</h2>
+      </div>
+
+      <nav className="flex-1 px-2">
+        {navigationItems.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <a className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer">
+              <item.icon className="h-5 w-5" />
+              <span className="hidden md:block">{item.label}</span>
+            </a>
+          </Link>
+        ))}
+      </nav>
+
+      <div className="p-4 border-t border-sidebar-border">
+        <button className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent w-full">
+          <Settings className="h-5 w-5" />
+          <span className="hidden md:block">Settings</span>
+        </button>
+        <button className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent w-full mt-2">
+          <LogOut className="h-5 w-5" />
+          <span className="hidden md:block">Logout</span>
+        </button>
+      </div>
+    </aside>
+  );
+}
