@@ -42,6 +42,43 @@ const CHART_COLORS = ['#0ea5e9', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444'];
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('12');
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    
+    const progressData = payload.find(p => p.dataKey === 'progress');
+    const studentData = payload.find(p => p.dataKey === 'studentCount');
+
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="grid gap-2">
+          <div className="font-medium">{label}</div>
+          <div className="grid grid-cols-2 gap-4">
+            {progressData && (
+              <div>
+                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                  Progress
+                </span>
+                <span className="block font-bold">
+                  {progressData.value}%
+                </span>
+              </div>
+            )}
+            {studentData && (
+              <div>
+                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                  Students
+                </span>
+                <span className="block font-bold">
+                  {studentData.value}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -142,38 +179,7 @@ export default function Analytics() {
                         <XAxis dataKey="name" />
                         <YAxis yAxisId="left" label={{ value: 'Progress (%)', angle: -90, position: 'insideLeft' }} />
                         <YAxis yAxisId="right" orientation="right" label={{ value: 'Students', angle: 90, position: 'insideRight' }} />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid gap-2">
-                                    <div className="font-medium">{payload[0].payload.name}</div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                          Progress
-                                        </span>
-                                        <span className="block font-bold">
-                                          {payload[0].value}%
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                          Students
-                                        </span>
-                                        <span className="block font-bold">
-                                          {payload[1].value}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
+                        <Tooltip content={CustomTooltip} />
                         <Area
                           yAxisId="left"
                           type="monotone"
