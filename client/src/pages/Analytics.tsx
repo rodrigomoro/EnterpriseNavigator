@@ -18,15 +18,12 @@ const programMetrics = {
   activeStaff: mockTeamMembers.length
 };
 
-// Calculate grade distribution
-const gradeDistribution = mockStudents.reduce((acc, student) => {
-  acc[student.grade] = (acc[student.grade] || 0) + 1;
-  return acc;
-}, {} as Record<string, number>);
-
-const gradeDistributionData = Object.entries(gradeDistribution).map(([grade, count]) => ({
-  name: grade,
-  value: count
+// Calculate program distribution data
+const programDistributionData = mockProjects.map(project => ({
+  name: project.name,
+  value: project.studentCount,
+  progress: project.progress,
+  teamSize: project.team.length
 }));
 
 // Calculate program progress data
@@ -44,7 +41,7 @@ export default function Analytics() {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
-    
+
     const progressData = payload.find(p => p.dataKey === 'progress');
     const studentData = payload.find(p => p.dataKey === 'studentCount');
 
@@ -201,37 +198,50 @@ export default function Analytics() {
                 </CardContent>
               </Card>
 
-              {/* Student Grade Distribution */}
+              {/* Program Distribution */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Student Grade Distribution</CardTitle>
+                  <CardTitle>Program Distribution</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={gradeDistributionData}
+                          data={programDistributionData}
                           cx="50%"
                           cy="50%"
                           innerRadius={60}
                           outerRadius={80}
                           paddingAngle={5}
                           dataKey="value"
+                          nameKey="name"
                         >
-                          {gradeDistributionData.map((entry, index) => (
+                          {programDistributionData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip
                           content={({ active, payload }) => {
                             if (active && payload && payload.length) {
+                              const data = payload[0].payload;
                               return (
                                 <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid gap-1">
-                                    <div className="font-medium">{payload[0].payload.name}</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      {payload[0].value} students
+                                  <div className="grid gap-2">
+                                    <div className="font-medium">{data.name}</div>
+                                    <div className="grid gap-1">
+                                      <div className="text-sm">
+                                        <span className="text-muted-foreground">Students: </span>
+                                        <span className="font-medium">{data.value}</span>
+                                      </div>
+                                      <div className="text-sm">
+                                        <span className="text-muted-foreground">Progress: </span>
+                                        <span className="font-medium">{data.progress}%</span>
+                                      </div>
+                                      <div className="text-sm">
+                                        <span className="text-muted-foreground">Team Size: </span>
+                                        <span className="font-medium">{data.teamSize}</span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
