@@ -97,53 +97,48 @@ export default function Organization() {
                         />
                       </div>
 
-                      {/* Director Level */}
+                      {/* C-Level Executives */}
                       <div className="relative">
                         <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
                         <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
                         <div className="flex justify-center gap-8">
-                          {mockTeamMembers
-                            .filter(member => member.isDirector && member.id !== '1')
-                            .map(director => (
-                              <div key={director.id} className="relative">
-                                <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                                <EmployeeCard 
-                                  employee={director}
-                                  isCurrentUser={director.id === LOGGED_IN_USER_ID}
-                                />
-                              </div>
-                            ))}
+                          {membersByManager['1']?.map(director => (
+                            <div key={director.id} className="relative">
+                              <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
+                              <EmployeeCard 
+                                employee={director}
+                                isCurrentUser={director.id === LOGGED_IN_USER_ID}
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      {/* Department Teams Level */}
-                      {departments.map(dept => {
-                        const directors = mockTeamMembers.filter(
-                          member => member.isDirector && member.department === dept
-                        );
-
-                        const departmentMembers = directors.map(director => {
-                          const reportingMembers = membersByManager[director.id] || [];
-                          return reportingMembers.map(member => (
-                            <div key={member.id} className="relative">
+                      {/* Department Teams */}
+                      <div className="relative">
+                        <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                        <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
+                        <div className="flex justify-center gap-16">
+                          {membersByManager['5']?.map(manager => (
+                            <div key={manager.id} className="relative">
                               <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
                               <EmployeeCard 
-                                employee={member}
-                                isCurrentUser={member.id === LOGGED_IN_USER_ID}
+                                employee={manager}
+                                isCurrentUser={manager.id === LOGGED_IN_USER_ID}
                               />
 
                               {/* Sub-team members */}
-                              {membersByManager[member.id] && (
+                              {membersByManager[manager.id] && (
                                 <div className="mt-8 relative">
                                   <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
                                   <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
                                   <div className="flex justify-center gap-4">
-                                    {membersByManager[member.id].map(subMember => (
-                                      <div key={subMember.id} className="relative">
+                                    {membersByManager[manager.id].map(member => (
+                                      <div key={member.id} className="relative">
                                         <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
                                         <EmployeeCard 
-                                          employee={subMember}
-                                          isCurrentUser={subMember.id === LOGGED_IN_USER_ID}
+                                          employee={member}
+                                          isCurrentUser={member.id === LOGGED_IN_USER_ID}
                                         />
                                       </div>
                                     ))}
@@ -151,21 +146,9 @@ export default function Organization() {
                                 </div>
                               )}
                             </div>
-                          ));
-                        });
-
-                        if (!departmentMembers.flat().length) return null;
-
-                        return (
-                          <div key={dept} className="relative">
-                            <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
-                            <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
-                            <div className="flex flex-wrap justify-center gap-8">
-                              {departmentMembers}
-                            </div>
-                          </div>
-                        );
-                      })}
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
