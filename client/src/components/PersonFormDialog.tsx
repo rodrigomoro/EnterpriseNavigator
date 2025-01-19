@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
+import { FormSection } from "@/components/ui/FormSection";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -96,8 +97,7 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {/* General Information */}
-              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-                <h2 className="text-base font-medium mb-4">General Information</h2>
+              <FormSection title="General Information">
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -151,11 +151,10 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
-              </div>
+              </FormSection>
 
               {/* Role Type */}
-              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-                <h2 className="text-base font-medium mb-4">Role Type</h2>
+              <FormSection title="Role Type">
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
@@ -220,11 +219,10 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
-              </div>
+              </FormSection>
 
               {/* Contact Information */}
-              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-                <h2 className="text-base font-medium mb-4">Contact Information</h2>
+              <FormSection title="Contact Information">
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -254,11 +252,10 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
-              </div>
+              </FormSection>
 
               {/* Additional Information */}
-              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-                <h2 className="text-base font-medium mb-4">Additional Information</h2>
+              <FormSection title="Additional Information">
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -298,12 +295,11 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
-              </div>
+              </FormSection>
 
-              {/* Program Assignments - Only shown when roles are selected */}
+              {/* Program Assignments */}
               {(watchIsDirector || watchIsTeacher || watchIsStudent) && (
-                <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-                  <h2 className="text-base font-medium mb-4">Program Assignments</h2>
+                <FormSection title="Program Assignments">
                   <div className="space-y-4">
                     {watchIsDirector && (
                       <FormField
@@ -368,7 +364,7 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       />
                     )}
                   </div>
-                </div>
+                </FormSection>
               )}
             </div>
 
