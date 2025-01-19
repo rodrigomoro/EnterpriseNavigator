@@ -61,7 +61,7 @@ export default function ManageProgram() {
       progress: programData?.progress ?? 0,
       directorIds: programData ? [programData.director.id] : [],
       teacherIds: programData ? programData.team.map((t) => t.id) : [],
-      studentIds: [],
+      studentIds: programData ? programData.students.map(s => s.id) : [],
     },
   });
 

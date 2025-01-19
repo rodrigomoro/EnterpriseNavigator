@@ -230,6 +230,110 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Web development and software engineering instructor.',
     projects: ['Cloud Computing'],
     reportsTo: '14'
+  },
+  {
+    id: 'student-1',
+    name: 'John Smith',
+    role: 'Student',
+    department: 'Computer Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    email: 'john.smith@company.com',
+    phone: '+1 (555) 0201',
+    bio: 'Computer Science student with interests in AI and machine learning.',
+    projects: ['Data Analytics 2025'],
+    reportsTo: '14'
+  },
+  {
+    id: 'student-2',
+    name: 'Emily Brown',
+    role: 'Student',
+    department: 'Mathematics',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+    email: 'emily.brown@company.com',
+    phone: '+1 (555) 0202',
+    bio: 'Mathematics enthusiast focusing on data analysis.',
+    projects: ['Data Analytics 2025'],
+    reportsTo: '13'
+  },
+  {
+    id: 'student-3',
+    name: 'Michael Johnson',
+    role: 'Student',
+    department: 'Computer Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+    email: 'michael.johnson@company.com',
+    phone: '+1 (555) 0203',
+    bio: 'Aspiring software developer with a passion for web technologies.',
+    projects: ['Cloud Computing'],
+    reportsTo: '14'
+  },
+  {
+    id: 'student-4',
+    name: 'Sarah Davis',
+    role: 'Student',
+    department: 'Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    email: 'sarah.davis@company.com',
+    phone: '+1 (555) 0204',
+    bio: 'Research-oriented student focusing on data science applications.',
+    projects: ['Design Research'],
+    reportsTo: '12'
+  },
+  {
+    id: 'student-5',
+    name: 'Alex Martinez',
+    role: 'Student',
+    department: 'Computer Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+    email: 'alex.martinez@company.com',
+    phone: '+1 (555) 0205',
+    bio: 'Full-stack developer in training with focus on cloud technologies.',
+    projects: ['Cloud Computing'],
+    reportsTo: '15'
+  },
+  {
+    id: 'student-6',
+    name: 'Lisa Wang',
+    role: 'Student',
+    department: 'Mathematics',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
+    email: 'lisa.wang@company.com',
+    phone: '+1 (555) 0206',
+    bio: 'Mathematics student specializing in statistical analysis.',
+    projects: ['Data Analytics 2025'],
+    reportsTo: '13'
+  },
+  {
+    id: 'student-7',
+    name: 'Daniel Lee',
+    role: 'Student',
+    department: 'Computer Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel',
+    email: 'daniel.lee@company.com',
+    phone: '+1 (555) 0207',
+    bio: 'Passionate about cybersecurity and network infrastructure.',
+    projects: ['Cloud Computing'],
+    reportsTo: '14'
+  },
+  {
+    id: 'student-8',
+    name: 'Rachel Chen',
+    role: 'Student',
+    department: 'Science',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel',
+    email: 'rachel.chen@company.com',
+    phone: '+1 (555) 0208',
+    bio: 'Research assistant focusing on data analytics applications.',
+    projects: ['Design Research'],
+    reportsTo: '12'
   }
 ];
 
@@ -246,7 +350,7 @@ export interface Student {
 
 export const mockStudents: Student[] = [
   {
-    id: '1',
+    id: 'student-1',
     name: 'John Smith',
     scores: {
       mathematics: 85,
@@ -256,7 +360,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
   },
   {
-    id: '2',
+    id: 'student-2',
     name: 'Emily Brown',
     scores: {
       mathematics: 95,
@@ -266,7 +370,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
   },
   {
-    id: '3',
+    id: 'student-3',
     name: 'Michael Johnson',
     scores: {
       mathematics: 78,
@@ -276,7 +380,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael'
   },
   {
-    id: '4',
+    id: 'student-4',
     name: 'Sarah Davis',
     scores: {
       mathematics: 92,
@@ -286,7 +390,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
   },
   {
-    id: '5',
+    id: 'student-5',
     name: 'Alex Martinez',
     scores: {
       mathematics: 88,
@@ -296,7 +400,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'
   },
   {
-    id: '6',
+    id: 'student-6',
     name: 'Lisa Wang',
     scores: {
       mathematics: 94,
@@ -306,7 +410,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa'
   },
   {
-    id: '7',
+    id: 'student-7',
     name: 'Daniel Lee',
     scores: {
       mathematics: 91,
@@ -316,7 +420,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel'
   },
   {
-    id: '8',
+    id: 'student-8',
     name: 'Rachel Chen',
     scores: {
       mathematics: 89,
@@ -326,7 +430,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel'
   },
   {
-    id: '9',
+    id: 'student-9',
     name: 'Kevin Patel',
     scores: {
       mathematics: 83,
@@ -336,7 +440,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kevin'
   },
   {
-    id: '10',
+    id: 'student-10',
     name: 'Sofia Rodriguez',
     scores: {
       mathematics: 96,
@@ -346,7 +450,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia'
   },
   {
-    id: '11',
+    id: 'student-11',
     name: 'Ryan Thompson',
     scores: {
       mathematics: 87,
@@ -356,7 +460,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ryan'
   },
   {
-    id: '12',
+    id: 'student-12',
     name: 'Emma Wilson',
     scores: {
       mathematics: 92,
@@ -366,7 +470,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma'
   },
   {
-    id: '13',
+    id: 'student-13',
     name: 'Lucas Kim',
     scores: {
       mathematics: 90,
@@ -376,7 +480,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas'
   },
   {
-    id: '14',
+    id: 'student-14',
     name: 'Isabella Garcia',
     scores: {
       mathematics: 88,
@@ -386,7 +490,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella'
   },
   {
-    id: '15',
+    id: 'student-15',
     name: 'Nathan Wright',
     scores: {
       mathematics: 85,
@@ -396,7 +500,7 @@ export const mockStudents: Student[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan'
   },
   {
-    id: '16',
+    id: 'student-16',
     name: 'Olivia Chen',
     scores: {
       mathematics: 93,
@@ -791,8 +895,7 @@ export const mockInvoices: Invoice[] = [
         quantity: 1,
         price: 4500,
         total: 4500
-      },
-      {
+      },{
         description: 'Implementation Services',
         quantity: 1,
         price: 1500,

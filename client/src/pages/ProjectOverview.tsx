@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Edit } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { mockProjects } from "@/data/mockData";
 import Calendar from "@/components/Calendar";
@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function ProjectOverview() {
   const [, params] = useRoute("/programs/:id");
@@ -30,12 +31,18 @@ export default function ProjectOverview() {
                       Program overview
                     </a>
                   </Link>
-                  <span>/</span>
-                  <span className="text-foreground">{project.name}</span>
                 </div>
-                <h1 className="text-2xl font-bold">
-                  Program overview / {project.name}
-                </h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-2xl font-bold">
+                    Program overview / {project.name}
+                  </h1>
+                  <Link href={`/programs/edit/${project.id}`}>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Edit className="h-4 w-4" />
+                      Edit Program
+                    </Button>
+                  </Link>
+                </div>
               </div>
 
               <UserAvatar />
