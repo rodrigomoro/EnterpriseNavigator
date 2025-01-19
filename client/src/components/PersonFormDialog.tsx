@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
+import PeoplePicker from "@/components/ui/PeoplePicker";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -72,6 +73,12 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
   const watchIsDirector = form.watch("isDirector");
   const watchIsTeacher = form.watch("isTeacher");
   const watchIsStudent = form.watch("isStudent");
+
+  const programOptions = mockProjects.map(program => ({
+    id: program.id,
+    name: program.name,
+    role: 'Program',
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -180,17 +187,13 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     <FormItem>
                       <FormLabel>Reports To</FormLabel>
                       <FormControl>
-                        <select
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                          {...field}
-                        >
-                          <option value="">Select manager</option>
-                          {potentialManagers.map(manager => (
-                            <option key={manager.id} value={manager.id}>
-                              {manager.name} - {manager.role}
-                            </option>
-                          ))}
-                        </select>
+                        <PeoplePicker
+                          people={potentialManagers}
+                          selectedIds={field.value ? [field.value] : []}
+                          onChange={(ids) => field.onChange(ids[0] || '')}
+                          placeholder="Select manager"
+                          multiple={false}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -273,21 +276,12 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       <FormItem>
                         <FormLabel>Directing Programs</FormLabel>
                         <FormControl>
-                          <select
-                            multiple
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                            value={field.value}
-                            onChange={(e) => {
-                              const options = Array.from(e.target.selectedOptions);
-                              field.onChange(options.map(option => option.value));
-                            }}
-                          >
-                            {mockProjects.map(program => (
-                              <option key={program.id} value={program.id}>
-                                {program.name}
-                              </option>
-                            ))}
-                          </select>
+                          <PeoplePicker
+                            people={programOptions}
+                            selectedIds={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Select programs to direct"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -303,21 +297,12 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       <FormItem>
                         <FormLabel>Teaching Programs</FormLabel>
                         <FormControl>
-                          <select
-                            multiple
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                            value={field.value}
-                            onChange={(e) => {
-                              const options = Array.from(e.target.selectedOptions);
-                              field.onChange(options.map(option => option.value));
-                            }}
-                          >
-                            {mockProjects.map(program => (
-                              <option key={program.id} value={program.id}>
-                                {program.name}
-                              </option>
-                            ))}
-                          </select>
+                          <PeoplePicker
+                            people={programOptions}
+                            selectedIds={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Select programs to teach"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -333,21 +318,12 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       <FormItem>
                         <FormLabel>Enrolled Programs</FormLabel>
                         <FormControl>
-                          <select
-                            multiple
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                            value={field.value}
-                            onChange={(e) => {
-                              const options = Array.from(e.target.selectedOptions);
-                              field.onChange(options.map(option => option.value));
-                            }}
-                          >
-                            {mockProjects.map(program => (
-                              <option key={program.id} value={program.id}>
-                                {program.name}
-                              </option>
-                            ))}
-                          </select>
+                          <PeoplePicker
+                            people={programOptions}
+                            selectedIds={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Select programs to enroll in"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

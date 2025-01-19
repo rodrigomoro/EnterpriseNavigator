@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { mockTeamMembers } from "@/data/mockData";
+import PeoplePicker from "@/components/ui/PeoplePicker";
 
 const formSchema = z.object({
   name: z.string().min(1, "Program name is required"),
@@ -64,8 +65,8 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Create Program' : 'Edit Program'}</DialogTitle>
           <DialogDescription>
-            {mode === 'create' 
-              ? 'Add a new program to your organization.' 
+            {mode === 'create'
+              ? 'Add a new program to your organization.'
               : 'Update the program details.'}
           </DialogDescription>
         </DialogHeader>
@@ -141,21 +142,12 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
                     <FormItem>
                       <FormLabel>Directors</FormLabel>
                       <FormControl>
-                        <select
-                          multiple
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                          value={field.value}
-                          onChange={(e) => {
-                            const options = Array.from(e.target.selectedOptions);
-                            field.onChange(options.map(option => option.value));
-                          }}
-                        >
-                          {directors.map(director => (
-                            <option key={director.id} value={director.id}>
-                              {director.name} - {director.role}
-                            </option>
-                          ))}
-                        </select>
+                        <PeoplePicker
+                          people={directors}
+                          selectedIds={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select program directors"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -169,21 +161,12 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
                     <FormItem>
                       <FormLabel>Teachers</FormLabel>
                       <FormControl>
-                        <select
-                          multiple
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                          value={field.value}
-                          onChange={(e) => {
-                            const options = Array.from(e.target.selectedOptions);
-                            field.onChange(options.map(option => option.value));
-                          }}
-                        >
-                          {teachers.map(teacher => (
-                            <option key={teacher.id} value={teacher.id}>
-                              {teacher.name} - {teacher.role}
-                            </option>
-                          ))}
-                        </select>
+                        <PeoplePicker
+                          people={teachers}
+                          selectedIds={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select program teachers"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -197,21 +180,12 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
                     <FormItem>
                       <FormLabel>Students</FormLabel>
                       <FormControl>
-                        <select
-                          multiple
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                          value={field.value}
-                          onChange={(e) => {
-                            const options = Array.from(e.target.selectedOptions);
-                            field.onChange(options.map(option => option.value));
-                          }}
-                        >
-                          {students.map(student => (
-                            <option key={student.id} value={student.id}>
-                              {student.name}
-                            </option>
-                          ))}
-                        </select>
+                        <PeoplePicker
+                          people={students}
+                          selectedIds={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select program students"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
