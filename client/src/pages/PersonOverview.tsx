@@ -1,10 +1,11 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Edit } from "lucide-react";
 import { Link, useRoute } from 'wouter';
 import { mockTeamMembers } from '@/data/mockData';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from "@/components/ui/button";
 
 export default function PersonOverview() {
   const [, params] = useRoute('/people/:id');
@@ -33,7 +34,17 @@ export default function PersonOverview() {
                   <span>/</span>
                   <span className="text-foreground">{person.name}</span>
                 </div>
-                <h1 className="text-2xl font-bold">Person Overview / {person.name}</h1>
+                <div className="flex items-center gap-4">
+                <h1 className="text-2xl font-bold">
+                  Person Overview / {person.name}
+                </h1>
+                <Link href={`/people/${person.id}/edit`}>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Edit className="h-4 w-4" />
+                    Edit Person
+                  </Button>
+                </Link>
+                  </div>
               </div>
 
               <UserAvatar />

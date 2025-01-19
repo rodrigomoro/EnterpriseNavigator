@@ -36,7 +36,7 @@ export default function ProjectOverview() {
                   <h1 className="text-2xl font-bold">
                     Program overview / {project.name}
                   </h1>
-                  <Link href={`/programs/edit/${project.id}`}>
+                  <Link href={`/programs/${project.id}/edit`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Edit className="h-4 w-4" />
                       Edit Program
