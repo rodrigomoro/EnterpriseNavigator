@@ -10,7 +10,6 @@ import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
 import { Input } from '@/components/ui/input';
-import ProgramFormDialog from '@/components/ProgramFormDialog';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,30 +30,8 @@ const item = {
 
 export default function Projects() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingProgram, setEditingProgram] = useState<typeof mockProjects[0] | null>(null);
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
   const { toast } = useToast();
-
-  const handleCreateProgram = (data: any) => {
-    // In a real app, this would make an API call
-    console.log('Creating program:', data);
-    setIsCreateDialogOpen(false);
-    toast({
-      title: "Program created",
-      description: "The program has been created successfully.",
-    });
-  };
-
-  const handleUpdateProgram = (data: any) => {
-    // In a real app, this would make an API call
-    console.log('Updating program:', data);
-    setEditingProgram(null);
-    toast({
-      title: "Program updated",
-      description: "The program has been updated successfully.",
-    });
-  };
 
   const handleDeleteProgram = () => {
     if (!deletingProgramId) return;
@@ -94,10 +71,12 @@ export default function Projects() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button onClick={() => setIsCreateDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Program
-                </Button>
+                <Link href="/programs/new">
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Program
+                  </Button>
+                </Link>
                 <UserAvatar />
               </div>
             </div>
@@ -113,7 +92,7 @@ export default function Projects() {
               {mockProjects.map((project) => (
                 <motion.div key={project.id} variants={item}>
                   <div className="relative group">
-                    <Link href={`/program/${project.id}`}>
+                    <Link href={`/programs/${project.id}`}>
                       <a className="block">
                         <motion.div 
                           className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
@@ -178,16 +157,19 @@ export default function Projects() {
                     {/* Action buttons */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-2">
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setEditingProgram(project);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <Link href={`/programs/${project.id}/edit`}>
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.location.href = `/programs/${project.id}/edit`;
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
                         <Button
                           variant="destructive"
                           size="icon"
@@ -207,20 +189,6 @@ export default function Projects() {
           </main>
         </PageTransition>
       </div>
-
-      {/* Create/Edit Program Dialog */}
-      <ProgramFormDialog
-        open={isCreateDialogOpen || editingProgram !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setIsCreateDialogOpen(false);
-            setEditingProgram(null);
-          }
-        }}
-        onSubmit={editingProgram ? handleUpdateProgram : handleCreateProgram}
-        initialData={editingProgram || undefined}
-        mode={editingProgram ? 'edit' : 'create'}
-      />
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
