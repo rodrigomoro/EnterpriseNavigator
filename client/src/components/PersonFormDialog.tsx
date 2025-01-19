@@ -105,7 +105,7 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter name" {...field} />
+                          <Input placeholder="Enter name" {...field} className="bg-white" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -114,12 +114,61 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
 
                   <FormField
                     control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="Enter email" {...field} className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter phone number" {...field} className="bg-white" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[80px]"
+                            placeholder="Enter bio"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Right Column - Role Information */}
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
                     name="role"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Role</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter role" {...field} />
+                          <Input placeholder="Enter role" {...field} className="bg-white" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -134,7 +183,7 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                         <FormLabel>Department</FormLabel>
                         <FormControl>
                           <select
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
                             {...field}
                           >
                             <option value="">Select department</option>
@@ -150,7 +199,28 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
 
-                  <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="reportsTo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reports To</FormLabel>
+                        <FormControl>
+                          <PeoplePicker
+                            people={potentialManagers}
+                            selectedIds={field.value ? [field.value] : []}
+                            onChange={(ids) => field.onChange(ids[0] || '')}
+                            placeholder="Select manager"
+                            multiple={false}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="p-4 border rounded-lg bg-white space-y-2">
+                    <h3 className="text-sm font-medium mb-2">Role Type</h3>
                     <FormField
                       control={form.control}
                       name="isDirector"
@@ -215,142 +285,78 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     />
                   </div>
                 </div>
-
-                {/* Right Column - Contact & Additional Info */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="Enter email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter phone number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="reportsTo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reports To</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={potentialManagers}
-                            selectedIds={field.value ? [field.value] : []}
-                            onChange={(ids) => field.onChange(ids[0] || '')}
-                            placeholder="Select manager"
-                            multiple={false}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="bio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bio</FormLabel>
-                        <FormControl>
-                          <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                            placeholder="Enter bio"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
 
               {/* Program Assignments - Full Width */}
-              <div className="mt-6 space-y-4">
-                {watchIsDirector && (
-                  <FormField
-                    control={form.control}
-                    name="directorPrograms"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Directing Programs</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={programOptions}
-                            selectedIds={field.value || []}
-                            onChange={field.onChange}
-                            placeholder="Select programs to direct"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+              {(watchIsDirector || watchIsTeacher || watchIsStudent) && (
+                <div className="mt-6 border-t pt-6">
+                  <h3 className="text-sm font-medium mb-4">Program Assignments</h3>
+                  <div className="space-y-4">
+                    {watchIsDirector && (
+                      <FormField
+                        control={form.control}
+                        name="directorPrograms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Directing Programs</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={programOptions}
+                                selectedIds={field.value || []}
+                                onChange={field.onChange}
+                                placeholder="Select programs to direct"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )}
-                  />
-                )}
 
-                {watchIsTeacher && (
-                  <FormField
-                    control={form.control}
-                    name="teachingPrograms"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teaching Programs</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={programOptions}
-                            selectedIds={field.value || []}
-                            onChange={field.onChange}
-                            placeholder="Select programs to teach"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    {watchIsTeacher && (
+                      <FormField
+                        control={form.control}
+                        name="teachingPrograms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Teaching Programs</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={programOptions}
+                                selectedIds={field.value || []}
+                                onChange={field.onChange}
+                                placeholder="Select programs to teach"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )}
-                  />
-                )}
 
-                {watchIsStudent && (
-                  <FormField
-                    control={form.control}
-                    name="enrolledPrograms"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Enrolled Programs</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={programOptions}
-                            selectedIds={field.value || []}
-                            onChange={field.onChange}
-                            placeholder="Select programs to enroll in"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    {watchIsStudent && (
+                      <FormField
+                        control={form.control}
+                        name="enrolledPrograms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Enrolled Programs</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={programOptions}
+                                selectedIds={field.value || []}
+                                onChange={field.onChange}
+                                placeholder="Select programs to enroll in"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )}
-                  />
-                )}
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <DialogFooter className="px-6 py-4">
