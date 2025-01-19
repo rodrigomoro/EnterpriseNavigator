@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useRoute } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,72 +24,39 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.string().min(1, "Role is required"),
   department: z.string().min(1, "Department is required"),
-  isDirector: z.boolean().default(false),
-  isTeacher: z.boolean().default(false),
-  isStudent: z.boolean().default(false),
-  directorPrograms: z.array(z.string()).optional(),
-  teachingPrograms: z.array(z.string()).optional(),
-  enrolledPrograms: z.array(z.string()).optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
   bio: z.string(),
   reportsTo: z.string().optional(),
+  programIds: z.array(z.string()).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ManagePerson() {
-  const [, params] = useRoute("/people/:id");
+  const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = Boolean(params?.id);
-  
-  const person = isEdit ? mockTeamMembers.find(m => m.id === params?.id) : undefined;
+  const isEdit = params?.id !== 'new';
+
+  // Find person data if in edit mode
+  const personData = isEdit ? mockTeamMembers.find(m => m.id === params?.id) : null;
+  const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
+  const potentialManagers = mockTeamMembers.filter(member => member.role === 'Director');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: person ? {
-      name: person.name,
-      role: person.role,
-      department: person.department,
-      isDirector: person.isDirector,
-      isTeacher: person.isTeacher,
-      isStudent: person.isStudent,
-      directorPrograms: person.directorPrograms,
-      teachingPrograms: person.teachingPrograms,
-      enrolledPrograms: person.enrolledPrograms,
-      email: 'example@email.com', // Add these fields to your mock data
-      phone: '123-456-7890',
-      bio: person.bio ?? '',
-      reportsTo: person.reportsTo,
-    } : {
-      name: '',
-      role: '',
-      department: '',
-      isDirector: false,
-      isTeacher: false,
-      isStudent: false,
-      directorPrograms: [],
-      teachingPrograms: [],
-      enrolledPrograms: [],
-      email: '',
-      phone: '',
-      bio: '',
-      reportsTo: '',
+    defaultValues: {
+      name: personData?.name ?? '',
+      role: personData?.role ?? '',
+      department: personData?.department ?? '',
+      email: personData?.email ?? '',
+      phone: personData?.phone ?? '',
+      bio: personData?.bio ?? '',
+      reportsTo: personData?.reportsTo ?? '',
+      programIds: personData?.programIds ?? [],
     },
   });
-
-  const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
-  const potentialManagers = mockTeamMembers.filter(member => member.isDirector);
-  const watchIsDirector = form.watch("isDirector");
-  const watchIsTeacher = form.watch("isTeacher");
-  const watchIsStudent = form.watch("isStudent");
-
-  const programOptions = mockProjects.map(program => ({
-    id: program.id,
-    name: program.name,
-    role: 'Program',
-  }));
 
   const onSubmit = async (data: FormValues) => {
     // In a real app, this would be an API call
@@ -100,6 +67,12 @@ export default function ManagePerson() {
     });
     navigate("/people");
   };
+
+  // If trying to edit a non-existent person, redirect to people list
+  if (isEdit && !personData) {
+    navigate("/people");
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -118,7 +91,7 @@ export default function ManagePerson() {
                 </Link>
               </div>
               <h1 className="text-2xl font-bold">
-                {isEdit ? `Edit ${person?.name}` : 'Add New Person'}
+                {isEdit ? `Edit ${personData?.name}` : 'Add New Person'}
               </h1>
             </div>
 
@@ -139,7 +112,11 @@ export default function ManagePerson() {
                           <FormItem>
                             <FormLabel>Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter name" {...field} className="bg-white" />
+                              <Input
+                                placeholder="Enter name"
+                                {...field}
+                                className="bg-white"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -153,7 +130,15 @@ export default function ManagePerson() {
                           <FormItem>
                             <FormLabel>Role</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter role" {...field} className="bg-white" />
+                              <select
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
+                                {...field}
+                              >
+                                <option value="">Select role</option>
+                                <option value="Director">Director</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Student">Student</option>
+                              </select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -185,76 +170,9 @@ export default function ManagePerson() {
                       />
                     </div>
                   </FormSection>
-
-                  <FormSection title="Role Type">
-                    <div className="space-y-3">
-                      <FormField
-                        control={form.control}
-                        name="isDirector"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-2">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  className="rounded border-input"
-                                />
-                              </FormControl>
-                              <FormLabel className="!mt-0">Is Director</FormLabel>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="isTeacher"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-2">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  className="rounded border-input"
-                                />
-                              </FormControl>
-                              <FormLabel className="!mt-0">Is Teacher</FormLabel>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="isStudent"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-2">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  className="rounded border-input"
-                                />
-                              </FormControl>
-                              <FormLabel className="!mt-0">Is Student</FormLabel>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </FormSection>
                 </div>
 
-                {/* Column 2: Contact & Additional Info */}
+                {/* Column 2: Contact Information */}
                 <div className="space-y-6">
                   <FormSection title="Contact Information">
                     <div className="space-y-4">
@@ -265,7 +183,12 @@ export default function ManagePerson() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="Enter email" {...field} className="bg-white" />
+                              <Input
+                                type="email"
+                                placeholder="Enter email"
+                                {...field}
+                                className="bg-white"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -279,30 +202,10 @@ export default function ManagePerson() {
                           <FormItem>
                             <FormLabel>Phone</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter phone number" {...field} className="bg-white" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </FormSection>
-
-                  <FormSection title="Additional Information">
-                    <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="reportsTo"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Reports To</FormLabel>
-                            <FormControl>
-                              <PeoplePicker
-                                people={potentialManagers}
-                                selectedIds={field.value ? [field.value] : []}
-                                onChange={(ids) => field.onChange(ids[0] || '')}
-                                placeholder="Select manager"
-                                multiple={false}
+                              <Input
+                                placeholder="Enter phone number"
+                                {...field}
+                                className="bg-white"
                               />
                             </FormControl>
                             <FormMessage />
@@ -331,76 +234,54 @@ export default function ManagePerson() {
                   </FormSection>
                 </div>
 
-                {/* Column 3: Program Assignments */}
+                {/* Column 3: Additional Information */}
                 <div className="space-y-6">
-                  {(watchIsDirector || watchIsTeacher || watchIsStudent) && (
-                    <FormSection title="Program Assignments">
-                      <div className="space-y-4">
-                        {watchIsDirector && (
-                          <FormField
-                            control={form.control}
-                            name="directorPrograms"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Directing Programs</FormLabel>
-                                <FormControl>
-                                  <PeoplePicker
-                                    people={programOptions}
-                                    selectedIds={field.value || []}
-                                    onChange={field.onChange}
-                                    placeholder="Select programs to direct"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                  <FormSection title="Additional Information">
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="reportsTo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Reports To</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={potentialManagers}
+                                selectedIds={field.value ? [field.value] : []}
+                                onChange={(ids) => field.onChange(ids[0] || '')}
+                                placeholder="Select manager"
+                                multiple={false}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
+                      />
 
-                        {watchIsTeacher && (
-                          <FormField
-                            control={form.control}
-                            name="teachingPrograms"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Teaching Programs</FormLabel>
-                                <FormControl>
-                                  <PeoplePicker
-                                    people={programOptions}
-                                    selectedIds={field.value || []}
-                                    onChange={field.onChange}
-                                    placeholder="Select programs to teach"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                      <FormField
+                        control={form.control}
+                        name="programIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Associated Programs</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={mockProjects.map(p => ({
+                                  id: p.id,
+                                  name: p.name,
+                                  role: 'Program'
+                                }))}
+                                selectedIds={field.value || []}
+                                onChange={field.onChange}
+                                placeholder="Select programs"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
-
-                        {watchIsStudent && (
-                          <FormField
-                            control={form.control}
-                            name="enrolledPrograms"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Enrolled Programs</FormLabel>
-                                <FormControl>
-                                  <PeoplePicker
-                                    people={programOptions}
-                                    selectedIds={field.value || []}
-                                    onChange={field.onChange}
-                                    placeholder="Select programs to enroll in"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-                      </div>
-                    </FormSection>
-                  )}
+                      />
+                    </div>
+                  </FormSection>
                 </div>
               </div>
 

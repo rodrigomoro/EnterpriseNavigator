@@ -1,4 +1,5 @@
 import Sidebar from '@/components/Sidebar';
+import { Link } from 'wouter';
 import { mockTeamMembers } from '@/data/mockData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PageTransition from '@/components/PageTransition';
@@ -7,9 +8,7 @@ import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Link } from 'wouter';
 import { motion } from 'framer-motion';
-import PersonFormDialog from '@/components/PersonFormDialog';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -30,30 +29,8 @@ const item = {
 
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingPerson, setEditingPerson] = useState<typeof mockTeamMembers[0] | null>(null);
   const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
   const { toast } = useToast();
-
-  const handleCreatePerson = (data: any) => {
-    // In a real app, this would make an API call
-    console.log('Creating person:', data);
-    setIsCreateDialogOpen(false);
-    toast({
-      title: "Person added",
-      description: "The team member has been added successfully.",
-    });
-  };
-
-  const handleUpdatePerson = (data: any) => {
-    // In a real app, this would make an API call
-    console.log('Updating person:', data);
-    setEditingPerson(null);
-    toast({
-      title: "Person updated",
-      description: "The team member has been updated successfully.",
-    });
-  };
 
   const handleDeletePerson = () => {
     if (!deletingPersonId) return;
@@ -93,10 +70,14 @@ export default function People() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button onClick={() => setIsCreateDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Person
-                </Button>
+                <Link href="/people/new">
+                  <a className="inline-block">
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Person
+                    </Button>
+                  </a>
+                </Link>
                 <UserAvatar />
               </div>
             </div>
@@ -112,8 +93,8 @@ export default function People() {
               {mockTeamMembers.map((member) => (
                 <motion.div key={member.id} variants={item}>
                   <div className="relative group">
-                    <Link href={`/people/${member.id}`}>
-                      <a className="block">
+                    <div className="block">
+                      <Link href={`/people/${member.id}`}>
                         <motion.div 
                           className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
                           whileHover={{ 
@@ -135,27 +116,28 @@ export default function People() {
                             </div>
                           </div>
                         </motion.div>
-                      </a>
-                    </Link>
+                      </Link>
+                    </div>
 
                     {/* Action buttons */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-2">
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setEditingPerson(member);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <Link href={`/people/${member.id}/edit`}>
+                          <a onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </a>
+                        </Link>
                         <Button
                           variant="destructive"
                           size="icon"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             setDeletingPersonId(member.id);
                           }}
                         >
@@ -170,20 +152,6 @@ export default function People() {
           </main>
         </PageTransition>
       </div>
-
-      {/* Create/Edit Person Dialog */}
-      <PersonFormDialog
-        open={isCreateDialogOpen || editingPerson !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setIsCreateDialogOpen(false);
-            setEditingPerson(null);
-          }
-        }}
-        onSubmit={editingPerson ? handleUpdatePerson : handleCreatePerson}
-        initialData={editingPerson || undefined}
-        mode={editingPerson ? 'edit' : 'create'}
-      />
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog

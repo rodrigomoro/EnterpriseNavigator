@@ -36,33 +36,41 @@ export default function ManageProgram() {
   const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = params?.id !== 'new';
+  const isEdit = params.id !== undefined;
 
   // Find program data if in edit mode
-  const programData = isEdit ? mockProjects.find(p => p.id === params?.id) : null;
+  const programData = isEdit
+    ? mockProjects.find((p) => p.id === params?.id)
+    : null;
 
-  const directors = mockTeamMembers.filter(member => member.role === 'Director');
-  const teachers = mockTeamMembers.filter(member => member.role === 'Teacher');
-  const students = mockTeamMembers.filter(member => member.role === 'Student');
+  const directors = mockTeamMembers.filter(
+    (member) => member.role === "Director",
+  );
+  const teachers = mockTeamMembers.filter(
+    (member) => member.role === "Teacher",
+  );
+  const students = mockTeamMembers.filter(
+    (member) => member.role === "Student",
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: programData?.name ?? '',
-      description: programData?.description ?? '',
+      name: programData?.name ?? "",
+      description: programData?.description ?? "",
       progress: programData?.progress ?? 0,
       directorIds: programData ? [programData.director.id] : [],
-      teacherIds: programData ? programData.team.map(t => t.id) : [],
+      teacherIds: programData ? programData.team.map((t) => t.id) : [],
       studentIds: [],
     },
   });
 
   const onSubmit = async (data: FormValues) => {
     // In a real app, this would be an API call
-    console.log('Form submitted:', data);
+    console.log("Form submitted:", data);
     toast({
       title: isEdit ? "Program Updated" : "Program Created",
-      description: `Successfully ${isEdit ? 'updated' : 'created'} ${data.name}`,
+      description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
     });
     navigate("/programs");
   };
@@ -90,7 +98,7 @@ export default function ManageProgram() {
                 </Link>
               </div>
               <h1 className="text-2xl font-bold">
-                {isEdit ? 'Edit Program' : 'Create New Program'}
+                {isEdit ? "Edit Program" : "Create New Program"}
               </h1>
             </div>
 
@@ -111,7 +119,11 @@ export default function ManageProgram() {
                           <FormItem>
                             <FormLabel>Program Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter program name" {...field} className="bg-white" />
+                              <Input
+                                placeholder="Enter program name"
+                                {...field}
+                                className="bg-white"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -149,7 +161,9 @@ export default function ManageProgram() {
                                   max={100}
                                   step={1}
                                   value={[field.value]}
-                                  onValueChange={([value]) => field.onChange(value)}
+                                  onValueChange={([value]) =>
+                                    field.onChange(value)
+                                  }
                                   className="flex-1"
                                 />
                                 <span className="text-sm font-medium w-12 text-right">
@@ -244,7 +258,7 @@ export default function ManageProgram() {
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {isEdit ? 'Save Changes' : 'Create Program'}
+                  {isEdit ? "Save Changes" : "Create Program"}
                 </Button>
               </div>
             </form>

@@ -211,7 +211,7 @@ export const mockStudents = [
 export const mockProjects = [
   {
     id: '1',
-    name: 'Market Research 2025',
+    name: 'Data Analytics 2025',
     progress: 65,
     team: mockTeamMembers.slice(0, 2),
     director: mockTeamMembers[0],
@@ -220,7 +220,7 @@ export const mockProjects = [
   },
   {
     id: '2',
-    name: 'SWOT Analysis',
+    name: 'Cloud Computing',
     progress: 40,
     team: mockTeamMembers.slice(1, 3),
     director: mockTeamMembers[1],
