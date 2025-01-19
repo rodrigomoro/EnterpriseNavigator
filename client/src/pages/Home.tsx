@@ -18,8 +18,8 @@ export default function Home() {
 
       <div className="flex-1">
         <PageTransition>
-          <header className="border-b">
-            <div className="px-6 h-16 flex items-center justify-between gap-8">
+          <header>
+            <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
               <div className="min-w-60">
                 <h1 className="text-2xl font-bold">Welcome, Juliana!</h1>
                 <p className="text-muted-foreground">Here is your agenda for today</p>
