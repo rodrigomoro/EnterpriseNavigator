@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Calendar from '@/components/Calendar';
 import PeopleDirectory from '@/components/PeopleDirectory';
-import ProjectDirectory from '@/components/ProjectDirectory';
+import ProgramDirectory from '@/components/ProgramDirectory';
 import TaskList from '@/components/TaskList';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function Home() {
                 </div>
 
                 <div className="bg-card rounded-lg shadow-sm p-4">
-                  <ProjectDirectory />
+                  <ProgramDirectory />
                 </div>
               </div>
 
