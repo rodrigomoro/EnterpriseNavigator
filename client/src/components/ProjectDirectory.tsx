@@ -28,10 +28,14 @@ export default function ProjectDirectory() {
 
               <div className="flex -space-x-2">
                 {project.team.map((member) => (
-                  <Avatar key={member.id} className="border-2 border-background w-8 h-8">
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                  </Avatar>
+                  <Link key={member.id} href={`/people/${member.id}`}>
+                    <a onClick={(e) => e.stopPropagation()}>
+                      <Avatar className="border-2 border-background w-8 h-8">
+                        <AvatarImage src={member.avatar} alt={member.name} />
+                        <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                      </Avatar>
+                    </a>
+                  </Link>
                 ))}
               </div>
             </a>

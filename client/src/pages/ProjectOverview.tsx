@@ -2,7 +2,6 @@ import { ArrowLeft } from 'lucide-react';
 import { Link, useRoute } from 'wouter';
 import { mockProjects } from '@/data/mockData';
 import Calendar from '@/components/Calendar';
-import TasksByUser from '@/components/TasksByUser';
 import Sidebar from '@/components/Sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PageTransition from '@/components/PageTransition';
@@ -51,16 +50,18 @@ export default function ProjectOverview() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Assigned Teachers</h3>
                     {project.team.map((member) => (
-                      <div key={member.id} className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-sm">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.role}</p>
-                        </div>
-                      </div>
+                      <Link key={member.id} href={`/people/${member.id}`}>
+                        <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.avatar} alt={member.name} />
+                            <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.role}</p>
+                          </div>
+                        </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -84,10 +85,6 @@ export default function ProjectOverview() {
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="bg-card rounded-lg shadow-sm p-4">
-                  <TasksByUser />
                 </div>
 
                 <Card className="p-4">

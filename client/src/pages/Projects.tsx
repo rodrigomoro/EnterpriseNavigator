@@ -97,13 +97,15 @@ export default function Projects() {
                           <div>
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-muted-foreground">Director</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">{project.director.name}</span>
-                                <Avatar className="h-6 w-6">
-                                  <AvatarImage src={project.director.avatar} alt={project.director.name} />
-                                  <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
-                                </Avatar>
-                              </div>
+                              <Link href={`/people/${project.director.id}`}>
+                                <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                  <span className="text-sm font-medium">{project.director.name}</span>
+                                  <Avatar className="h-6 w-6">
+                                    <AvatarImage src={project.director.avatar} alt={project.director.name} />
+                                    <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
+                                  </Avatar>
+                                </a>
+                              </Link>
                             </div>
                           </div>
 
@@ -112,10 +114,14 @@ export default function Projects() {
                               <p className="text-sm text-muted-foreground mb-2">Teachers</p>
                               <div className="flex -space-x-2">
                                 {project.team.map((member) => (
-                                  <Avatar key={member.id} className="border-2 border-background w-8 h-8">
-                                    <AvatarImage src={member.avatar} alt={member.name} />
-                                    <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                                  </Avatar>
+                                  <Link key={member.id} href={`/people/${member.id}`}>
+                                    <a onClick={(e) => e.stopPropagation()}>
+                                      <Avatar className="border-2 border-background w-8 h-8">
+                                        <AvatarImage src={member.avatar} alt={member.name} />
+                                        <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                                      </Avatar>
+                                    </a>
+                                  </Link>
                                 ))}
                               </div>
                             </div>

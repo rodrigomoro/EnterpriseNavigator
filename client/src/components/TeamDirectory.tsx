@@ -15,17 +15,19 @@ export default function PeopleDirectory() {
 
       <div className="space-y-4">
         {mockTeamMembers.map((member) => (
-          <div key={member.id} className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={member.avatar} alt={member.name} />
-              <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-            </Avatar>
+          <Link key={member.id} href={`/people/${member.id}`}>
+            <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
+              <Avatar>
+                <AvatarImage src={member.avatar} alt={member.name} />
+                <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+              </Avatar>
 
-            <div>
-              <p className="font-medium">{member.name}</p>
-              <p className="text-sm text-muted-foreground">{member.role}</p>
-            </div>
-          </div>
+              <div>
+                <p className="font-medium">{member.name}</p>
+                <p className="text-sm text-muted-foreground">{member.role}</p>
+              </div>
+            </a>
+          </Link>
         ))}
       </div>
     </div>
