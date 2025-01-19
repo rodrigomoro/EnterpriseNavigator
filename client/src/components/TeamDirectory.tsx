@@ -1,10 +1,17 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { mockTeamMembers } from '@/data/mockData';
+import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
 
 export default function PeopleDirectory() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">People Directory</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold">People Directory</h3>
+        <Link href="/team">
+          <Button variant="outline" size="sm">See all people</Button>
+        </Link>
+      </div>
 
       <div className="space-y-4">
         {mockTeamMembers.map((member) => (
