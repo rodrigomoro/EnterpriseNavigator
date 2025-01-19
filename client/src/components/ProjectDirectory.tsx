@@ -7,9 +7,9 @@ export default function ProjectDirectory() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Project Directory</h3>
+        <h3 className="text-lg font-semibold">Program Directory</h3>
         <Link href="/projects">
-          <Button variant="outline" size="sm">See all projects</Button>
+          <Button variant="outline" size="sm">See all programs</Button>
         </Link>
       </div>
 
