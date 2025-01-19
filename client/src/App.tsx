@@ -12,6 +12,7 @@ import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
 import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
 import FinancialDashboard from "@/pages/FinancialDashboard";
+import Analytics from "@/pages/Analytics";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/invoices/:id" component={InvoiceDetail} />
       <Route path="/qr-tracking" component={QRTrackingDashboard} />
       <Route path="/financial-dashboard" component={FinancialDashboard} />
+      <Route path="/analytics" component={Analytics} />
       <Route component={NotFound} />
     </Switch>
   );
