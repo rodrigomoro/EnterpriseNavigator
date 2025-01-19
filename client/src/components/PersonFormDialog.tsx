@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 
-// Schema remains unchanged
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.string().min(1, "Role is required"),
@@ -96,10 +95,10 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto px-6 py-4">
-              <div className="space-y-6">
-                {/* General Info Section */}
-                <div className="bg-white p-4 rounded-lg border space-y-4">
-                  <h3 className="text-sm font-medium">General Information</h3>
+              {/* General Information */}
+              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <h2 className="text-base font-medium mb-4">General Information</h2>
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="name"
@@ -152,79 +151,81 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
+              </div>
 
-                {/* Role Type Section */}
-                <div className="bg-white p-4 rounded-lg border">
-                  <h3 className="text-sm font-medium mb-4">Role Type</h3>
-                  <div className="space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="isDirector"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center gap-2">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="rounded border-input"
-                              />
-                            </FormControl>
-                            <FormLabel className="!mt-0">Is Director</FormLabel>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              {/* Role Type */}
+              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <h2 className="text-base font-medium mb-4">Role Type</h2>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="isDirector"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Director</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="isTeacher"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center gap-2">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="rounded border-input"
-                              />
-                            </FormControl>
-                            <FormLabel className="!mt-0">Is Teacher</FormLabel>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="isTeacher"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Teacher</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="isStudent"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center gap-2">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="rounded border-input"
-                              />
-                            </FormControl>
-                            <FormLabel className="!mt-0">Is Student</FormLabel>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="isStudent"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Student</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
+              </div>
 
-                {/* Contact Info Section */}
-                <div className="bg-white p-4 rounded-lg border space-y-4">
-                  <h3 className="text-sm font-medium">Contact Information</h3>
+              {/* Contact Information */}
+              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <h2 className="text-base font-medium mb-4">Contact Information</h2>
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="email"
@@ -252,6 +253,32 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       </FormItem>
                     )}
                   />
+                </div>
+              </div>
+
+              {/* Additional Information */}
+              <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <h2 className="text-base font-medium mb-4">Additional Information</h2>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="reportsTo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reports To</FormLabel>
+                        <FormControl>
+                          <PeoplePicker
+                            people={potentialManagers}
+                            selectedIds={field.value ? [field.value] : []}
+                            onChange={(ids) => field.onChange(ids[0] || '')}
+                            placeholder="Select manager"
+                            multiple={false}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
@@ -271,11 +298,13 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                     )}
                   />
                 </div>
+              </div>
 
-                {/* Program Assignments Section - Only shown when roles are selected */}
-                {(watchIsDirector || watchIsTeacher || watchIsStudent) && (
-                  <div className="bg-white p-4 rounded-lg border space-y-4">
-                    <h3 className="text-sm font-medium">Program Assignments</h3>
+              {/* Program Assignments - Only shown when roles are selected */}
+              {(watchIsDirector || watchIsTeacher || watchIsStudent) && (
+                <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+                  <h2 className="text-base font-medium mb-4">Program Assignments</h2>
+                  <div className="space-y-4">
                     {watchIsDirector && (
                       <FormField
                         control={form.control}
@@ -339,32 +368,8 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                       />
                     )}
                   </div>
-                )}
-
-                {/* Reports To Section */}
-                <div className="bg-white p-4 rounded-lg border space-y-4">
-                  <h3 className="text-sm font-medium">Reporting Structure</h3>
-                  <FormField
-                    control={form.control}
-                    name="reportsTo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reports To</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={potentialManagers}
-                            selectedIds={field.value ? [field.value] : []}
-                            onChange={(ids) => field.onChange(ids[0] || '')}
-                            placeholder="Select manager"
-                            multiple={false}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
-              </div>
+              )}
             </div>
 
             <DialogFooter className="px-6 py-4">
