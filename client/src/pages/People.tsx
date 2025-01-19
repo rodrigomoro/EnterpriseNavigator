@@ -70,14 +70,12 @@ export default function People() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Link href="/people/new">
-                  <a className="inline-block">
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Person
-                    </Button>
-                  </a>
-                </Link>
+                <Button asChild>
+                  <Link href="/people/new">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Person
+                  </Link>
+                </Button>
                 <UserAvatar />
               </div>
             </div>
@@ -93,45 +91,43 @@ export default function People() {
               {mockTeamMembers.map((member) => (
                 <motion.div key={member.id} variants={item}>
                   <div className="relative group">
-                    <div className="block">
-                      <Link href={`/people/${member.id}`}>
-                        <motion.div 
-                          className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
-                          whileHover={{ 
-                            scale: 1.02,
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-                          }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="flex items-center gap-4">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={member.avatar} alt={member.name} />
-                              <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                            </Avatar>
+                    <Link href={`/people/${member.id}`}>
+                      <motion.div 
+                        className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        whileHover={{ 
+                          scale: 1.02,
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={member.avatar} alt={member.name} />
+                            <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
 
-                            <div>
-                              <h3 className="font-semibold">{member.name}</h3>
-                              <p className="text-sm text-muted-foreground">{member.role}</p>
-                              <p className="text-sm text-muted-foreground">{member.department}</p>
-                            </div>
+                          <div>
+                            <h3 className="font-semibold">{member.name}</h3>
+                            <p className="text-sm text-muted-foreground">{member.role}</p>
+                            <p className="text-sm text-muted-foreground">{member.department}</p>
                           </div>
-                        </motion.div>
-                      </Link>
-                    </div>
+                        </div>
+                      </motion.div>
+                    </Link>
 
                     {/* Action buttons */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-2">
-                        <Link href={`/people/${member.id}/edit`}>
-                          <a onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              variant="secondary"
-                              size="icon"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </a>
-                        </Link>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link href={`/people/${member.id}/edit`}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
+                        </Button>
                         <Button
                           variant="destructive"
                           size="icon"

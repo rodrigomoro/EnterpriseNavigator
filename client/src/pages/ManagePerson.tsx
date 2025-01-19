@@ -37,7 +37,7 @@ export default function ManagePerson() {
   const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = params?.id !== 'new';
+  const isEdit = params.id !== undefined;
 
   // Find person data if in edit mode
   const personData = isEdit ? mockTeamMembers.find(m => m.id === params?.id) : null;
