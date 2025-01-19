@@ -34,7 +34,7 @@ export default function Home() {
 
         <div className="grid grid-cols-12 gap-6">
           {/* Left Column */}
-          <div className="col-span-12 lg:col-span-7">
+          <div className="col-span-12 lg:col-span-5">
             <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
               <Calendar />
             </div>
@@ -45,7 +45,7 @@ export default function Home() {
           </div>
 
           {/* Right Column */}
-          <div className="col-span-12 lg:col-span-5 space-y-6">
+          <div className="col-span-12 lg:col-span-7 space-y-6">
             <div className="bg-card rounded-lg shadow-sm p-4">
               <TaskList />
             </div>

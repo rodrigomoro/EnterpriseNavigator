@@ -10,30 +10,30 @@ const navigationItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-14 md:w-56 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
-      <div className="p-4">
-        <h2 className="text-xl font-bold hidden md:block">ERP System</h2>
+    <aside className="w-12 md:w-48 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
+      <div className="p-3">
+        <h2 className="text-lg font-bold hidden md:block">ERP System</h2>
       </div>
 
       <nav className="flex-1 px-2">
         {navigationItems.map((item) => (
           <Link key={item.href} href={item.href}>
-            <a className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer">
-              <item.icon className="h-5 w-5" />
-              <span className="hidden md:block">{item.label}</span>
+            <a className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer">
+              <item.icon className="h-4 w-4" />
+              <span className="hidden md:block text-sm">{item.label}</span>
             </a>
           </Link>
         ))}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border">
-        <button className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent w-full">
-          <Settings className="h-5 w-5" />
-          <span className="hidden md:block">Settings</span>
+      <div className="p-3 border-t border-sidebar-border">
+        <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full">
+          <Settings className="h-4 w-4" />
+          <span className="hidden md:block text-sm">Settings</span>
         </button>
-        <button className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent w-full mt-2">
-          <LogOut className="h-5 w-5" />
-          <span className="hidden md:block">Logout</span>
+        <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full mt-1">
+          <LogOut className="h-4 w-4" />
+          <span className="hidden md:block text-sm">Logout</span>
         </button>
       </div>
     </aside>
