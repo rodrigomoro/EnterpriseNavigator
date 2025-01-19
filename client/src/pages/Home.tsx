@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Calendar from '@/components/Calendar';
-import PeopleDirectory from '@/components/TeamDirectory';
+import PeopleDirectory from '@/components/PeopleDirectory';
 import ProjectDirectory from '@/components/ProjectDirectory';
 import TaskList from '@/components/TaskList';
 import { Input } from '@/components/ui/input';
