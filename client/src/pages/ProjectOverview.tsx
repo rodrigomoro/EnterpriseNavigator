@@ -15,7 +15,7 @@ export default function ProjectOverview() {
       <main className="flex-1 p-6">
         <div className="mb-6">
           <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <Link href="/">
+            <Link href="/projects">
               <a className="flex items-center gap-1 hover:text-foreground">
                 <ArrowLeft className="h-4 w-4" />
                 Project overview
