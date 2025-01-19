@@ -3,13 +3,69 @@ import { mockTeamMembers } from '@/data/mockData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
-import { Search } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Link } from 'wouter';
+import { motion } from 'framer-motion';
+import PersonFormDialog from '@/components/PersonFormDialog';
+import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
+import { useToast } from '@/hooks/use-toast';
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
 
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingPerson, setEditingPerson] = useState<typeof mockTeamMembers[0] | null>(null);
+  const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleCreatePerson = (data: any) => {
+    // In a real app, this would make an API call
+    console.log('Creating person:', data);
+    setIsCreateDialogOpen(false);
+    toast({
+      title: "Person added",
+      description: "The team member has been added successfully.",
+    });
+  };
+
+  const handleUpdatePerson = (data: any) => {
+    // In a real app, this would make an API call
+    console.log('Updating person:', data);
+    setEditingPerson(null);
+    toast({
+      title: "Person updated",
+      description: "The team member has been updated successfully.",
+    });
+  };
+
+  const handleDeletePerson = () => {
+    if (!deletingPersonId) return;
+    // In a real app, this would make an API call
+    console.log('Deleting person:', deletingPersonId);
+    setDeletingPersonId(null);
+    toast({
+      title: "Person removed",
+      description: "The team member has been removed successfully.",
+      variant: "destructive",
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -36,37 +92,107 @@ export default function People() {
                 </div>
               </div>
 
-              <div className="min-w-60 flex justify-end">
+              <div className="min-w-60 flex justify-end items-center gap-4">
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Person
+                </Button>
                 <UserAvatar />
               </div>
             </div>
           </header>
 
           <main className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
               {mockTeamMembers.map((member) => (
-                <Link key={member.id} href={`/people/${member.id}`}>
-                  <a className="block">
-                    <div className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
+                <motion.div key={member.id} variants={item}>
+                  <div className="relative group">
+                    <Link href={`/people/${member.id}`}>
+                      <a className="block">
+                        <motion.div 
+                          className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+                          whileHover={{ 
+                            scale: 1.02,
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage src={member.avatar} alt={member.name} />
+                              <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
 
-                        <div>
-                          <h3 className="font-semibold">{member.name}</h3>
-                          <p className="text-sm text-muted-foreground">{member.role}</p>
-                        </div>
+                            <div>
+                              <h3 className="font-semibold">{member.name}</h3>
+                              <p className="text-sm text-muted-foreground">{member.role}</p>
+                              <p className="text-sm text-muted-foreground">{member.department}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </a>
+                    </Link>
+
+                    {/* Action buttons */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setEditingPerson(member);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDeletingPersonId(member.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                  </a>
-                </Link>
+                  </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </main>
         </PageTransition>
       </div>
+
+      {/* Create/Edit Person Dialog */}
+      <PersonFormDialog
+        open={isCreateDialogOpen || editingPerson !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            setEditingPerson(null);
+          }
+        }}
+        onSubmit={editingPerson ? handleUpdatePerson : handleCreatePerson}
+        initialData={editingPerson || undefined}
+        mode={editingPerson ? 'edit' : 'create'}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deletingPersonId !== null}
+        onOpenChange={(open) => !open && setDeletingPersonId(null)}
+        onConfirm={handleDeletePerson}
+        title="Delete Person"
+        description="Are you sure you want to remove this team member? This action cannot be undone."
+      />
     </div>
   );
 }
