@@ -45,7 +45,7 @@ export default function ManagePerson() {
   const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = params.id !== "new";
+  const isEdit = params.id !== undefined;
 
   // Find person data if in edit mode
   const personData = isEdit
@@ -53,9 +53,6 @@ export default function ManagePerson() {
     : null;
   const departments = Array.from(
     new Set(mockTeamMembers.map((member) => member.department))
-  );
-  const potentialManagers = mockTeamMembers.filter(
-    (member) => member.role === "Director"
   );
 
   const form = useForm<FormValues>({
@@ -290,7 +287,7 @@ export default function ManagePerson() {
                             <FormLabel>Reports To</FormLabel>
                             <FormControl>
                               <PeoplePicker
-                                people={potentialManagers}
+                                people={mockTeamMembers}
                                 selectedIds={field.value ? [field.value] : []}
                                 onChange={(ids) => field.onChange(ids[0] || "")}
                                 placeholder="Select manager"

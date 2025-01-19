@@ -47,7 +47,7 @@ export default function ManageProgram() {
     (member) => member.role === "Director",
   );
   const teachers = mockTeamMembers.filter(
-    (member) => member.role === "Teacher",
+    (member) => member.role === "Teacher" || member.role === "Director",
   );
   const students = mockTeamMembers.filter(
     (member) => member.role === "Student",
