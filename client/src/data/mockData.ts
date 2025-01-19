@@ -25,31 +25,91 @@ export const mockEvents = [
 export const mockTeamMembers = [
   {
     id: '1',
-    name: 'Dana R.',
-    role: 'Project Manager',
+    name: 'Emily Johnson',
+    role: 'Founder & CEO',
+    department: 'Executive',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dana'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
   },
   {
     id: '2',
-    name: 'Elon S.',
-    role: 'Key Account Plann.',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elon'
+    name: 'Andrea Leeland',
+    role: 'CFO',
+    department: 'Finance',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea'
   },
   {
     id: '3',
-    name: 'Nancy W.',
-    role: 'Account Manager',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nancy'
+    name: 'Sarah Williams',
+    role: 'CTO',
+    department: 'Technology',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
   },
   {
     id: '4',
-    name: 'James M.',
-    role: 'Digital Manager',
+    name: 'Jessica Martinez',
+    role: 'HR Director',
+    department: 'Human Resources',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica'
+  },
+  {
+    id: '5',
+    name: 'Ethan Wilson',
+    role: 'VP of Sales',
+    department: 'Sales',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan'
+  },
+  {
+    id: '6',
+    name: 'Mikkel Johanson',
+    role: 'Account Manager',
+    department: 'Sales',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mikkel'
+  },
+  {
+    id: '7',
+    name: 'Frank Miles',
+    role: 'Sales Manager',
+    department: 'Sales',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank'
+  },
+  {
+    id: '8',
+    name: 'Dan Smith',
+    role: 'Account Director',
+    department: 'Sales',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dan'
+  },
+  {
+    id: '9',
+    name: 'James McFin',
+    role: 'Sales Analyst',
+    department: 'Sales',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James'
+  },
+  {
+    id: '10',
+    name: 'Adele Pole',
+    role: 'SDR',
+    department: 'Sales',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adele'
+  },
+  {
+    id: '11',
+    name: 'Beth Moore',
+    role: 'Inside Sales Rep',
+    department: 'Sales',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beth'
   }
 ];
 

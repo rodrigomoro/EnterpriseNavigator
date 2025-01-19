@@ -1,77 +1,32 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
-import { ResponsiveNetwork } from '@nivo/network';
+import { Search } from "lucide-react";
 
-// Transform mock data into network graph format
-const generateOrgData = () => {
-  // Create nodes from team members
-  const nodes = mockTeamMembers.map((member) => ({
-    id: member.id,
-    height: 1,
-    size: member.isDirector ? 24 : 16,
-    data: {
-      name: member.name,
-      role: member.role,
-      avatar: member.avatar,
-      isDirector: member.isDirector,
-    },
-  }));
-
-  // Create hierarchical links
-  // In this example, we'll make directors the top level
-  // and connect other members to them
-  const links = mockTeamMembers
-    .filter(member => !member.isDirector)
-    .map((member, index) => {
-      const director = mockTeamMembers.find(m => m.isDirector);
-      return {
-        source: director?.id || "1",
-        target: member.id,
-        distance: 50,
-      };
-    });
-
-  return { nodes, links };
-};
-
-const orgData = generateOrgData();
-
-const NetworkNode = ({ node }: { node: any }) => (
-  <div style={{ 
-    background: node.data.isDirector ? 'hsl(var(--primary))' : 'hsl(var(--secondary))',
-    color: node.data.isDirector ? 'hsl(var(--primary-foreground))' : 'hsl(var(--secondary-foreground))',
-    padding: '8px 16px',
-    borderRadius: '16px',
-    fontSize: '14px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-  }}>
-    <img 
-      src={node.data.avatar} 
-      alt={node.data.name}
-      style={{
-        width: '24px',
-        height: '24px',
-        borderRadius: '50%',
-      }}
-    />
-    <div>
-      <div style={{ fontWeight: 500 }}>{node.data.name}</div>
-      <div style={{ fontSize: '12px', opacity: 0.8 }}>{node.data.role}</div>
-    </div>
-  </div>
-);
+// Get unique departments for filter buttons
+const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
 
 export default function Organization() {
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter members based on department and search query
+  const filteredMembers = mockTeamMembers.filter(member => {
+    const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         member.role.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesDepartment && matchesSearch;
+  });
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      
+
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
@@ -85,34 +40,110 @@ export default function Organization() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Organizational Chart</CardTitle>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <CardTitle>People Org Chart</CardTitle>
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search people..."
+                      className="pl-8 w-[300px]"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <Button
+                    variant={selectedDepartment === "All" ? "default" : "secondary"}
+                    onClick={() => setSelectedDepartment("All")}
+                  >
+                    All People
+                  </Button>
+                  {departments.map((dept) => (
+                    <Button
+                      key={dept}
+                      variant={selectedDepartment === dept ? "default" : "secondary"}
+                      onClick={() => setSelectedDepartment(dept)}
+                    >
+                      {dept}
+                    </Button>
+                  ))}
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="h-[700px] border rounded-lg bg-background/50">
-                  <ResponsiveNetwork
-                    data={orgData}
-                    margin={{ top: 40, right: 120, bottom: 40, left: 120 }}
-                    linkDistance={200}
-                    centeringStrength={0.3}
-                    repulsivity={6}
-                    nodeSize={node => node.size}
-                    activeNodeSize={node => node.size * 1.2}
-                    nodeColor={node => node.data.isDirector ? 'hsl(var(--primary))' : 'hsl(var(--secondary))'}
-                    nodeBorderWidth={1}
-                    nodeBorderColor={{
-                      from: 'color',
-                      modifiers: [['darker', 0.8]],
-                    }}
-                    linkThickness={2}
-                    linkBlendMode="multiply"
-                    motionConfig="gentle"
-                    renderNode={({ node }) => <NetworkNode node={node} />}
-                  />
+                <div className="min-h-[600px] pt-8">
+                  <div className="flex flex-col items-center">
+                    <div className="grid gap-8">
+                      {/* CEO Level */}
+                      <div className="flex justify-center">
+                        <EmployeeCard employee={mockTeamMembers[0]} />
+                      </div>
+
+                      {/* Director Level */}
+                      <div className="relative">
+                        <div className="absolute left-0 right-0 top-[-30px] h-[2px] bg-border" />
+                        <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                        <div className="flex justify-center gap-8">
+                          {mockTeamMembers
+                            .filter(member => member.isDirector && member.id !== '1')
+                            .map(director => (
+                              <div key={director.id} className="relative">
+                                <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
+                                <EmployeeCard employee={director} />
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Team Members Level */}
+                      {departments.map(dept => {
+                        const teamMembers = filteredMembers.filter(
+                          member => !member.isDirector && member.department === dept
+                        );
+                        if (teamMembers.length === 0) return null;
+
+                        return (
+                          <div key={dept} className="relative">
+                            <div className="absolute left-0 right-0 top-[-30px] h-[2px] bg-border" />
+                            <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                            <div className="flex flex-wrap justify-center gap-8">
+                              {teamMembers.map(member => (
+                                <div key={member.id} className="relative">
+                                  <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
+                                  <EmployeeCard employee={member} />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </main>
         </PageTransition>
+      </div>
+    </div>
+  );
+}
+
+function EmployeeCard({ employee }: { employee: typeof mockTeamMembers[0] }) {
+  return (
+    <div className="bg-card w-[200px] rounded-lg border shadow-sm">
+      <div className="p-4">
+        <div className="flex items-center gap-3">
+          <img
+            src={employee.avatar}
+            alt={employee.name}
+            className="h-10 w-10 rounded-full"
+          />
+          <div className="space-y-1">
+            <h3 className="font-medium leading-none">{employee.name}</h3>
+            <p className="text-sm text-muted-foreground">{employee.role}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
