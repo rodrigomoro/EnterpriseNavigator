@@ -7,7 +7,6 @@ import UserAvatar from "@/components/UserAvatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
 import { Users, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
-import OrganizationalHierarchy from '@/components/OrganizationalHierarchy';
 
 // Calculate program performance metrics
 const programMetrics = {
@@ -109,6 +108,7 @@ export default function Analytics() {
             </div>
 
             <div className="space-y-6">
+              {/* Key Metrics */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -197,9 +197,6 @@ export default function Analytics() {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Organizational Hierarchy */}
-              <OrganizationalHierarchy />
 
               {/* Program Distribution */}
               <Card>
