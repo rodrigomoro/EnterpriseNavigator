@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 
 const navigationItems = [
   { icon: Home, label: 'Home', href: '/' },
-  { icon: FolderKanban, label: 'Projects', href: '/projects' },
+  { icon: FolderKanban, label: 'Programs', href: '/projects' },
   { icon: Calendar, label: 'Calendar', href: '/calendar' },
   { icon: Users, label: 'Team', href: '/team' },
   { icon: PieChart, label: 'Analytics', href: '/analytics' },

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
+import UserAvatar from '@/components/UserAvatar';
 
 const container = {
   hidden: { opacity: 0 },
@@ -33,14 +34,17 @@ export default function Projects() {
           <main className="p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-2xl font-bold">Projects Directory</h1>
-                <p className="text-muted-foreground">Manage and track all your projects</p>
+                <h1 className="text-2xl font-bold">Programs Directory</h1>
+                <p className="text-muted-foreground">Manage and track all your programs</p>
               </div>
 
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                New Project
-              </Button>
+              <div className="flex items-center gap-4">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Program
+                </Button>
+                <UserAvatar />
+              </div>
             </div>
 
             <motion.div 

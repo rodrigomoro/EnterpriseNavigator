@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Calendar from '@/components/Calendar';
-import TeamDirectory from '@/components/TeamDirectory';
+import PeopleDirectory from '@/components/TeamDirectory';
 import ProjectDirectory from '@/components/ProjectDirectory';
 import TaskList from '@/components/TaskList';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
+import UserAvatar from '@/components/UserAvatar';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,14 +25,17 @@ export default function Home() {
                 <p className="text-muted-foreground">Here is your agenda for today</p>
               </div>
 
-              <div className="relative w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search"
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+              <div className="flex items-center gap-4">
+                <div className="relative w-64">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search"
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <UserAvatar />
               </div>
             </div>
 
@@ -54,7 +58,7 @@ export default function Home() {
                 </div>
 
                 <div className="bg-card rounded-lg shadow-sm p-4">
-                  <TeamDirectory />
+                  <PeopleDirectory />
                 </div>
               </div>
             </div>

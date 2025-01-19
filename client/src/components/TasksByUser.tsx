@@ -91,10 +91,10 @@ const priorityColors: Record<TaskPriority, string> = {
   'Low': 'green'
 } as const;
 
-export default function TasksByUser() {
+export default function TasksByTeacher() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Task by user</h3>
+      <h3 className="text-lg font-semibold mb-4">Task by Teachers</h3>
       <div className="space-y-8">
         {userTasks.map((user) => (
           <div key={user.userId}>
