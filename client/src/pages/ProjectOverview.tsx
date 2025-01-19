@@ -19,7 +19,7 @@ export default function ProjectOverview() {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                  <Link href="/projects">
+                  <Link href="/programs">
                     <a className="flex items-center gap-1 hover:text-foreground">
                       <ArrowLeft className="h-4 w-4" />
                       Program overview
@@ -73,7 +73,7 @@ export default function ProjectOverview() {
                           <span className="text-sm text-muted-foreground">{65 - index * 15}%</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full">
-                          <div 
+                          <div
                             className="h-full bg-primary rounded-full"
                             style={{ width: `${65 - index * 15}%` }}
                           />

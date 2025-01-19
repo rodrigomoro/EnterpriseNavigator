@@ -85,7 +85,7 @@ export default function Projects() {
                       >
                         <h3 className="font-semibold mb-3">{project.name}</h3>
 
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           <div>
                             <div className="flex justify-between mb-2">
                               <span className="text-sm text-muted-foreground">Progress</span>
@@ -95,14 +95,33 @@ export default function Projects() {
                           </div>
 
                           <div>
-                            <p className="text-sm text-muted-foreground mb-2">Team Members</p>
-                            <div className="flex -space-x-2">
-                              {project.team.map((member) => (
-                                <Avatar key={member.id} className="border-2 border-background w-8 h-8">
-                                  <AvatarImage src={member.avatar} alt={member.name} />
-                                  <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm text-muted-foreground">Director</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{project.director.name}</span>
+                                <Avatar className="h-6 w-6">
+                                  <AvatarImage src={project.director.avatar} alt={project.director.name} />
+                                  <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
                                 </Avatar>
-                              ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-muted-foreground mb-2">Teachers</p>
+                              <div className="flex -space-x-2">
+                                {project.team.map((member) => (
+                                  <Avatar key={member.id} className="border-2 border-background w-8 h-8">
+                                    <AvatarImage src={member.avatar} alt={member.name} />
+                                    <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                                  </Avatar>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">Students</p>
+                              <p className="text-sm font-medium">{project.studentCount}</p>
                             </div>
                           </div>
                         </div>
