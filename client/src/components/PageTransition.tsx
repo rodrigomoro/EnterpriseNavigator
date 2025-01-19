@@ -30,6 +30,7 @@ export default function PageTransition({ children }: PropsWithChildren) {
       exit="exit"
       variants={pageVariants}
       transition={pageTransition}
+      className="w-full"
     >
       {children}
     </motion.div>

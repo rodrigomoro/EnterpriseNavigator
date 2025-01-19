@@ -28,69 +28,71 @@ export default function Projects() {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
 
-      <PageTransition>
-        <main className="flex-1 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold">Projects Directory</h1>
-              <p className="text-muted-foreground">Manage and track all your projects</p>
+      <div className="flex-1">
+        <PageTransition>
+          <main className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-2xl font-bold">Projects Directory</h1>
+                <p className="text-muted-foreground">Manage and track all your projects</p>
+              </div>
+
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                New Project
+              </Button>
             </div>
 
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
-            </Button>
-          </div>
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
+              {mockProjects.map((project) => (
+                <motion.div key={project.id} variants={item}>
+                  <Link href={`/project/${project.id}`}>
+                    <a className="block">
+                      <motion.div 
+                        className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
+                        whileHover={{ 
+                          scale: 1.02,
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <h3 className="font-semibold mb-3">{project.name}</h3>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {mockProjects.map((project) => (
-              <motion.div key={project.id} variants={item}>
-                <Link href={`/project/${project.id}`}>
-                  <a className="block">
-                    <motion.div 
-                      className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
-                      whileHover={{ 
-                        scale: 1.02,
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-                      }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <h3 className="font-semibold mb-3">{project.name}</h3>
-
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between mb-2">
-                            <span className="text-sm text-muted-foreground">Progress</span>
-                            <span className="text-sm font-medium">{project.progress}%</span>
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm text-muted-foreground">Progress</span>
+                              <span className="text-sm font-medium">{project.progress}%</span>
+                            </div>
+                            <Progress value={project.progress} className="h-2" />
                           </div>
-                          <Progress value={project.progress} className="h-2" />
-                        </div>
 
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Team Members</p>
-                          <div className="flex -space-x-2">
-                            {project.team.map((member) => (
-                              <Avatar key={member.id} className="border-2 border-background w-8 h-8">
-                                <AvatarImage src={member.avatar} alt={member.name} />
-                                <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                              </Avatar>
-                            ))}
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-2">Team Members</p>
+                            <div className="flex -space-x-2">
+                              {project.team.map((member) => (
+                                <Avatar key={member.id} className="border-2 border-background w-8 h-8">
+                                  <AvatarImage src={member.avatar} alt={member.name} />
+                                  <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                                </Avatar>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  </a>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        </main>
-      </PageTransition>
+                      </motion.div>
+                    </a>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </main>
+        </PageTransition>
+      </div>
     </div>
   );
 }
