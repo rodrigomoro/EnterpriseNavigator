@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockSkills, competencyLevels, type TeamMember, type Skill, type CompetencyLevel } from "@/data/mockData";
+import { mockTeamMembers, mockSkills, competencyLevels } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
-import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import { 
+  DndContext, 
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  useDraggable,
+  useDroppable
+} from "@dnd-kit/core";
 import { Search } from "lucide-react";
 
 interface CompetencyMapping {
@@ -40,7 +48,7 @@ export default function SkillsMatrix() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (!over) return;
 
     const levelId = active.id as string;
@@ -52,7 +60,7 @@ export default function SkillsMatrix() {
       const filtered = prev.filter(m => 
         !(m.employeeId === employeeId && m.skillId === skillId)
       );
-      
+
       // Add the new mapping
       return [...filtered, {
         employeeId,
@@ -154,22 +162,10 @@ export default function SkillsMatrix() {
                                   key={`${employee.id}-${skill.id}`}
                                   className="p-2 border"
                                 >
-                                  <div
+                                  <SkillDropArea
                                     id={`${employee.id}-${skill.id}`}
-                                    className="h-16 rounded border-2 border-dashed border-muted-foreground/25 flex items-center justify-center"
-                                  >
-                                    {getCompetencyLevel(employee.id, skill.id) ? (
-                                      <CompetencyBadge
-                                        level={competencyLevels.find(l => 
-                                          l.id === getCompetencyLevel(employee.id, skill.id)
-                                        )!}
-                                      />
-                                    ) : (
-                                      <span className="text-sm text-muted-foreground">
-                                        Drop level here
-                                      </span>
-                                    )}
-                                  </div>
+                                    currentLevel={getCompetencyLevel(employee.id, skill.id)}
+                                  />
                                 </td>
                               ))}
                             </tr>
@@ -182,7 +178,7 @@ export default function SkillsMatrix() {
                       <h3 className="text-sm font-medium mb-2">Competency Levels</h3>
                       <div className="flex gap-2 flex-wrap">
                         {competencyLevels.map(level => (
-                          <CompetencyBadge key={level.id} level={level} draggable />
+                          <DraggableCompetencyBadge key={level.id} level={level} />
                         ))}
                       </div>
                     </div>
@@ -197,16 +193,61 @@ export default function SkillsMatrix() {
   );
 }
 
-interface CompetencyBadgeProps {
-  level: CompetencyLevel;
-  draggable?: boolean;
+interface SkillDropAreaProps {
+  id: string;
+  currentLevel?: string;
 }
 
-function CompetencyBadge({ level, draggable }: CompetencyBadgeProps) {
+function SkillDropArea({ id, currentLevel }: SkillDropAreaProps) {
+  const { setNodeRef } = useDroppable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="h-16 rounded border-2 border-dashed border-muted-foreground/25 flex items-center justify-center"
+    >
+      {currentLevel ? (
+        <CompetencyBadge
+          level={competencyLevels.find(l => l.id === currentLevel)!}
+        />
+      ) : (
+        <span className="text-sm text-muted-foreground">
+          Drop level here
+        </span>
+      )}
+    </div>
+  );
+}
+
+interface CompetencyBadgeProps {
+  level: (typeof competencyLevels)[0];
+}
+
+function DraggableCompetencyBadge({ level }: CompetencyBadgeProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: level.id,
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+    >
+      <CompetencyBadge level={level} />
+    </div>
+  );
+}
+
+function CompetencyBadge({ level }: CompetencyBadgeProps) {
   return (
     <div
       className={`px-3 py-1.5 rounded text-sm font-medium cursor-grab active:cursor-grabbing ${level.color}`}
-      draggable={draggable}
     >
       {level.name}
     </div>
