@@ -1,13 +1,17 @@
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'wouter';
 import { mockTeamMembers } from '@/data/mockData';
+import Calendar from '@/components/Calendar';
 import ProjectProgressTimeline from '@/components/ProjectProgressTimeline';
 import TasksByUser from '@/components/TasksByUser';
+import Sidebar from '@/components/Sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function ProjectOverview() {
   return (
     <div className="flex min-h-screen bg-background">
+      <Sidebar />
+
       <main className="flex-1 p-6">
         <div className="mb-6">
           <div className="flex items-center gap-2 text-muted-foreground mb-2">
@@ -24,6 +28,12 @@ export default function ProjectOverview() {
         </div>
 
         <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12">
+            <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
+              <Calendar />
+            </div>
+          </div>
+
           <div className="col-span-12">
             <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
               <ProjectProgressTimeline />
