@@ -61,7 +61,7 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Create Program' : 'Edit Program'}</DialogTitle>
           <DialogDescription>
@@ -72,134 +72,123 @@ export default function ProgramFormDialog({ open, onOpenChange, onSubmit, initia
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto px-1">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
-                {/* Column 1 - Basic Information */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Program Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter program name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Program Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter program name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                            placeholder="Enter program description"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <textarea
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+                      placeholder="Enter program description"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <FormField
-                    control={form.control}
-                    name="progress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Progress (%)</FormLabel>
-                        <FormControl>
-                          <div className="flex items-center gap-4">
-                            <Slider
-                              min={0}
-                              max={100}
-                              step={1}
-                              value={[field.value]}
-                              onValueChange={([value]) => field.onChange(value)}
-                              className="flex-1"
-                            />
-                            <span className="text-sm font-medium">{field.value}%</span>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+            <FormField
+              control={form.control}
+              name="progress"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Progress (%)</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-4">
+                      <Slider
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={([value]) => field.onChange(value)}
+                        className="flex-1"
+                      />
+                      <span className="text-sm font-medium">{field.value}%</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                {/* Column 2 - Director and Teacher Assignment */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="directorIds"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Directors</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={directors}
-                            selectedIds={field.value}
-                            onChange={field.onChange}
-                            placeholder="Select program directors"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            {/* People Assignments */}
+            <FormField
+              control={form.control}
+              name="directorIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Directors</FormLabel>
+                  <FormControl>
+                    <PeoplePicker
+                      people={directors}
+                      selectedIds={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select program directors"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <FormField
-                    control={form.control}
-                    name="teacherIds"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teachers</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={teachers}
-                            selectedIds={field.value}
-                            onChange={field.onChange}
-                            placeholder="Select program teachers"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+            <FormField
+              control={form.control}
+              name="teacherIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Teachers</FormLabel>
+                  <FormControl>
+                    <PeoplePicker
+                      people={teachers}
+                      selectedIds={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select program teachers"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                {/* Column 3 - Student Assignment */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="studentIds"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Students</FormLabel>
-                        <FormControl>
-                          <PeoplePicker
-                            people={students}
-                            selectedIds={field.value}
-                            onChange={field.onChange}
-                            placeholder="Select program students"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
+            <FormField
+              control={form.control}
+              name="studentIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Students</FormLabel>
+                  <FormControl>
+                    <PeoplePicker
+                      people={students}
+                      selectedIds={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select program students"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <DialogFooter className="mt-4">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="secondary"
