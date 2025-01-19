@@ -10,6 +10,7 @@ import People from "@/pages/People";
 import PersonOverview from "@/pages/PersonOverview";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
+import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/people/:id" component={PersonOverview} />
       <Route path="/invoices" component={Invoices} />
       <Route path="/invoices/:id" component={InvoiceDetail} />
+      <Route path="/qr-tracking" component={QRTrackingDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
