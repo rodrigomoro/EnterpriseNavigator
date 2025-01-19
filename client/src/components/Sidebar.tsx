@@ -10,7 +10,7 @@ const navigationItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-16 md:w-64 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
+    <aside className="w-14 md:w-56 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
       <div className="p-4">
         <h2 className="text-xl font-bold hidden md:block">ERP System</h2>
       </div>

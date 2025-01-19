@@ -28,43 +28,43 @@ export default function ProjectOverview() {
         </div>
 
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12">
+          {/* Left Column */}
+          <div className="col-span-12 lg:col-span-7">
             <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
               <Calendar />
             </div>
-          </div>
 
-          <div className="col-span-12">
-            <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
-              <ProjectProgressTimeline />
+            <div className="bg-card rounded-lg shadow-sm p-4">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Team Directory</h3>
+                {mockTeamMembers.slice(0, 4).map((member) => (
+                  <div key={member.id} className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={member.avatar} alt={member.name} />
+                      <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-sm">{member.name}</p>
+                      <p className="text-xs text-muted-foreground">{member.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="col-span-12">
+          {/* Right Column */}
+          <div className="col-span-12 lg:col-span-5 space-y-6">
+            <div className="bg-card rounded-lg shadow-sm p-4">
+              <ProjectProgressTimeline />
+            </div>
+
             <div className="bg-card rounded-lg shadow-sm p-4">
               <TasksByUser />
             </div>
           </div>
         </div>
       </main>
-
-      <aside className="w-64 border-l border-border p-4">
-        <h3 className="text-lg font-semibold mb-4">Team Directory</h3>
-        <div className="space-y-4">
-          {mockTeamMembers.slice(0, 4).map((member) => (
-            <div key={member.id} className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={member.avatar} alt={member.name} />
-                <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-sm">{member.name}</p>
-                <p className="text-xs text-muted-foreground">{member.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
     </div>
   );
 }
