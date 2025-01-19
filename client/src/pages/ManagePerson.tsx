@@ -13,12 +13,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
-import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -37,35 +44,55 @@ export default function ManagePerson() {
   const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = params.id !== undefined;
+  const isEdit = params.id !== "new";
 
   // Find person data if in edit mode
-  const personData = isEdit ? mockTeamMembers.find(m => m.id === params?.id) : null;
-  const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
-  const potentialManagers = mockTeamMembers.filter(member => member.role === 'Director');
+  const personData = isEdit ? mockTeamMembers.find((m) => m.id === params?.id) : null;
+  const departments = Array.from(new Set(mockTeamMembers.map((member) => member.department)));
+  const potentialManagers = mockTeamMembers.filter((member) => member.role === "Director");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: personData?.name ?? '',
-      role: personData?.role ?? '',
-      department: personData?.department ?? '',
-      email: personData?.email ?? '',
-      phone: personData?.phone ?? '',
-      bio: personData?.bio ?? '',
-      reportsTo: personData?.reportsTo ?? '',
-      programIds: personData?.programIds ?? [],
+      name: personData?.name ?? "",
+      role: personData?.role ?? "",
+      department: personData?.department ?? "",
+      email: personData?.email ?? "",
+      phone: personData?.phone ?? "",
+      bio: personData?.bio ?? "",
+      reportsTo: personData?.reportsTo ?? "",
+      programIds: [],
     },
   });
 
+  // Cleanup effect for ResizeObserver
+  useEffect(() => {
+    return () => {
+      // Clear any pending resize observations
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => {});
+        resizeObserver.disconnect();
+      }
+    };
+  }, []);
+
   const onSubmit = async (data: FormValues) => {
-    // In a real app, this would be an API call
-    console.log('Form submitted:', data);
-    toast({
-      title: isEdit ? "Person Updated" : "Person Created",
-      description: `Successfully ${isEdit ? 'updated' : 'created'} ${data.name}`,
-    });
-    navigate("/people");
+    try {
+      // In a real app, this would be an API call
+      console.log("Form submitted:", data);
+      toast({
+        title: isEdit ? "Person Updated" : "Person Created",
+        description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
+      });
+      navigate("/people");
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save changes. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // If trying to edit a non-existent person, redirect to people list
@@ -83,15 +110,17 @@ export default function ManagePerson() {
           <div className="flex justify-between items-center mb-6">
             <div>
               <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                <Link href="/people">
-                  <a className="flex items-center gap-1 hover:text-foreground">
-                    <ArrowLeft className="h-4 w-4" />
-                    People Directory
-                  </a>
-                </Link>
+                <Button
+                  variant="ghost"
+                  className="gap-1 p-0 hover:bg-transparent"
+                  onClick={() => navigate("/people")}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  People Directory
+                </Button>
               </div>
               <h1 className="text-2xl font-bold">
-                {isEdit ? `Edit ${personData?.name}` : 'Add New Person'}
+                {isEdit ? `Edit ${personData?.name}` : "Add New Person"}
               </h1>
             </div>
 
@@ -129,17 +158,21 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Role</FormLabel>
-                            <FormControl>
-                              <select
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
-                                {...field}
-                              >
-                                <option value="">Select role</option>
-                                <option value="Director">Director</option>
-                                <option value="Teacher">Teacher</option>
-                                <option value="Student">Student</option>
-                              </select>
-                            </FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Director">Director</SelectItem>
+                                <SelectItem value="Teacher">Teacher</SelectItem>
+                                <SelectItem value="Student">Student</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -151,19 +184,23 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Department</FormLabel>
-                            <FormControl>
-                              <select
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
-                                {...field}
-                              >
-                                <option value="">Select department</option>
-                                {departments.map(dept => (
-                                  <option key={dept} value={dept}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select department" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {departments.map((dept) => (
+                                  <SelectItem key={dept} value={dept}>
                                     {dept}
-                                  </option>
+                                  </SelectItem>
                                 ))}
-                              </select>
-                            </FormControl>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -244,15 +281,23 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Reports To</FormLabel>
-                            <FormControl>
-                              <PeoplePicker
-                                people={potentialManagers}
-                                selectedIds={field.value ? [field.value] : []}
-                                onChange={(ids) => field.onChange(ids[0] || '')}
-                                placeholder="Select manager"
-                                multiple={false}
-                              />
-                            </FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select manager" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {potentialManagers.map((manager) => (
+                                  <SelectItem key={manager.id} value={manager.id}>
+                                    {manager.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -264,18 +309,28 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Associated Programs</FormLabel>
-                            <FormControl>
-                              <PeoplePicker
-                                people={mockProjects.map(p => ({
-                                  id: p.id,
-                                  name: p.name,
-                                  role: 'Program'
-                                }))}
-                                selectedIds={field.value || []}
-                                onChange={field.onChange}
-                                placeholder="Select programs"
-                              />
-                            </FormControl>
+                            <Select
+                              value={field.value?.[0] || ""}
+                              onValueChange={(value) =>
+                                field.onChange([value])
+                              }
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select program" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {mockProjects.map((program) => (
+                                  <SelectItem
+                                    key={program.id}
+                                    value={program.id}
+                                  >
+                                    {program.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -294,7 +349,7 @@ export default function ManagePerson() {
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {isEdit ? 'Save Changes' : 'Create Person'}
+                  {isEdit ? "Save Changes" : "Create Person"}
                 </Button>
               </div>
             </form>
