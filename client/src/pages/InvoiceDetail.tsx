@@ -1,6 +1,6 @@
 import { useRoute } from "wouter";
 import { mockInvoices } from "@/data/mockData";
-import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send } from "lucide-react";
+import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
@@ -185,6 +185,57 @@ export default function InvoiceDetail() {
                           <div className="text-sm">
                             <p className="text-muted-foreground">Signed by:</p>
                             <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
+                          </div>
+
+                          {/* New: Encryption Details */}
+                          <Separator />
+                          <div className="space-y-2">
+                            <h4 className="font-medium flex items-center gap-2">
+                              <Lock className="h-4 w-4" />
+                              Encryption Details
+                            </h4>
+                            <div className="text-sm space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Key className="h-3 w-3 text-primary" />
+                                <span>RSA-4096 Digital Signature</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Shield className="h-3 w-3 text-primary" />
+                                <span>SHA-256 Hash Algorithm</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* New: Certificate Information */}
+                          <Separator />
+                          <div className="space-y-2">
+                            <h4 className="font-medium flex items-center gap-2">
+                              <FileCheck className="h-4 w-4" />
+                              Certificate Information
+                            </h4>
+                            <div className="text-sm space-y-1">
+                              <p>Issuer: Spanish Tax Authority (FNMT)</p>
+                              <p>Valid Until: 31/12/2025</p>
+                              <div className="flex items-center gap-1 text-green-600">
+                                <CheckCircle2 className="h-3 w-3" />
+                                <span>Certificate Valid</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* New: Security Alerts */}
+                          <Separator />
+                          <div className="space-y-2">
+                            <h4 className="font-medium flex items-center gap-2">
+                              <AlertTriangle className="h-4 w-4" />
+                              Security Alerts
+                            </h4>
+                            <div className="text-sm space-y-1">
+                              <div className="flex items-center gap-1 text-green-600">
+                                <CheckCircle2 className="h-3 w-3" />
+                                <span>No security issues detected</span>
+                              </div>
+                            </div>
                           </div>
                         </>
                       ) : (
