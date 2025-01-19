@@ -1,17 +1,9 @@
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { mockEvents } from '@/data/mockData';
 
 export default function Calendar() {
   const [date, setDate] = useState<Date | undefined>(new Date());
-
-  const selectedDayEvents = mockEvents.filter(event => {
-    if (!date) return false;
-    const eventDate = new Date(event.date);
-    return eventDate.toDateString() === date.toDateString();
-  });
 
   return (
     <div>
@@ -20,32 +12,20 @@ export default function Calendar() {
         Calendar
       </h3>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <CalendarComponent
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="rounded-md border"
-        />
-
-        <div className="flex-1">
-          <h4 className="font-medium mb-3">Events for {date?.toLocaleDateString()}</h4>
-          <div className="space-y-2">
-            {selectedDayEvents.map((event) => (
-              <Card key={event.id} className="p-3">
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full bg-${event.priority}`} />
-                  <p className="font-medium">{event.title}</p>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">{event.time}</p>
-              </Card>
-            ))}
-            {selectedDayEvents.length === 0 && (
-              <p className="text-muted-foreground">No events scheduled</p>
-            )}
-          </div>
-        </div>
-      </div>
+      <CalendarComponent
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        className="rounded-md border w-full"
+        classNames={{
+          day_selected: "bg-primary text-primary-foreground",
+          head_cell: "text-muted-foreground font-normal",
+          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+          nav_button_previous: "absolute left-1",
+          nav_button_next: "absolute right-1",
+          caption: "relative text-sm flex justify-center py-2 px-10"
+        }}
+      />
     </div>
   );
 }
