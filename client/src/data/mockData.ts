@@ -274,6 +274,36 @@ export const mockInvoices: Invoice[] = [
     ],
     totalAmount: 3500,
     status: 'submitted',
+    approvalWorkflow: {
+      currentLevel: 3,
+      maxLevels: 3,
+      approvers: [
+        {
+          level: 1,
+          role: 'Department Manager',
+          status: 'approved',
+          userId: 'DM123',
+          timestamp: '2024-01-18T12:00:00Z',
+          comments: 'Approved after budget review'
+        },
+        {
+          level: 2,
+          role: 'Financial Controller',
+          status: 'approved',
+          userId: 'FC456',
+          timestamp: '2024-01-18T13:30:00Z',
+          comments: 'Financial terms verified'
+        },
+        {
+          level: 3,
+          role: 'CFO',
+          status: 'approved',
+          userId: 'CFO789',
+          timestamp: '2024-01-18T14:00:00Z',
+          comments: 'Final approval granted'
+        }
+      ]
+    },
     signatureInfo: {
       signedAt: '2024-01-18T14:20:00Z',
       signedBy: 'Dana R.'
@@ -286,7 +316,47 @@ export const mockInvoices: Invoice[] = [
       }
     },
     qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-002',
-    auditTrail: []
+    auditTrail: [
+      {
+        timestamp: '2024-01-18T10:00:00Z',
+        action: 'created',
+        actor: 'Dana R.',
+        details: 'Invoice created'
+      },
+      {
+        timestamp: '2024-01-18T12:00:00Z',
+        action: 'approved',
+        actor: 'Department Manager',
+        details: 'Level 1 approval granted',
+        level: 1
+      },
+      {
+        timestamp: '2024-01-18T13:30:00Z',
+        action: 'approved',
+        actor: 'Financial Controller',
+        details: 'Level 2 approval granted',
+        level: 2
+      },
+      {
+        timestamp: '2024-01-18T14:00:00Z',
+        action: 'approved',
+        actor: 'CFO',
+        details: 'Level 3 approval granted',
+        level: 3
+      },
+      {
+        timestamp: '2024-01-18T14:20:00Z',
+        action: 'signed',
+        actor: 'Dana R.',
+        details: 'Digital signature applied'
+      },
+      {
+        timestamp: '2024-01-18T14:25:00Z',
+        action: 'submitted',
+        actor: 'System',
+        details: 'Submitted to VERIFACTU'
+      }
+    ]
   },
   {
     id: '3',
@@ -313,10 +383,58 @@ export const mockInvoices: Invoice[] = [
       }
     ],
     totalAmount: 1300,
-    status: 'draft',
+    status: 'rejected',
+    approvalWorkflow: {
+      currentLevel: 2,
+      maxLevels: 3,
+      approvers: [
+        {
+          level: 1,
+          role: 'Department Manager',
+          status: 'approved',
+          userId: 'DM123',
+          timestamp: '2024-01-19T11:00:00Z',
+          comments: 'Initial approval granted'
+        },
+        {
+          level: 2,
+          role: 'Financial Controller',
+          status: 'rejected',
+          userId: 'FC456',
+          timestamp: '2024-01-19T12:00:00Z',
+          comments: 'Budget exceeded for this quarter'
+        },
+        {
+          level: 3,
+          role: 'CFO',
+          status: 'pending'
+        }
+      ]
+    },
     signatureInfo: {},
     submissionInfo: {},
     qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-003',
-    auditTrail: []
+    auditTrail: [
+      {
+        timestamp: '2024-01-19T10:00:00Z',
+        action: 'created',
+        actor: 'Nancy W.',
+        details: 'Invoice created'
+      },
+      {
+        timestamp: '2024-01-19T11:00:00Z',
+        action: 'approved',
+        actor: 'Department Manager',
+        details: 'Level 1 approval granted',
+        level: 1
+      },
+      {
+        timestamp: '2024-01-19T12:00:00Z',
+        action: 'rejected',
+        actor: 'Financial Controller',
+        details: 'Level 2 approval rejected - Budget exceeded',
+        level: 2
+      }
+    ]
   }
 ];

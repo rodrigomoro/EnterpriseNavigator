@@ -14,10 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
+  pending_approval: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-green-100 text-green-700',
+  rejected: 'bg-red-100 text-red-700',
   signed: 'bg-blue-100 text-blue-700',
   submitted: 'bg-yellow-100 text-yellow-700',
-  accepted: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700'
+  accepted: 'bg-green-100 text-green-700'
 } as const;
 
 const actionIcons = {
@@ -25,14 +27,17 @@ const actionIcons = {
   signed: FileCheck,
   submitted: Send,
   verified: Shield,
-  status_changed: CheckCircle2
+  status_changed: Clock,
+  approval_requested: Send,
+  approved: CheckCircle2,
+  rejected: XCircle
 } as const;
 
 type ActionType = keyof typeof actionIcons;
 
 const TimelineIcon = ({ action }: { action: ActionType }) => {
   const Icon = actionIcons[action];
-  return <Icon className="h-4 w-4 text-primary" />;
+  return Icon ? <Icon className="h-4 w-4 text-primary" /> : null;
 };
 
 export default function InvoiceDetail() {
