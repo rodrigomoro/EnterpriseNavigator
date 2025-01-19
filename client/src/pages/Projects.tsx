@@ -1,15 +1,18 @@
 import { Link } from 'wouter';
+import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { mockProjects } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import ProgramFormDialog from '@/components/ProgramFormDialog';
+import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const container = {
   hidden: { opacity: 0 },
@@ -28,6 +31,42 @@ const item = {
 
 export default function Projects() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingProgram, setEditingProgram] = useState<typeof mockProjects[0] | null>(null);
+  const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleCreateProgram = (data: any) => {
+    // In a real app, this would make an API call
+    console.log('Creating program:', data);
+    setIsCreateDialogOpen(false);
+    toast({
+      title: "Program created",
+      description: "The program has been created successfully.",
+    });
+  };
+
+  const handleUpdateProgram = (data: any) => {
+    // In a real app, this would make an API call
+    console.log('Updating program:', data);
+    setEditingProgram(null);
+    toast({
+      title: "Program updated",
+      description: "The program has been updated successfully.",
+    });
+  };
+
+  const handleDeleteProgram = () => {
+    if (!deletingProgramId) return;
+    // In a real app, this would make an API call
+    console.log('Deleting program:', deletingProgramId);
+    setDeletingProgramId(null);
+    toast({
+      title: "Program deleted",
+      description: "The program has been deleted successfully.",
+      variant: "destructive",
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -55,7 +94,7 @@ export default function Projects() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button>
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Program
                 </Button>
@@ -73,73 +112,124 @@ export default function Projects() {
             >
               {mockProjects.map((project) => (
                 <motion.div key={project.id} variants={item}>
-                  <Link href={`/program/${project.id}`}>
-                    <a className="block">
-                      <motion.div 
-                        className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
-                        whileHover={{ 
-                          scale: 1.02,
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <h3 className="font-semibold mb-3">{project.name}</h3>
+                  <div className="relative group">
+                    <Link href={`/program/${project.id}`}>
+                      <a className="block">
+                        <motion.div 
+                          className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
+                          whileHover={{ 
+                            scale: 1.02,
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <h3 className="font-semibold mb-3">{project.name}</h3>
 
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex justify-between mb-2">
-                              <span className="text-sm text-muted-foreground">Progress</span>
-                              <span className="text-sm font-medium">{project.progress}%</span>
-                            </div>
-                            <Progress value={project.progress} className="h-2" />
-                          </div>
-
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm text-muted-foreground">Director</span>
-                              <Link href={`/people/${project.director.id}`}>
-                                <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                  <span className="text-sm font-medium">{project.director.name}</span>
-                                  <Avatar className="h-6 w-6">
-                                    <AvatarImage src={project.director.avatar} alt={project.director.name} />
-                                    <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
-                                  </Avatar>
-                                </a>
-                              </Link>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between">
+                          <div className="space-y-4">
                             <div>
-                              <p className="text-sm text-muted-foreground mb-2">Teachers</p>
-                              <div className="flex -space-x-2">
-                                {project.team.map((member) => (
-                                  <Link key={member.id} href={`/people/${member.id}`}>
-                                    <a onClick={(e) => e.stopPropagation()}>
-                                      <Avatar className="border-2 border-background w-8 h-8">
-                                        <AvatarImage src={member.avatar} alt={member.name} />
-                                        <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                                      </Avatar>
-                                    </a>
-                                  </Link>
-                                ))}
+                              <div className="flex justify-between mb-2">
+                                <span className="text-sm text-muted-foreground">Progress</span>
+                                <span className="text-sm font-medium">{project.progress}%</span>
+                              </div>
+                              <Progress value={project.progress} className="h-2" />
+                            </div>
+
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm text-muted-foreground">Director</span>
+                                <Link href={`/people/${project.director.id}`}>
+                                  <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <span className="text-sm font-medium">{project.director.name}</span>
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarImage src={project.director.avatar} alt={project.director.name} />
+                                      <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                  </a>
+                                </Link>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="text-sm text-muted-foreground">Students</p>
-                              <p className="text-sm font-medium">{project.studentCount}</p>
+
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground mb-2">Teachers</p>
+                                <div className="flex -space-x-2">
+                                  {project.team.map((member) => (
+                                    <Link key={member.id} href={`/people/${member.id}`}>
+                                      <a onClick={(e) => e.stopPropagation()}>
+                                        <Avatar className="border-2 border-background w-8 h-8">
+                                          <AvatarImage src={member.avatar} alt={member.name} />
+                                          <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                                        </Avatar>
+                                      </a>
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-muted-foreground">Students</p>
+                                <p className="text-sm font-medium">{project.studentCount}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    </a>
-                  </Link>
+                        </motion.div>
+                      </a>
+                    </Link>
+
+                    {/* Action buttons */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setEditingProgram(project);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDeletingProgramId(project.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
           </main>
         </PageTransition>
       </div>
+
+      {/* Create/Edit Program Dialog */}
+      <ProgramFormDialog
+        open={isCreateDialogOpen || editingProgram !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            setEditingProgram(null);
+          }
+        }}
+        onSubmit={editingProgram ? handleUpdateProgram : handleCreateProgram}
+        initialData={editingProgram || undefined}
+        mode={editingProgram ? 'edit' : 'create'}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deletingProgramId !== null}
+        onOpenChange={(open) => !open && setDeletingProgramId(null)}
+        onConfirm={handleDeleteProgram}
+        title="Delete Program"
+        description="Are you sure you want to delete this program? This action cannot be undone."
+      />
     </div>
   );
 }
