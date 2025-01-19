@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Check, X } from 'lucide-react';
+import { useState } from 'react';
+import { Check } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -13,9 +13,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from "@/components/ui/badge";
 
 interface Person {
   id: string;
@@ -42,7 +42,7 @@ export default function PeoplePicker({
   multiple = true,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   const selected = people.filter(person => selectedIds.includes(person.id));
 
@@ -55,8 +55,6 @@ export default function PeoplePicker({
       }
     } else {
       onChange([personId]);
-    }
-    if (!multiple) {
       setOpen(false);
     }
   };
@@ -82,31 +80,28 @@ export default function PeoplePicker({
             ) : (
               selected[0]?.name
             )}
-            <X
-              className="ml-2 h-4 w-4 shrink-0 opacity-50"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange([]);
-              }}
-            />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
-          <Command>
-            <CommandInput
-              placeholder="Search people..."
-              value={search}
-              onValueChange={setSearch}
+        <PopoverContent className="w-[300px] p-0" align="start">
+          <Command shouldFilter={false}>
+            <CommandInput 
+              placeholder="Search people..." 
+              value={inputValue}
+              onValueChange={setInputValue}
             />
             <CommandEmpty>No person found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-auto">
-              {people.map(person => (
-                <CommandItem
-                  key={person.id}
-                  value={person.name}
-                  onSelect={() => handleSelect(person.id)}
-                >
-                  <div className="flex items-center gap-2 flex-1">
+              {people
+                .filter(person =>
+                  person.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+                  person.role.toLowerCase().includes(inputValue.toLowerCase())
+                )
+                .map(person => (
+                  <CommandItem
+                    key={person.id}
+                    onSelect={() => handleSelect(person.id)}
+                    className="flex items-center gap-2"
+                  >
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={person.avatar} alt={person.name} />
                       <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
@@ -115,15 +110,14 @@ export default function PeoplePicker({
                       <span>{person.name}</span>
                       <span className="text-xs text-muted-foreground">{person.role}</span>
                     </div>
-                  </div>
-                  <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      selectedIds.includes(person.id) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        selectedIds.includes(person.id) ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </Command>
         </PopoverContent>
@@ -139,10 +133,12 @@ export default function PeoplePicker({
                   <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 {person.name}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer hover:text-destructive"
+                <button
+                  className="ml-1 hover:text-destructive"
                   onClick={() => removeSelected(person.id)}
-                />
+                >
+                  ×
+                </button>
               </div>
             </Badge>
           ))}

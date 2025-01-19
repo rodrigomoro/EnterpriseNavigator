@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import PeoplePicker from "@/components/ui/PeoplePicker";
 import { useEffect } from "react";
 
 const formSchema = z.object({
@@ -47,9 +48,15 @@ export default function ManagePerson() {
   const isEdit = params.id !== "new";
 
   // Find person data if in edit mode
-  const personData = isEdit ? mockTeamMembers.find((m) => m.id === params?.id) : null;
-  const departments = Array.from(new Set(mockTeamMembers.map((member) => member.department)));
-  const potentialManagers = mockTeamMembers.filter((member) => member.role === "Director");
+  const personData = isEdit
+    ? mockTeamMembers.find((m) => m.id === params?.id)
+    : null;
+  const departments = Array.from(
+    new Set(mockTeamMembers.map((member) => member.department))
+  );
+  const potentialManagers = mockTeamMembers.filter(
+    (member) => member.role === "Director"
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,7 +68,7 @@ export default function ManagePerson() {
       phone: personData?.phone ?? "",
       bio: personData?.bio ?? "",
       reportsTo: personData?.reportsTo ?? "",
-      programIds: [],
+      programIds: personData?.programIds ?? [],
     },
   });
 
@@ -281,23 +288,15 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Reports To</FormLabel>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select manager" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {potentialManagers.map((manager) => (
-                                  <SelectItem key={manager.id} value={manager.id}>
-                                    {manager.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <FormControl>
+                              <PeoplePicker
+                                people={potentialManagers}
+                                selectedIds={field.value ? [field.value] : []}
+                                onChange={(ids) => field.onChange(ids[0] || "")}
+                                placeholder="Select manager"
+                                multiple={false}
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -309,28 +308,18 @@ export default function ManagePerson() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Associated Programs</FormLabel>
-                            <Select
-                              value={field.value?.[0] || ""}
-                              onValueChange={(value) =>
-                                field.onChange([value])
-                              }
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select program" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {mockProjects.map((program) => (
-                                  <SelectItem
-                                    key={program.id}
-                                    value={program.id}
-                                  >
-                                    {program.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <FormControl>
+                              <PeoplePicker
+                                people={mockProjects.map((p) => ({
+                                  id: p.id,
+                                  name: p.name,
+                                  role: "Program",
+                                }))}
+                                selectedIds={field.value || []}
+                                onChange={field.onChange}
+                                placeholder="Select programs"
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
