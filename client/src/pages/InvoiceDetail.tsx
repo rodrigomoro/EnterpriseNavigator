@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import InvoiceApprovalWorkflow from "@/components/InvoiceApprovalWorkflow";
+import { useToast } from "@/hooks/use-toast";
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -36,10 +38,26 @@ const TimelineIcon = ({ action }: { action: ActionType }) => {
 export default function InvoiceDetail() {
   const [, params] = useRoute('/invoices/:id');
   const invoice = mockInvoices.find(i => i.id === params?.id);
+  const { toast } = useToast();
 
   if (!invoice) {
     return <div>Invoice not found</div>;
   }
+
+  const handleApprove = (level: number, comments: string) => {
+    toast({
+      title: "Invoice Approved",
+      description: `Level ${level} approval processed successfully.`,
+    });
+  };
+
+  const handleReject = (level: number, comments: string) => {
+    toast({
+      title: "Invoice Rejected",
+      description: `Level ${level} rejection processed with comments.`,
+      variant: "destructive",
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -67,7 +85,6 @@ export default function InvoiceDetail() {
             </div>
 
             <div className="grid grid-cols-12 gap-6">
-              {/* Left Column - Invoice Details */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 <Card>
                   <CardContent className="p-6">
@@ -122,25 +139,27 @@ export default function InvoiceDetail() {
                   </CardContent>
                 </Card>
 
-                {/* Audit Trail Timeline */}
+                <InvoiceApprovalWorkflow
+                  invoice={invoice}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                />
+
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4">Audit Trail</h3>
                     <div className="space-y-6">
                       {invoice.auditTrail?.map((event, index) => (
                         <div key={index} className="relative pl-6">
-                          {/* Timeline connector */}
                           {index !== invoice.auditTrail.length - 1 && (
                             <div className="absolute left-[11px] top-6 w-[2px] h-full bg-muted" />
                           )}
 
                           <div className="flex items-start gap-4">
-                            {/* Icon */}
                             <div className="absolute left-0 p-1 rounded-full bg-background border">
                               <TimelineIcon action={event.action as ActionType} />
                             </div>
 
-                            {/* Content */}
                             <div className="flex-1 pt-1">
                               <div className="flex items-center justify-between">
                                 <p className="font-medium">{event.details}</p>
@@ -161,7 +180,6 @@ export default function InvoiceDetail() {
                 </Card>
               </div>
 
-              {/* Right Column - Digital Signature & Verification */}
               <div className="col-span-12 lg:col-span-4 space-y-6">
                 <Card>
                   <CardContent className="p-6">
@@ -187,7 +205,6 @@ export default function InvoiceDetail() {
                             <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
                           </div>
 
-                          {/* Encryption Details */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
@@ -206,7 +223,6 @@ export default function InvoiceDetail() {
                             </div>
                           </div>
 
-                          {/* Certificate Information */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
@@ -223,7 +239,6 @@ export default function InvoiceDetail() {
                             </div>
                           </div>
 
-                          {/* Security Alerts */}
                           <Separator />
                           <div className="space-y-2">
                             <h4 className="font-medium flex items-center gap-2">
