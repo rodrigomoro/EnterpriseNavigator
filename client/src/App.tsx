@@ -22,17 +22,17 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/programs" component={Projects} />
       <Route path="/programs/new" component={ManageProgram} />
       <Route path="/programs/:id/edit" component={ManageProgram} />
       <Route path="/programs/:id" component={ProjectOverview} />
-      <Route path="/people" component={People} />
+      <Route path="/programs" component={Projects} />
       <Route path="/people/new" component={ManagePerson} />
       <Route path="/people/:id/edit" component={ManagePerson} />
       <Route path="/people/:id" component={PersonOverview} />
+      <Route path="/people" component={People} />
       <Route path="/organization" component={Organization} />
-      <Route path="/invoices" component={Invoices} />
       <Route path="/invoices/:id" component={InvoiceDetail} />
+      <Route path="/invoices" component={Invoices} />
       <Route path="/qr-tracking" component={QRTrackingDashboard} />
       <Route path="/financial-dashboard" component={FinancialDashboard} />
       <Route path="/analytics" component={Analytics} />

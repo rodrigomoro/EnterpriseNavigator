@@ -95,8 +95,8 @@ export default function Projects() {
               {mockProjects.map((project) => (
                 <motion.div key={project.id} variants={item}>
                   <div className="relative group">
-                    <Link href={`/programs/${project.id}`}>
-                      <a className="block">
+                    <div className="block">
+                      <Link href={`/programs/${project.id}`}>
                         <motion.div 
                           className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
                           whileHover={{ 
@@ -154,8 +154,8 @@ export default function Projects() {
                             </div>
                           </div>
                         </motion.div>
-                      </a>
-                    </Link>
+                      </Link>
+                    </div>
 
                     {/* Action buttons */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -175,6 +175,7 @@ export default function Projects() {
                           size="icon"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             setDeletingProgramId(project.id);
                           }}
                         >

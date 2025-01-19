@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useRoute } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers } from "@/data/mockData";
+import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import Sidebar from "@/components/Sidebar";
@@ -33,23 +33,26 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ManageProgram() {
-  const [, params] = useRoute("/programs/:id");
+  const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const isEdit = Boolean(params?.id);
-  
-  const directors = mockTeamMembers.filter(member => member.isDirector);
-  const teachers = mockTeamMembers.filter(member => member.isTeacher);
-  const students = mockTeamMembers.filter(member => member.isStudent);
+  const isEdit = params?.id !== 'new';
+
+  // Find program data if in edit mode
+  const programData = isEdit ? mockProjects.find(p => p.id === params?.id) : null;
+
+  const directors = mockTeamMembers.filter(member => member.role === 'Director');
+  const teachers = mockTeamMembers.filter(member => member.role === 'Teacher');
+  const students = mockTeamMembers.filter(member => member.role === 'Student');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      progress: 0,
-      directorIds: [],
-      teacherIds: [],
+      name: programData?.name ?? '',
+      description: programData?.description ?? '',
+      progress: programData?.progress ?? 0,
+      directorIds: programData ? [programData.director.id] : [],
+      teacherIds: programData ? programData.team.map(t => t.id) : [],
       studentIds: [],
     },
   });
@@ -63,6 +66,12 @@ export default function ManageProgram() {
     });
     navigate("/programs");
   };
+
+  // If trying to edit a non-existent program, redirect to programs list
+  if (isEdit && !programData) {
+    navigate("/programs");
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
