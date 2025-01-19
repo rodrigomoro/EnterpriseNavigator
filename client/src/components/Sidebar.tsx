@@ -1,8 +1,9 @@
-import { Home, Calendar, Users, PieChart, Settings, LogOut } from 'lucide-react';
+import { Home, Calendar, Users, PieChart, Settings, LogOut, FolderKanban } from 'lucide-react';
 import { Link } from 'wouter';
 
 const navigationItems = [
   { icon: Home, label: 'Home', href: '/' },
+  { icon: FolderKanban, label: 'Projects', href: '/projects' },
   { icon: Calendar, label: 'Calendar', href: '/calendar' },
   { icon: Users, label: 'Team', href: '/team' },
   { icon: PieChart, label: 'Analytics', href: '/analytics' },
