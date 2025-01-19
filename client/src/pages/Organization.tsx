@@ -7,9 +7,13 @@ import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Search } from "lucide-react";
+import { Link } from "wouter";
 
 // Get unique departments for filter buttons
 const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
+
+// Simulate logged in user (in a real app, this would come from auth context)
+const LOGGED_IN_USER_ID = '7'; // Frank Miles
 
 export default function Organization() {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("All");
@@ -22,6 +26,17 @@ export default function Organization() {
                          member.role.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesDepartment && matchesSearch;
   });
+
+  // Group members by their reporting structure
+  const membersByManager = mockTeamMembers.reduce((acc, member) => {
+    if (member.reportsTo) {
+      if (!acc[member.reportsTo]) {
+        acc[member.reportsTo] = [];
+      }
+      acc[member.reportsTo].push(member);
+    }
+    return acc;
+  }, {} as Record<string, typeof mockTeamMembers>);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -76,43 +91,77 @@ export default function Organization() {
                     <div className="grid gap-8">
                       {/* CEO Level */}
                       <div className="flex justify-center">
-                        <EmployeeCard employee={mockTeamMembers[0]} />
+                        <EmployeeCard 
+                          employee={mockTeamMembers[0]} 
+                          isCurrentUser={mockTeamMembers[0].id === LOGGED_IN_USER_ID}
+                        />
                       </div>
 
                       {/* Director Level */}
                       <div className="relative">
-                        <div className="absolute left-0 right-0 top-[-30px] h-[2px] bg-border" />
                         <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                        <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
                         <div className="flex justify-center gap-8">
                           {mockTeamMembers
                             .filter(member => member.isDirector && member.id !== '1')
                             .map(director => (
                               <div key={director.id} className="relative">
                                 <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                                <EmployeeCard employee={director} />
+                                <EmployeeCard 
+                                  employee={director}
+                                  isCurrentUser={director.id === LOGGED_IN_USER_ID}
+                                />
                               </div>
                             ))}
                         </div>
                       </div>
 
-                      {/* Team Members Level */}
+                      {/* Department Teams Level */}
                       {departments.map(dept => {
-                        const teamMembers = filteredMembers.filter(
-                          member => !member.isDirector && member.department === dept
+                        const directors = mockTeamMembers.filter(
+                          member => member.isDirector && member.department === dept
                         );
-                        if (teamMembers.length === 0) return null;
+
+                        const departmentMembers = directors.map(director => {
+                          const reportingMembers = membersByManager[director.id] || [];
+                          return reportingMembers.map(member => (
+                            <div key={member.id} className="relative">
+                              <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
+                              <EmployeeCard 
+                                employee={member}
+                                isCurrentUser={member.id === LOGGED_IN_USER_ID}
+                              />
+
+                              {/* Sub-team members */}
+                              {membersByManager[member.id] && (
+                                <div className="mt-8 relative">
+                                  <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                                  <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
+                                  <div className="flex justify-center gap-4">
+                                    {membersByManager[member.id].map(subMember => (
+                                      <div key={subMember.id} className="relative">
+                                        <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
+                                        <EmployeeCard 
+                                          employee={subMember}
+                                          isCurrentUser={subMember.id === LOGGED_IN_USER_ID}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ));
+                        });
+
+                        if (!departmentMembers.flat().length) return null;
 
                         return (
                           <div key={dept} className="relative">
-                            <div className="absolute left-0 right-0 top-[-30px] h-[2px] bg-border" />
                             <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
+                            <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
                             <div className="flex flex-wrap justify-center gap-8">
-                              {teamMembers.map(member => (
-                                <div key={member.id} className="relative">
-                                  <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                                  <EmployeeCard employee={member} />
-                                </div>
-                              ))}
+                              {departmentMembers}
                             </div>
                           </div>
                         );
@@ -129,22 +178,30 @@ export default function Organization() {
   );
 }
 
-function EmployeeCard({ employee }: { employee: typeof mockTeamMembers[0] }) {
+interface EmployeeCardProps {
+  employee: typeof mockTeamMembers[0];
+  isCurrentUser: boolean;
+}
+
+function EmployeeCard({ employee, isCurrentUser }: EmployeeCardProps) {
   return (
-    <div className="bg-card w-[200px] rounded-lg border shadow-sm">
-      <div className="p-4">
-        <div className="flex items-center gap-3">
-          <img
-            src={employee.avatar}
-            alt={employee.name}
-            className="h-10 w-10 rounded-full"
-          />
-          <div className="space-y-1">
-            <h3 className="font-medium leading-none">{employee.name}</h3>
-            <p className="text-sm text-muted-foreground">{employee.role}</p>
+    <Link href={`/people/${employee.id}`}>
+      <a className={`block bg-card hover:bg-accent transition-colors w-[200px] rounded-lg border shadow-sm
+        ${isCurrentUser ? 'ring-2 ring-primary' : ''}`}>
+        <div className="p-4">
+          <div className="flex items-center gap-3">
+            <img
+              src={employee.avatar}
+              alt={employee.name}
+              className="h-10 w-10 rounded-full"
+            />
+            <div className="space-y-1">
+              <h3 className="font-medium leading-none">{employee.name}</h3>
+              <p className="text-sm text-muted-foreground">{employee.role}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </a>
+    </Link>
   );
 }

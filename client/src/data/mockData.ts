@@ -22,14 +22,32 @@ export const mockEvents = [
   }
 ];
 
-export const mockTeamMembers = [
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  isDirector: boolean;
+  avatar: string;
+  email: string;
+  phone: string;
+  bio: string;
+  projects: string[];
+  reportsTo?: string;
+}
+
+export const mockTeamMembers: TeamMember[] = [
   {
     id: '1',
     name: 'Emily Johnson',
     role: 'Founder & CEO',
     department: 'Executive',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+    email: 'emily.johnson@company.com',
+    phone: '+1 (555) 0101',
+    bio: 'Founded the company in 2020. Previously led education technology initiatives at major enterprises.',
+    projects: ['Strategic Planning', 'Company Vision 2025']
   },
   {
     id: '2',
@@ -37,7 +55,12 @@ export const mockTeamMembers = [
     role: 'CFO',
     department: 'Finance',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
+    email: 'andrea.leeland@company.com',
+    phone: '+1 (555) 0102',
+    bio: 'Over 15 years of experience in financial management and strategic planning.',
+    projects: ['Budget Planning', 'Financial Strategy'],
+    reportsTo: '1'
   },
   {
     id: '3',
@@ -45,7 +68,12 @@ export const mockTeamMembers = [
     role: 'CTO',
     department: 'Technology',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    email: 'sarah.williams@company.com',
+    phone: '+1 (555) 0103',
+    bio: 'Tech leader with a focus on educational software and scalable systems.',
+    projects: ['Tech Infrastructure', 'Digital Transformation'],
+    reportsTo: '1'
   },
   {
     id: '4',
@@ -53,7 +81,12 @@ export const mockTeamMembers = [
     role: 'HR Director',
     department: 'Human Resources',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
+    email: 'jessica.martinez@company.com',
+    phone: '+1 (555) 0104',
+    bio: 'Specialized in organizational development and talent management.',
+    projects: ['Employee Development', 'Culture Initiative'],
+    reportsTo: '1'
   },
   {
     id: '5',
@@ -61,7 +94,12 @@ export const mockTeamMembers = [
     role: 'VP of Sales',
     department: 'Sales',
     isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
+    email: 'ethan.wilson@company.com',
+    phone: '+1 (555) 0105',
+    bio: 'Driving sales strategy and team development across regions.',
+    projects: ['Sales Strategy', 'Market Expansion'],
+    reportsTo: '1'
   },
   {
     id: '6',
@@ -69,7 +107,12 @@ export const mockTeamMembers = [
     role: 'Account Manager',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mikkel'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mikkel',
+    email: 'mikkel.johanson@company.com',
+    phone: '+1 (555) 0106',
+    bio: 'Managing key client relationships and account growth.',
+    projects: ['Client Success', 'Account Planning'],
+    reportsTo: '5'
   },
   {
     id: '7',
@@ -77,7 +120,12 @@ export const mockTeamMembers = [
     role: 'Sales Manager',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank',
+    email: 'frank.miles@company.com',
+    phone: '+1 (555) 0107',
+    bio: 'Leading the regional sales team and strategy implementation.',
+    projects: ['Team Development', 'Sales Operations'],
+    reportsTo: '5'
   },
   {
     id: '8',
@@ -85,7 +133,12 @@ export const mockTeamMembers = [
     role: 'Account Director',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dan'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dan',
+    email: 'dan.smith@company.com',
+    phone: '+1 (555) 0108',
+    bio: 'Overseeing strategic accounts and partnership development.',
+    projects: ['Strategic Accounts', 'Partnership Growth'],
+    reportsTo: '5'
   },
   {
     id: '9',
@@ -93,7 +146,12 @@ export const mockTeamMembers = [
     role: 'Sales Analyst',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
+    email: 'james.mcfin@company.com',
+    phone: '+1 (555) 0109',
+    bio: 'Analyzing sales data and providing strategic insights.',
+    projects: ['Sales Analytics', 'Performance Tracking'],
+    reportsTo: '7'
   },
   {
     id: '10',
@@ -101,7 +159,12 @@ export const mockTeamMembers = [
     role: 'SDR',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adele'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adele',
+    email: 'adele.pole@company.com',
+    phone: '+1 (555) 0110',
+    bio: 'Developing new business opportunities and lead generation.',
+    projects: ['Lead Generation', 'Market Research'],
+    reportsTo: '7'
   },
   {
     id: '11',
@@ -109,7 +172,12 @@ export const mockTeamMembers = [
     role: 'Inside Sales Rep',
     department: 'Sales',
     isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beth'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beth',
+    email: 'beth.moore@company.com',
+    phone: '+1 (555) 0111',
+    bio: 'Managing inside sales operations and customer relationships.',
+    projects: ['Inside Sales', 'Customer Success'],
+    reportsTo: '7'
   }
 ];
 
