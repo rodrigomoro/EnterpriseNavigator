@@ -166,6 +166,12 @@ export interface Invoice {
   };
   qrCode: string;
   pdfUrl?: string;
+  auditTrail: {
+    timestamp: string;
+    action: 'created' | 'signed' | 'submitted' | 'verified' | 'status_changed';
+    actor: string;
+    details: string;
+  }[];
 }
 
 export const mockInvoices: Invoice[] = [
@@ -208,7 +214,39 @@ export const mockInvoices: Invoice[] = [
       }
     },
     qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-001',
-    pdfUrl: '/invoices/INV-2024-001.pdf'
+    pdfUrl: '/invoices/INV-2024-001.pdf',
+    auditTrail: [
+      {
+        timestamp: '2024-01-15T10:00:00Z',
+        action: 'created',
+        actor: 'Dana R.',
+        details: 'Invoice created'
+      },
+      {
+        timestamp: '2024-01-15T10:30:00Z',
+        action: 'signed',
+        actor: 'Dana R.',
+        details: 'Digital signature applied'
+      },
+      {
+        timestamp: '2024-01-15T10:35:00Z',
+        action: 'submitted',
+        actor: 'System',
+        details: 'Submitted to VERIFACTU for verification'
+      },
+      {
+        timestamp: '2024-01-15T10:40:00Z',
+        action: 'verified',
+        actor: 'VERIFACTU',
+        details: 'Invoice verified successfully'
+      },
+      {
+        timestamp: '2024-01-15T10:41:00Z',
+        action: 'status_changed',
+        actor: 'System',
+        details: 'Status changed to Accepted'
+      }
+    ]
   },
   {
     id: '2',
@@ -241,7 +279,8 @@ export const mockInvoices: Invoice[] = [
         status: 'pending'
       }
     },
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-002'
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-002',
+    auditTrail: []
   },
   {
     id: '3',
@@ -271,6 +310,7 @@ export const mockInvoices: Invoice[] = [
     status: 'draft',
     signatureInfo: {},
     submissionInfo: {},
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-003'
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-003',
+    auditTrail: []
   }
 ];

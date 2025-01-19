@@ -1,6 +1,6 @@
 import { useRoute } from "wouter";
 import { mockInvoices } from "@/data/mockData";
-import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send } from "lucide-react";
 import { Link } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
@@ -17,6 +17,21 @@ const statusColors = {
   accepted: 'bg-green-100 text-green-700',
   rejected: 'bg-red-100 text-red-700'
 } as const;
+
+const actionIcons = {
+  created: Settings,
+  signed: FileCheck,
+  submitted: Send,
+  verified: Shield,
+  status_changed: CheckCircle2
+} as const;
+
+type ActionType = keyof typeof actionIcons;
+
+const TimelineIcon = ({ action }: { action: ActionType }) => {
+  const Icon = actionIcons[action];
+  return <Icon className="h-4 w-4 text-primary" />;
+};
 
 export default function InvoiceDetail() {
   const [, params] = useRoute('/invoices/:id');
@@ -53,7 +68,7 @@ export default function InvoiceDetail() {
 
             <div className="grid grid-cols-12 gap-6">
               {/* Left Column - Invoice Details */}
-              <div className="col-span-12 lg:col-span-8">
+              <div className="col-span-12 lg:col-span-8 space-y-6">
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-6">
@@ -103,6 +118,44 @@ export default function InvoiceDetail() {
                         <p className="font-medium">Total Amount</p>
                         <p className="text-xl font-bold">€{invoice.totalAmount}</p>
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Audit Trail Timeline */}
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Audit Trail</h3>
+                    <div className="space-y-6">
+                      {invoice.auditTrail?.map((event, index) => (
+                        <div key={index} className="relative pl-6">
+                          {/* Timeline connector */}
+                          {index !== invoice.auditTrail.length - 1 && (
+                            <div className="absolute left-[11px] top-6 w-[2px] h-full bg-muted" />
+                          )}
+
+                          <div className="flex items-start gap-4">
+                            {/* Icon */}
+                            <div className="absolute left-0 p-1 rounded-full bg-background border">
+                              <TimelineIcon action={event.action as ActionType} />
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 pt-1">
+                              <div className="flex items-center justify-between">
+                                <p className="font-medium">{event.details}</p>
+                                <time className="text-sm text-muted-foreground">
+                                  {new Date(event.timestamp).toLocaleString()}
+                                </time>
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <User className="h-3 w-3 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground">{event.actor}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
