@@ -19,13 +19,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers } from "@/data/mockData";
+import { mockTeamMembers, mockProjects } from "@/data/mockData";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.string().min(1, "Role is required"),
   department: z.string().min(1, "Department is required"),
   isDirector: z.boolean().default(false),
+  isTeacher: z.boolean().default(false),
+  isStudent: z.boolean().default(false),
+  directorPrograms: z.array(z.string()).optional(),
+  teachingPrograms: z.array(z.string()).optional(),
+  enrolledPrograms: z.array(z.string()).optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
   bio: z.string(),
@@ -50,6 +55,11 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
       role: initialData?.role ?? '',
       department: initialData?.department ?? '',
       isDirector: initialData?.isDirector ?? false,
+      isTeacher: initialData?.isTeacher ?? false,
+      isStudent: initialData?.isStudent ?? false,
+      directorPrograms: initialData?.directorPrograms ?? [],
+      teachingPrograms: initialData?.teachingPrograms ?? [],
+      enrolledPrograms: initialData?.enrolledPrograms ?? [],
       email: initialData?.email ?? '',
       phone: initialData?.phone ?? '',
       bio: initialData?.bio ?? '',
@@ -59,6 +69,9 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
 
   const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
   const potentialManagers = mockTeamMembers.filter(member => member.isDirector);
+  const watchIsDirector = form.watch("isDirector");
+  const watchIsTeacher = form.watch("isTeacher");
+  const watchIsStudent = form.watch("isStudent");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -187,26 +200,160 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
 
               {/* Full Width Fields */}
               <div className="col-span-2 space-y-4">
-                <FormField
-                  control={form.control}
-                  name="isDirector"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
+                <div className="flex gap-4 items-center">
+                  <FormField
+                    control={form.control}
+                    name="isDirector"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Director</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isTeacher"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Teacher</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isStudent"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-input"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Is Student</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {watchIsDirector && (
+                  <FormField
+                    control={form.control}
+                    name="directorPrograms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Directing Programs</FormLabel>
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={field.onChange}
-                            className="rounded border-input"
-                          />
+                          <select
+                            multiple
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                            value={field.value}
+                            onChange={(e) => {
+                              const options = Array.from(e.target.selectedOptions);
+                              field.onChange(options.map(option => option.value));
+                            }}
+                          >
+                            {mockProjects.map(program => (
+                              <option key={program.id} value={program.id}>
+                                {program.name}
+                              </option>
+                            ))}
+                          </select>
                         </FormControl>
-                        <FormLabel className="!mt-0">Is Director</FormLabel>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {watchIsTeacher && (
+                  <FormField
+                    control={form.control}
+                    name="teachingPrograms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Teaching Programs</FormLabel>
+                        <FormControl>
+                          <select
+                            multiple
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                            value={field.value}
+                            onChange={(e) => {
+                              const options = Array.from(e.target.selectedOptions);
+                              field.onChange(options.map(option => option.value));
+                            }}
+                          >
+                            {mockProjects.map(program => (
+                              <option key={program.id} value={program.id}>
+                                {program.name}
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {watchIsStudent && (
+                  <FormField
+                    control={form.control}
+                    name="enrolledPrograms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enrolled Programs</FormLabel>
+                        <FormControl>
+                          <select
+                            multiple
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                            value={field.value}
+                            onChange={(e) => {
+                              const options = Array.from(e.target.selectedOptions);
+                              field.onChange(options.map(option => option.value));
+                            }}
+                          >
+                            {mockProjects.map(program => (
+                              <option key={program.id} value={program.id}>
+                                {program.name}
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
