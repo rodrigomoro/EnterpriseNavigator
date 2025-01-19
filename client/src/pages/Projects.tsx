@@ -4,10 +4,12 @@ import { mockProjects } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,6 +27,8 @@ const item = {
 };
 
 export default function Projects() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -32,18 +36,31 @@ export default function Projects() {
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-2xl font-bold">Programs Directory</h1>
-                <p className="text-muted-foreground">Manage and track all your programs</p>
+            <div className="flex flex-col gap-6 mb-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold">Programs Directory</h1>
+                  <p className="text-muted-foreground">Manage and track all your programs</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Program
+                  </Button>
+                  <UserAvatar />
+                </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Program
-                </Button>
-                <UserAvatar />
+              <div className="flex justify-center">
+                <div className="relative w-96">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search programs..."
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -55,7 +72,7 @@ export default function Projects() {
             >
               {mockProjects.map((project) => (
                 <motion.div key={project.id} variants={item}>
-                  <Link href={`/project/${project.id}`}>
+                  <Link href={`/program/${project.id}`}>
                     <a className="block">
                       <motion.div 
                         className="bg-card rounded-lg shadow-sm p-4 transition-shadow"

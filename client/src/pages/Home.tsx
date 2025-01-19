@@ -19,14 +19,17 @@ export default function Home() {
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-2xl font-bold">Welcome, Juliana!</h1>
-                <p className="text-muted-foreground">Here is your agenda for today</p>
+            <div className="flex flex-col gap-6 mb-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold">Welcome, Juliana!</h1>
+                  <p className="text-muted-foreground">Here is your agenda for today</p>
+                </div>
+                <UserAvatar />
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="relative w-64">
+              <div className="flex justify-center">
+                <div className="relative w-96">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search"
@@ -35,7 +38,6 @@ export default function Home() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <UserAvatar />
               </div>
             </div>
 
