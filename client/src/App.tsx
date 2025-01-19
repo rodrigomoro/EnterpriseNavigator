@@ -8,6 +8,8 @@ import Projects from "@/pages/Projects";
 import ProjectOverview from "@/pages/ProjectOverview";
 import People from "@/pages/People";
 import PersonOverview from "@/pages/PersonOverview";
+import ManagePerson from "@/pages/ManagePerson";
+import ManageProgram from "@/pages/ManageProgram";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
 import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
@@ -21,8 +23,12 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/programs" component={Projects} />
-      <Route path="/program/:id" component={ProjectOverview} />
+      <Route path="/programs/new" component={ManageProgram} />
+      <Route path="/programs/:id/edit" component={ManageProgram} />
+      <Route path="/programs/:id" component={ProjectOverview} />
       <Route path="/people" component={People} />
+      <Route path="/people/new" component={ManagePerson} />
+      <Route path="/people/:id/edit" component={ManagePerson} />
       <Route path="/people/:id" component={PersonOverview} />
       <Route path="/organization" component={Organization} />
       <Route path="/invoices" component={Invoices} />
