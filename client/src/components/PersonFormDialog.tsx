@@ -62,8 +62,8 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] flex flex-col gap-0 p-0">
-        <DialogHeader className="p-6 pb-4">
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Add Person' : 'Edit Person'}</DialogTitle>
           <DialogDescription>
             {mode === 'create'
@@ -73,8 +73,9 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto px-6 py-2">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              {/* Left Column - Personal Information */}
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -90,6 +91,37 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Enter email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter phone number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Right Column - Role Information */}
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="role"
@@ -130,73 +162,6 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
 
                 <FormField
                   control={form.control}
-                  name="isDirector"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={field.onChange}
-                            className="rounded border-input"
-                          />
-                        </FormControl>
-                        <FormLabel>Is Director</FormLabel>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Enter email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter phone number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <textarea
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                          placeholder="Enter bio"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="reportsTo"
                   render={({ field }) => (
                     <FormItem>
@@ -219,9 +184,51 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
                   )}
                 />
               </div>
+
+              {/* Full Width Fields */}
+              <div className="col-span-2 space-y-4">
+                <FormField
+                  control={form.control}
+                  name="isDirector"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-2">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="rounded border-input"
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0">Is Director</FormLabel>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bio</FormLabel>
+                      <FormControl>
+                        <textarea
+                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                          placeholder="Enter bio"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <DialogFooter className="p-6 pt-4">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="secondary"
