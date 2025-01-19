@@ -1,49 +1,46 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockInvoices } from "@/data/mockData";
+import { mockProjects, mockStudents, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
-import FinancialTrendChart from "@/components/FinancialTrendChart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { addMonths, format, parseISO, subMonths, differenceInDays } from 'date-fns';
-import { sma } from 'moving-averages';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import { Users, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
 
-// Calculate average processing time
-const getProcessingTimeData = () => {
-  return mockInvoices.map(invoice => {
-    const createdDate = new Date(invoice.auditTrail[0].timestamp);
-    const lastAction = invoice.auditTrail[invoice.auditTrail.length - 1];
-    const completedDate = new Date(lastAction.timestamp);
-    const processingTime = differenceInDays(completedDate, createdDate);
-
-    return {
-      invoiceId: invoice.invoiceNumber,
-      processingTime,
-      status: invoice.status
-    };
-  });
+// Calculate program performance metrics
+const programMetrics = {
+  totalStudents: mockStudents.length,
+  totalPrograms: mockProjects.length,
+  averageProgress: Math.round(
+    mockProjects.reduce((acc, proj) => acc + proj.progress, 0) / mockProjects.length
+  ),
+  activeStaff: mockTeamMembers.length
 };
 
-// Calculate approval rates
-const getApprovalRates = () => {
-  const total = mockInvoices.length;
-  const approved = mockInvoices.filter(i => i.status === 'accepted').length;
-  const rejected = mockInvoices.filter(i => i.status === 'rejected').length;
-  const pending = total - approved - rejected;
+// Calculate grade distribution
+const gradeDistribution = mockStudents.reduce((acc, student) => {
+  acc[student.grade] = (acc[student.grade] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
 
-  return [
-    { name: 'Approved', value: (approved / total) * 100 },
-    { name: 'Rejected', value: (rejected / total) * 100 },
-    { name: 'Pending', value: (pending / total) * 100 }
-  ];
-};
+const gradeDistributionData = Object.entries(gradeDistribution).map(([grade, count]) => ({
+  name: grade,
+  value: count
+}));
+
+// Calculate program progress data
+const programProgressData = mockProjects.map(project => ({
+  name: project.name,
+  progress: project.progress,
+  studentCount: project.studentCount
+}));
+
+// Colors for charts
+const CHART_COLORS = ['#0ea5e9', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444'];
 
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('12');
-  const processingTimeData = getProcessingTimeData();
-  const approvalRates = getApprovalRates();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -54,8 +51,8 @@ export default function Analytics() {
           <main className="p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-                <p className="text-muted-foreground">Comprehensive analysis and insights</p>
+                <h1 className="text-2xl font-bold">Educational Analytics</h1>
+                <p className="text-muted-foreground">Program and Student Performance Insights</p>
               </div>
 
               <div className="flex items-center gap-4">
@@ -77,96 +74,98 @@ export default function Analytics() {
             </div>
 
             <div className="space-y-6">
-              {/* Revenue Trend with Predictions */}
-              <FinancialTrendChart />
+              {/* Key Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{programMetrics.totalStudents}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Across all programs
+                    </p>
+                  </CardContent>
+                </Card>
 
-              {/* Processing Time Analysis */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
+                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{programMetrics.totalPrograms}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Currently running
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Average Progress</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{programMetrics.averageProgress}%</div>
+                    <p className="text-xs text-muted-foreground">
+                      Program completion rate
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Staff</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{programMetrics.activeStaff}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Teaching and support
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Program Progress Chart */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Invoice Processing Time Analysis</CardTitle>
+                  <CardTitle>Program Progress Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={processingTimeData}>
-                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                        <XAxis dataKey="invoiceId" />
-                        <YAxis label={{ value: 'Days', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip 
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Invoice
-                                      </span>
-                                      <span className="font-bold">
-                                        {payload[0].payload.invoiceId}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Processing Time
-                                      </span>
-                                      <span className="font-bold">
-                                        {payload[0].value} days
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="processingTime" 
-                          stroke="hsl(var(--primary))" 
-                          strokeWidth={2}
-                          dot={{ r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Approval Rate Trend */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Approval Rate Analysis</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={approvalRates}>
+                      <AreaChart data={programProgressData}>
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                         <XAxis dataKey="name" />
-                        <YAxis label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip 
+                        <YAxis yAxisId="left" label={{ value: 'Progress (%)', angle: -90, position: 'insideLeft' }} />
+                        <YAxis yAxisId="right" orientation="right" label={{ value: 'Students', angle: 90, position: 'insideRight' }} />
+                        <Tooltip
                           content={({ active, payload }) => {
                             if (active && payload && payload.length) {
                               return (
                                 <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Status
-                                      </span>
-                                      <span className="font-bold">
-                                        {payload[0].payload.name}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Percentage
-                                      </span>
-                                      <span className="font-bold">
-                                        {payload[0].value.toFixed(1)}%
-                                      </span>
+                                  <div className="grid gap-2">
+                                    <div className="font-medium">{payload[0].payload.name}</div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                          Progress
+                                        </span>
+                                        <span className="block font-bold">
+                                          {payload[0].value}%
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                          Students
+                                        </span>
+                                        <span className="block font-bold">
+                                          {payload[1].value}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -176,13 +175,67 @@ export default function Analytics() {
                           }}
                         />
                         <Area
+                          yAxisId="left"
                           type="monotone"
-                          dataKey="value"
-                          stroke="hsl(var(--primary))"
-                          fill="hsl(var(--primary))"
+                          dataKey="progress"
+                          stroke={CHART_COLORS[0]}
+                          fill={CHART_COLORS[0]}
                           fillOpacity={0.2}
                         />
+                        <Line
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="studentCount"
+                          stroke={CHART_COLORS[1]}
+                          strokeWidth={2}
+                        />
                       </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Student Grade Distribution */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Student Grade Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={gradeDistributionData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={80}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {gradeDistributionData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                  <div className="grid gap-1">
+                                    <div className="font-medium">{payload[0].payload.name}</div>
+                                    <div className="text-sm text-muted-foreground">
+                                      {payload[0].value} students
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend />
+                      </PieChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>

@@ -2,21 +2,21 @@ export const mockEvents = [
   {
     id: '1',
     title: 'Team Meeting',
-    date: '2024-04-08',
+    date: '2025-01-08',
     time: '10:00 AM',
     priority: 'primary'
   },
   {
     id: '2',
     title: 'Project Review',
-    date: '2024-04-08',
+    date: '2025-01-08',
     time: '2:00 PM',
     priority: 'destructive'
   },
   {
     id: '3',
     title: 'Client Call',
-    date: '2024-04-09',
+    date: '2025-01-09',
     time: '11:30 AM',
     priority: 'orange'
   }
@@ -83,7 +83,7 @@ export const mockStudents = [
 export const mockProjects = [
   {
     id: '1',
-    name: 'Market Research 2024',
+    name: 'Market Research 2025',
     progress: 65,
     team: mockTeamMembers.slice(0, 2),
     director: mockTeamMembers[0],
@@ -190,14 +190,14 @@ export interface Invoice {
 export const mockInvoices: Invoice[] = [
   {
     id: '1',
-    invoiceNumber: 'INV-2024-001',
+    invoiceNumber: 'INV-2025-001',
     customer: {
       name: 'Tech Education S.L.',
       taxId: 'B12345678',
       address: 'Calle Principal 123, 28001 Madrid'
     },
-    issueDate: '2024-01-15',
-    dueDate: '2024-02-14',
+    issueDate: '2025-01-15',
+    dueDate: '2025-02-14',
     items: [
       {
         description: 'Educational Software License - Annual',
@@ -237,16 +237,16 @@ export const mockInvoices: Invoice[] = [
     },
     signatureInfo: {},
     submissionInfo: {},
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-001',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-001',
     auditTrail: [
       {
-        timestamp: '2024-01-15T10:00:00Z',
+        timestamp: '2025-01-15T10:00:00Z',
         action: 'created',
         actor: 'Dana R.',
         details: 'Invoice created'
       },
       {
-        timestamp: '2024-01-15T10:30:00Z',
+        timestamp: '2025-01-15T10:30:00Z',
         action: 'approval_requested',
         actor: 'Dana R.',
         details: 'Approval requested from Department Manager',
@@ -256,14 +256,14 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: '2',
-    invoiceNumber: 'INV-2024-002',
+    invoiceNumber: 'INV-2025-002',
     customer: {
       name: 'Educational Services Company',
       taxId: 'B87654321',
       address: 'Avenida Secundaria 456, 08001 Barcelona'
     },
-    issueDate: '2024-01-18',
-    dueDate: '2024-02-17',
+    issueDate: '2025-01-18',
+    dueDate: '2025-02-17',
     items: [
       {
         description: 'Curriculum Development Services',
@@ -283,7 +283,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Department Manager',
           status: 'approved',
           userId: 'DM123',
-          timestamp: '2024-01-18T12:00:00Z',
+          timestamp: '2025-01-18T12:00:00Z',
           comments: 'Approved after budget review'
         },
         {
@@ -291,7 +291,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Financial Controller',
           status: 'approved',
           userId: 'FC456',
-          timestamp: '2024-01-18T13:30:00Z',
+          timestamp: '2025-01-18T13:30:00Z',
           comments: 'Financial terms verified'
         },
         {
@@ -299,59 +299,59 @@ export const mockInvoices: Invoice[] = [
           role: 'CFO',
           status: 'approved',
           userId: 'CFO789',
-          timestamp: '2024-01-18T14:00:00Z',
+          timestamp: '2025-01-18T14:00:00Z',
           comments: 'Final approval granted'
         }
       ]
     },
     signatureInfo: {
-      signedAt: '2024-01-18T14:20:00Z',
+      signedAt: '2025-01-18T14:20:00Z',
       signedBy: 'Dana R.'
     },
     submissionInfo: {
-      submittedAt: '2024-01-18T14:25:00Z',
-      verificationId: 'VF-2024-002-DEF',
+      submittedAt: '2025-01-18T14:25:00Z',
+      verificationId: 'VF-2025-002-DEF',
       response: {
         status: 'pending'
       }
     },
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-002',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-002',
     auditTrail: [
       {
-        timestamp: '2024-01-18T10:00:00Z',
+        timestamp: '2025-01-18T10:00:00Z',
         action: 'created',
         actor: 'Dana R.',
         details: 'Invoice created'
       },
       {
-        timestamp: '2024-01-18T12:00:00Z',
+        timestamp: '2025-01-18T12:00:00Z',
         action: 'approved',
         actor: 'Department Manager',
         details: 'Level 1 approval granted',
         level: 1
       },
       {
-        timestamp: '2024-01-18T13:30:00Z',
+        timestamp: '2025-01-18T13:30:00Z',
         action: 'approved',
         actor: 'Financial Controller',
         details: 'Level 2 approval granted',
         level: 2
       },
       {
-        timestamp: '2024-01-18T14:00:00Z',
+        timestamp: '2025-01-18T14:00:00Z',
         action: 'approved',
         actor: 'CFO',
         details: 'Level 3 approval granted',
         level: 3
       },
       {
-        timestamp: '2024-01-18T14:20:00Z',
+        timestamp: '2025-01-18T14:20:00Z',
         action: 'signed',
         actor: 'Dana R.',
         details: 'Digital signature applied'
       },
       {
-        timestamp: '2024-01-18T14:25:00Z',
+        timestamp: '2025-01-18T14:25:00Z',
         action: 'submitted',
         actor: 'System',
         details: 'Submitted to VERIFACTU'
@@ -360,14 +360,14 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: '3',
-    invoiceNumber: 'INV-2024-003',
+    invoiceNumber: 'INV-2025-003',
     customer: {
       name: 'Learning Center Institute',
       taxId: 'B98765432',
       address: 'Plaza Principal 789, 46001 Valencia'
     },
-    issueDate: '2024-01-19',
-    dueDate: '2024-02-18',
+    issueDate: '2025-01-19',
+    dueDate: '2025-02-18',
     items: [
       {
         description: 'Student Management System - Monthly Fee',
@@ -393,7 +393,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Department Manager',
           status: 'approved',
           userId: 'DM123',
-          timestamp: '2024-01-19T11:00:00Z',
+          timestamp: '2025-01-19T11:00:00Z',
           comments: 'Initial approval granted'
         },
         {
@@ -401,7 +401,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Financial Controller',
           status: 'rejected',
           userId: 'FC456',
-          timestamp: '2024-01-19T12:00:00Z',
+          timestamp: '2025-01-19T12:00:00Z',
           comments: 'Budget exceeded for this quarter'
         },
         {
@@ -413,23 +413,23 @@ export const mockInvoices: Invoice[] = [
     },
     signatureInfo: {},
     submissionInfo: {},
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-003',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-003',
     auditTrail: [
       {
-        timestamp: '2024-01-19T10:00:00Z',
+        timestamp: '2025-01-19T10:00:00Z',
         action: 'created',
         actor: 'Nancy W.',
         details: 'Invoice created'
       },
       {
-        timestamp: '2024-01-19T11:00:00Z',
+        timestamp: '2025-01-19T11:00:00Z',
         action: 'approved',
         actor: 'Department Manager',
         details: 'Level 1 approval granted',
         level: 1
       },
       {
-        timestamp: '2024-01-19T12:00:00Z',
+        timestamp: '2025-01-19T12:00:00Z',
         action: 'rejected',
         actor: 'Financial Controller',
         details: 'Level 2 approval rejected - Budget exceeded',
@@ -439,14 +439,14 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: '4',
-    invoiceNumber: 'INV-2024-004',
+    invoiceNumber: 'INV-2025-004',
     customer: {
       name: 'Digital Learning Academy',
       taxId: 'B45678901',
       address: 'Avenida Principal 321, 41001 Sevilla'
     },
-    issueDate: '2024-01-16',
-    dueDate: '2024-02-15',
+    issueDate: '2025-01-16',
+    dueDate: '2025-02-15',
     items: [
       {
         description: 'Learning Management System - Annual License',
@@ -472,7 +472,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Department Manager',
           status: 'approved',
           userId: 'DM123',
-          timestamp: '2024-01-16T11:00:00Z',
+          timestamp: '2025-01-16T11:00:00Z',
           comments: 'Approved - Strategic investment'
         },
         {
@@ -480,7 +480,7 @@ export const mockInvoices: Invoice[] = [
           role: 'Financial Controller',
           status: 'approved',
           userId: 'FC456',
-          timestamp: '2024-01-16T13:00:00Z',
+          timestamp: '2025-01-16T13:00:00Z',
           comments: 'Budget verified and approved'
         },
         {
@@ -488,79 +488,79 @@ export const mockInvoices: Invoice[] = [
           role: 'CFO',
           status: 'approved',
           userId: 'CFO789',
-          timestamp: '2024-01-16T14:30:00Z',
+          timestamp: '2025-01-16T14:30:00Z',
           comments: 'Final approval granted - High priority project'
         }
       ]
     },
     signatureInfo: {
-      signedAt: '2024-01-16T15:00:00Z',
+      signedAt: '2025-01-16T15:00:00Z',
       signedBy: 'Dana R.'
     },
     submissionInfo: {
-      submittedAt: '2024-01-16T15:05:00Z',
-      verificationId: 'VF-2024-004-XYZ',
+      submittedAt: '2025-01-16T15:05:00Z',
+      verificationId: 'VF-2025-004-XYZ',
       response: {
         status: 'accepted',
         message: 'Invoice successfully verified and accepted by VERIFACTU'
       }
     },
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-004',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-004',
     auditTrail: [
       {
-        timestamp: '2024-01-16T10:00:00Z',
+        timestamp: '2025-01-16T10:00:00Z',
         action: 'created',
         actor: 'Dana R.',
         details: 'Invoice created'
       },
       {
-        timestamp: '2024-01-16T10:05:00Z',
+        timestamp: '2025-01-16T10:05:00Z',
         action: 'approval_requested',
         actor: 'Dana R.',
         details: 'Approval workflow initiated',
         level: 1
       },
       {
-        timestamp: '2024-01-16T11:00:00Z',
+        timestamp: '2025-01-16T11:00:00Z',
         action: 'approved',
         actor: 'Department Manager',
         details: 'Level 1 approval granted',
         level: 1
       },
       {
-        timestamp: '2024-01-16T13:00:00Z',
+        timestamp: '2025-01-16T13:00:00Z',
         action: 'approved',
         actor: 'Financial Controller',
         details: 'Level 2 approval granted',
         level: 2
       },
       {
-        timestamp: '2024-01-16T14:30:00Z',
+        timestamp: '2025-01-16T14:30:00Z',
         action: 'approved',
         actor: 'CFO',
         details: 'Level 3 approval granted',
         level: 3
       },
       {
-        timestamp: '2024-01-16T15:00:00Z',
+        timestamp: '2025-01-16T15:00:00Z',
         action: 'signed',
         actor: 'Dana R.',
         details: 'Digital signature applied'
       },
       {
-        timestamp: '2024-01-16T15:05:00Z',
+        timestamp: '2025-01-16T15:05:00Z',
         action: 'submitted',
         actor: 'System',
         details: 'Submitted to VERIFACTU for verification'
       },
       {
-        timestamp: '2024-01-16T15:10:00Z',
+        timestamp: '2025-01-16T15:10:00Z',
         action: 'verified',
         actor: 'VERIFACTU',
         details: 'Invoice verified and accepted by VERIFACTU'
       },
       {
-        timestamp: '2024-01-16T15:11:00Z',
+        timestamp: '2025-01-16T15:11:00Z',
         action: 'status_changed',
         actor: 'System',
         details: 'Status updated to Accepted'
