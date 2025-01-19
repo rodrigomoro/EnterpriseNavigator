@@ -9,6 +9,7 @@ import ProjectOverview from "@/pages/ProjectOverview";
 import People from "@/pages/People";
 import PersonOverview from "@/pages/PersonOverview";
 import Invoices from "@/pages/Invoices";
+import InvoiceDetail from "@/pages/InvoiceDetail";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/people" component={People} />
       <Route path="/people/:id" component={PersonOverview} />
       <Route path="/invoices" component={Invoices} />
+      <Route path="/invoices/:id" component={InvoiceDetail} />
       <Route component={NotFound} />
     </Switch>
   );
