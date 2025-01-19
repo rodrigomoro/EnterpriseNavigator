@@ -233,7 +233,7 @@ export const mockTeamMembers: TeamMember[] = [
   }
 ];
 
-interface Student {
+export interface Student {
   id: string;
   name: string;
   scores: {
@@ -304,6 +304,106 @@ export const mockStudents: Student[] = [
       programming: 92
     },
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa'
+  },
+  {
+    id: '7',
+    name: 'Daniel Lee',
+    scores: {
+      mathematics: 91,
+      science: 88,
+      programming: 95
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel'
+  },
+  {
+    id: '8',
+    name: 'Rachel Chen',
+    scores: {
+      mathematics: 89,
+      science: 94,
+      programming: 87
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel'
+  },
+  {
+    id: '9',
+    name: 'Kevin Patel',
+    scores: {
+      mathematics: 83,
+      science: 86,
+      programming: 90
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kevin'
+  },
+  {
+    id: '10',
+    name: 'Sofia Rodriguez',
+    scores: {
+      mathematics: 96,
+      science: 92,
+      programming: 89
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia'
+  },
+  {
+    id: '11',
+    name: 'Ryan Thompson',
+    scores: {
+      mathematics: 87,
+      science: 85,
+      programming: 93
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ryan'
+  },
+  {
+    id: '12',
+    name: 'Emma Wilson',
+    scores: {
+      mathematics: 92,
+      science: 88,
+      programming: 86
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma'
+  },
+  {
+    id: '13',
+    name: 'Lucas Kim',
+    scores: {
+      mathematics: 90,
+      science: 93,
+      programming: 91
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas'
+  },
+  {
+    id: '14',
+    name: 'Isabella Garcia',
+    scores: {
+      mathematics: 88,
+      science: 91,
+      programming: 94
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella'
+  },
+  {
+    id: '15',
+    name: 'Nathan Wright',
+    scores: {
+      mathematics: 85,
+      science: 89,
+      programming: 92
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan'
+  },
+  {
+    id: '16',
+    name: 'Olivia Chen',
+    scores: {
+      mathematics: 93,
+      science: 90,
+      programming: 88
+    },
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia'
   }
 ];
 
@@ -323,8 +423,8 @@ export const mockProjects = [
     team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
     director: mockTeamMembers[0],
     studentCount: 45,
-    students: mockStudents.slice(0, 3),
-    avgScore: calculateAverageScore(mockStudents.slice(0, 3))
+    students: mockStudents.slice(0, 6),
+    avgScore: calculateAverageScore(mockStudents.slice(0, 6))
   },
   {
     id: '2',
@@ -333,8 +433,8 @@ export const mockProjects = [
     team: mockTeamMembers.filter(m => ['14', '15'].includes(m.id)),
     director: mockTeamMembers[13],
     studentCount: 32,
-    students: mockStudents.slice(3),
-    avgScore: calculateAverageScore(mockStudents.slice(3))
+    students: mockStudents.slice(6, 11),
+    avgScore: calculateAverageScore(mockStudents.slice(6, 11))
   },
   {
     id: '3',
@@ -343,8 +443,8 @@ export const mockProjects = [
     team: mockTeamMembers.filter(m => ['3', '4'].includes(m.id)),
     director: mockTeamMembers[2],
     studentCount: 28,
-    students: mockStudents.slice(2, 5),
-    avgScore: calculateAverageScore(mockStudents.slice(2, 5))
+    students: mockStudents.slice(11, 16),
+    avgScore: calculateAverageScore(mockStudents.slice(11, 16))
   }
 ];
 
@@ -822,8 +922,7 @@ export interface CompetencyLevel {
 }
 
 export const mockSkills: Skill[] = [
-  {
-    id: 'skill-1',
+  {    id: 'skill-1',
     name: 'Project Management',
     category: 'Management',
     description: 'Ability to plan, execute and deliver projects effectively'
