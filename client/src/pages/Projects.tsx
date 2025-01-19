@@ -1,4 +1,4 @@
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { mockProjects } from '@/data/mockData';
@@ -31,6 +31,7 @@ const item = {
 export default function Projects() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
+  const [, navigate] = useLocation();
   const { toast } = useToast();
 
   const handleDeleteProgram = () => {
@@ -72,10 +73,12 @@ export default function Projects() {
 
               <div className="min-w-60 flex justify-end items-center gap-4">
                 <Link href="/programs/new">
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Program
-                  </Button>
+                  <a className="inline-block">
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Program
+                    </Button>
+                  </a>
                 </Link>
                 <UserAvatar />
               </div>
@@ -158,17 +161,14 @@ export default function Projects() {
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-2">
                         <Link href={`/programs/${project.id}/edit`}>
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              window.location.href = `/programs/${project.id}/edit`;
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          <a onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </a>
                         </Link>
                         <Button
                           variant="destructive"
