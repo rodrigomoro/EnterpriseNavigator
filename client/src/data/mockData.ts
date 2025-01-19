@@ -133,3 +133,144 @@ export const mockTasks = [
     completed: false
   }
 ];
+
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  customer: {
+    name: string;
+    taxId: string;
+    address: string;
+  };
+  issueDate: string;
+  dueDate: string;
+  items: {
+    description: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }[];
+  totalAmount: number;
+  status: 'draft' | 'signed' | 'submitted' | 'accepted' | 'rejected';
+  signatureInfo: {
+    signedAt?: string;
+    signedBy?: string;
+  };
+  submissionInfo: {
+    submittedAt?: string;
+    verificationId?: string;
+    response?: {
+      status: 'pending' | 'accepted' | 'rejected';
+      message?: string;
+    };
+  };
+  qrCode: string;
+  pdfUrl?: string;
+}
+
+export const mockInvoices: Invoice[] = [
+  {
+    id: '1',
+    invoiceNumber: 'INV-2024-001',
+    customer: {
+      name: 'Tech Education S.L.',
+      taxId: 'B12345678',
+      address: 'Calle Principal 123, 28001 Madrid'
+    },
+    issueDate: '2024-01-15',
+    dueDate: '2024-02-14',
+    items: [
+      {
+        description: 'Educational Software License - Annual',
+        quantity: 1,
+        price: 1200,
+        total: 1200
+      },
+      {
+        description: 'Training Sessions',
+        quantity: 5,
+        price: 300,
+        total: 1500
+      }
+    ],
+    totalAmount: 2700,
+    status: 'accepted',
+    signatureInfo: {
+      signedAt: '2024-01-15T10:30:00Z',
+      signedBy: 'Dana R.'
+    },
+    submissionInfo: {
+      submittedAt: '2024-01-15T10:35:00Z',
+      verificationId: 'VF-2024-001-ABC',
+      response: {
+        status: 'accepted',
+        message: 'Invoice verified and accepted'
+      }
+    },
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-001',
+    pdfUrl: '/invoices/INV-2024-001.pdf'
+  },
+  {
+    id: '2',
+    invoiceNumber: 'INV-2024-002',
+    customer: {
+      name: 'Educational Services Company',
+      taxId: 'B87654321',
+      address: 'Avenida Secundaria 456, 08001 Barcelona'
+    },
+    issueDate: '2024-01-18',
+    dueDate: '2024-02-17',
+    items: [
+      {
+        description: 'Curriculum Development Services',
+        quantity: 1,
+        price: 3500,
+        total: 3500
+      }
+    ],
+    totalAmount: 3500,
+    status: 'submitted',
+    signatureInfo: {
+      signedAt: '2024-01-18T14:20:00Z',
+      signedBy: 'Dana R.'
+    },
+    submissionInfo: {
+      submittedAt: '2024-01-18T14:25:00Z',
+      verificationId: 'VF-2024-002-DEF',
+      response: {
+        status: 'pending'
+      }
+    },
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-002'
+  },
+  {
+    id: '3',
+    invoiceNumber: 'INV-2024-003',
+    customer: {
+      name: 'Learning Center Institute',
+      taxId: 'B98765432',
+      address: 'Plaza Principal 789, 46001 Valencia'
+    },
+    issueDate: '2024-01-19',
+    dueDate: '2024-02-18',
+    items: [
+      {
+        description: 'Student Management System - Monthly Fee',
+        quantity: 1,
+        price: 800,
+        total: 800
+      },
+      {
+        description: 'Setup Service',
+        quantity: 1,
+        price: 500,
+        total: 500
+      }
+    ],
+    totalAmount: 1300,
+    status: 'draft',
+    signatureInfo: {},
+    submissionInfo: {},
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-003'
+  }
+];
