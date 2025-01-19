@@ -436,5 +436,135 @@ export const mockInvoices: Invoice[] = [
         level: 2
       }
     ]
+  },
+  {
+    id: '4',
+    invoiceNumber: 'INV-2024-004',
+    customer: {
+      name: 'Digital Learning Academy',
+      taxId: 'B45678901',
+      address: 'Avenida Principal 321, 41001 Sevilla'
+    },
+    issueDate: '2024-01-16',
+    dueDate: '2024-02-15',
+    items: [
+      {
+        description: 'Learning Management System - Annual License',
+        quantity: 1,
+        price: 4500,
+        total: 4500
+      },
+      {
+        description: 'Implementation Services',
+        quantity: 1,
+        price: 1500,
+        total: 1500
+      }
+    ],
+    totalAmount: 6000,
+    status: 'accepted',
+    approvalWorkflow: {
+      currentLevel: 3,
+      maxLevels: 3,
+      approvers: [
+        {
+          level: 1,
+          role: 'Department Manager',
+          status: 'approved',
+          userId: 'DM123',
+          timestamp: '2024-01-16T11:00:00Z',
+          comments: 'Approved - Strategic investment'
+        },
+        {
+          level: 2,
+          role: 'Financial Controller',
+          status: 'approved',
+          userId: 'FC456',
+          timestamp: '2024-01-16T13:00:00Z',
+          comments: 'Budget verified and approved'
+        },
+        {
+          level: 3,
+          role: 'CFO',
+          status: 'approved',
+          userId: 'CFO789',
+          timestamp: '2024-01-16T14:30:00Z',
+          comments: 'Final approval granted - High priority project'
+        }
+      ]
+    },
+    signatureInfo: {
+      signedAt: '2024-01-16T15:00:00Z',
+      signedBy: 'Dana R.'
+    },
+    submissionInfo: {
+      submittedAt: '2024-01-16T15:05:00Z',
+      verificationId: 'VF-2024-004-XYZ',
+      response: {
+        status: 'accepted',
+        message: 'Invoice successfully verified and accepted by VERIFACTU'
+      }
+    },
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2024-004',
+    auditTrail: [
+      {
+        timestamp: '2024-01-16T10:00:00Z',
+        action: 'created',
+        actor: 'Dana R.',
+        details: 'Invoice created'
+      },
+      {
+        timestamp: '2024-01-16T10:05:00Z',
+        action: 'approval_requested',
+        actor: 'Dana R.',
+        details: 'Approval workflow initiated',
+        level: 1
+      },
+      {
+        timestamp: '2024-01-16T11:00:00Z',
+        action: 'approved',
+        actor: 'Department Manager',
+        details: 'Level 1 approval granted',
+        level: 1
+      },
+      {
+        timestamp: '2024-01-16T13:00:00Z',
+        action: 'approved',
+        actor: 'Financial Controller',
+        details: 'Level 2 approval granted',
+        level: 2
+      },
+      {
+        timestamp: '2024-01-16T14:30:00Z',
+        action: 'approved',
+        actor: 'CFO',
+        details: 'Level 3 approval granted',
+        level: 3
+      },
+      {
+        timestamp: '2024-01-16T15:00:00Z',
+        action: 'signed',
+        actor: 'Dana R.',
+        details: 'Digital signature applied'
+      },
+      {
+        timestamp: '2024-01-16T15:05:00Z',
+        action: 'submitted',
+        actor: 'System',
+        details: 'Submitted to VERIFACTU for verification'
+      },
+      {
+        timestamp: '2024-01-16T15:10:00Z',
+        action: 'verified',
+        actor: 'VERIFACTU',
+        details: 'Invoice verified and accepted by VERIFACTU'
+      },
+      {
+        timestamp: '2024-01-16T15:11:00Z',
+        action: 'status_changed',
+        actor: 'System',
+        details: 'Status updated to Accepted'
+      }
+    ]
   }
 ];
