@@ -9,19 +9,23 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 export default function ProjectDirectory() {
   const [showAll, setShowAll] = useState(false);
   const { language } = useLanguage();
-  const displayMembers = showAll ? mockProjects : mockProjects.slice(0, 3);
+  const displayProjects = showAll ? mockProjects : mockProjects.slice(0, 3);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Program Directory</h3>
+        <h3 className="text-lg font-semibold">
+          {language === 'en' ? 'Program Directory' : 'Directorio de Programas'}
+        </h3>
         <Link href="/programs">
-          <Button variant="outline" size="sm">See all programs</Button>
+          <Button variant="outline" size="sm">
+            {language === 'en' ? 'See all programs' : 'Ver todos los programas'}
+          </Button>
         </Link>
       </div>
 
       <div className="space-y-4">
-        {displayMembers.map((project) => (
+        {displayProjects.map((project) => (
           <div key={project.id} className="hover:bg-muted/50 px-2 rounded-md">
             <Link href={`/program/${project.id}`}>
               <div className="flex items-center justify-between py-2 cursor-pointer">
@@ -60,11 +64,11 @@ export default function ProjectDirectory() {
           >
             {showAll ? (
               <>
-                Show Less <ChevronUp className="h-4 w-4" />
+                {language === 'en' ? 'Show Less' : 'Mostrar Menos'} <ChevronUp className="h-4 w-4" />
               </>
             ) : (
               <>
-                Show More <ChevronDown className="h-4 w-4" />
+                {language === 'en' ? 'Show More' : 'Mostrar Más'} <ChevronDown className="h-4 w-4" />
               </>
             )}
           </Button>

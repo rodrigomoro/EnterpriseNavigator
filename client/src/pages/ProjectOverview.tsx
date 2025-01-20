@@ -8,10 +8,12 @@ import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function ProjectOverview() {
   const [, params] = useRoute("/programs/:id");
   const project = mockProjects.find((p) => p.id === params?.id);
+  const { language } = useLanguage();
 
   if (!project) return <div>Project not found</div>;
 
@@ -26,15 +28,15 @@ export default function ProjectOverview() {
               <div>
                 <div className="flex items-center gap-2 text-muted-foreground mb-2">
                   <Link href="/programs">
-                    <a className="flex items-center gap-1 hover:text-foreground">
+                    <div className="flex items-center gap-1 hover:text-foreground cursor-pointer">
                       <ArrowLeft className="h-4 w-4" />
                       Program overview
-                    </a>
+                    </div>
                   </Link>
                 </div>
                 <div className="flex items-center gap-4">
                   <h1 className="text-2xl font-bold">
-                    Program overview / {project.name}
+                    Program overview / {project.name[language]}
                   </h1>
                   <Link href={`/programs/${project.id}/edit`}>
                     <Button variant="outline" size="sm" className="gap-2">
@@ -53,7 +55,7 @@ export default function ProjectOverview() {
               <div className="col-span-12 lg:col-span-4">
                 <div className="bg-card rounded-lg shadow-sm p-6">
                   <div className="flex flex-col items-center text-center mb-6">
-                    <h2 className="text-xl font-semibold">{project.name}</h2>
+                    <h2 className="text-xl font-semibold">{project.name[language]}</h2>
                   </div>
 
                   <div className="space-y-4">
@@ -63,7 +65,7 @@ export default function ProjectOverview() {
                       </h3>
                       {project.team.map((member) => (
                         <Link key={member.id} href={`/people/${member.id}`}>
-                          <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
+                          <div className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg cursor-pointer">
                             <Avatar className="h-8 w-8">
                               <AvatarImage
                                 src={member.avatar}
@@ -78,10 +80,10 @@ export default function ProjectOverview() {
                                 {member.name}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {member.role}
+                                {member.role[language]}
                               </p>
                             </div>
-                          </a>
+                          </div>
                         </Link>
                       ))}
                     </div>
@@ -134,7 +136,7 @@ export default function ProjectOverview() {
                       );
                       return (
                         <Link key={student.id} href={`/people/${student.id}`}>
-                          <a className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg">
+                          <div className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg cursor-pointer">
                             <Avatar className="h-10 w-10">
                               <AvatarImage
                                 src={student.avatar}
@@ -150,7 +152,7 @@ export default function ProjectOverview() {
                                 Score: {avgScore}%
                               </p>
                             </div>
-                          </a>
+                          </div>
                         </Link>
                       );
                     })}

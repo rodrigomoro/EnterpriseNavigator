@@ -6,8 +6,8 @@ import { mockTeamMembers, mockSkills, competencyLevels } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
-import { 
-  DndContext, 
+import {
+  DndContext,
   DragEndEvent,
   useSensor,
   useSensors,
@@ -16,6 +16,7 @@ import {
   useDroppable
 } from "@dnd-kit/core";
 import { Search } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface CompetencyMapping {
   employeeId: string;
@@ -27,6 +28,7 @@ export default function SkillsMatrix() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("All");
   const [competencyMappings, setCompetencyMappings] = useState<CompetencyMapping[]>([]);
+  const { language } = useLanguage();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -38,8 +40,9 @@ export default function SkillsMatrix() {
 
   // Filter employees based on search and department
   const filteredEmployees = mockTeamMembers.filter(employee => {
-    const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         employee.role.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.role[language].toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDepartment = selectedDepartment === "All" || employee.department === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
@@ -57,7 +60,7 @@ export default function SkillsMatrix() {
     // Update competency mappings
     setCompetencyMappings(prev => {
       // Remove any existing mapping for this employee and skill
-      const filtered = prev.filter(m => 
+      const filtered = prev.filter(m =>
         !(m.employeeId === employeeId && m.skillId === skillId)
       );
 
@@ -71,7 +74,7 @@ export default function SkillsMatrix() {
   };
 
   const getCompetencyLevel = (employeeId: string, skillId: string) => {
-    return competencyMappings.find(m => 
+    return competencyMappings.find(m =>
       m.employeeId === employeeId && m.skillId === skillId
     )?.levelId;
   };
@@ -134,8 +137,8 @@ export default function SkillsMatrix() {
                             {mockSkills.map(skill => (
                               <th key={skill.id} className="p-2 border bg-muted text-left min-w-[150px]">
                                 <div>
-                                  <div className="font-medium">{skill.name}</div>
-                                  <div className="text-xs text-muted-foreground">{skill.category}</div>
+                                  <div className="font-medium">{skill.name[language]}</div>
+                                  <div className="text-xs text-muted-foreground">{skill.category[language]}</div>
                                 </div>
                               </th>
                             ))}
@@ -153,7 +156,7 @@ export default function SkillsMatrix() {
                                   />
                                   <div>
                                     <div className="font-medium">{employee.name}</div>
-                                    <div className="text-sm text-muted-foreground">{employee.role}</div>
+                                    <div className="text-sm text-muted-foreground">{employee.role[language]}</div>
                                   </div>
                                 </div>
                               </td>
@@ -245,11 +248,13 @@ function DraggableCompetencyBadge({ level }: CompetencyBadgeProps) {
 }
 
 function CompetencyBadge({ level }: CompetencyBadgeProps) {
+  const { language } = useLanguage();
+
   return (
     <div
       className={`px-3 py-1.5 rounded text-sm font-medium cursor-grab active:cursor-grabbing ${level.color}`}
     >
-      {level.name}
+      {level.name[language]}
     </div>
   );
 }
