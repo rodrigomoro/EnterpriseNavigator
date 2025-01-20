@@ -18,7 +18,7 @@ export default function Sidebar() {
   return (
     <aside className="w-12 md:w-48 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
       <div className="p-3">
-        <h2 className="text-lg font-bold hidden md:block">ERP System</h2>
+        <h2 className="text-lg font-bold hidden md:block">Immune Institute ERP</h2>
       </div>
 
       <nav className="flex-1 px-2">

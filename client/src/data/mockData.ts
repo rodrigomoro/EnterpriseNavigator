@@ -47,7 +47,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'emily.johnson@company.com',
     phone: '+1 (555) 0101',
     bio: 'Founded the company in 2020. Previously led education technology initiatives at major enterprises.',
-    projects: ['Strategic Planning', 'Company Vision 2025']
+    projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
   },
   {
     id: '2',
@@ -59,7 +59,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'andrea.leeland@company.com',
     phone: '+1 (555) 0102',
     bio: 'Over 15 years of experience in financial management and strategic planning.',
-    projects: ['Budget Planning', 'Financial Strategy'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1'
   },
   {
@@ -72,7 +72,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'sarah.williams@company.com',
     phone: '+1 (555) 0103',
     bio: 'Tech leader with a focus on educational software and scalable systems.',
-    projects: ['Tech Infrastructure', 'Digital Transformation'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1'
   },
   {
@@ -85,7 +85,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'jessica.martinez@company.com',
     phone: '+1 (555) 0104',
     bio: 'Specialized in organizational development and talent management.',
-    projects: ['Employee Development', 'Culture Initiative'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1'
   },
   {
@@ -98,7 +98,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'ethan.wilson@company.com',
     phone: '+1 (555) 0105',
     bio: 'Driving sales strategy and team development across regions.',
-    projects: ['Sales Strategy', 'Market Expansion'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1'
   },
   {
@@ -111,7 +111,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'mikkel.johanson@company.com',
     phone: '+1 (555) 0106',
     bio: 'Managing key client relationships and account growth.',
-    projects: ['Client Success', 'Account Planning'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '5'
   },
   {
@@ -124,7 +124,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'frank.miles@company.com',
     phone: '+1 (555) 0107',
     bio: 'Leading the regional sales team and strategy implementation.',
-    projects: ['Team Development', 'Sales Operations'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '5'
   },
   {
@@ -137,7 +137,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'dan.smith@company.com',
     phone: '+1 (555) 0108',
     bio: 'Overseeing strategic accounts and partnership development.',
-    projects: ['Strategic Accounts', 'Partnership Growth'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '5'
   },
   {
@@ -150,7 +150,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'james.mcfin@company.com',
     phone: '+1 (555) 0109',
     bio: 'Analyzing sales data and providing strategic insights.',
-    projects: ['Sales Analytics', 'Performance Tracking'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '7'
   },
   {
@@ -163,7 +163,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'adele.pole@company.com',
     phone: '+1 (555) 0110',
     bio: 'Developing new business opportunities and lead generation.',
-    projects: ['Lead Generation', 'Market Research'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '7'
   },
   {
@@ -176,7 +176,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'beth.moore@company.com',
     phone: '+1 (555) 0111',
     bio: 'Managing inside sales operations and customer relationships.',
-    projects: ['Inside Sales', 'Customer Success'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '7'
   },
   {
@@ -189,7 +189,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'richard.chen@company.com',
     phone: '+1 (555) 0112',
     bio: 'Experienced science educator with a focus on practical applications.',
-    projects: ['Data Analytics 2025', 'STEM Initiative'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '3'
   },
   {
@@ -202,7 +202,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'maria.garcia@company.com',
     phone: '+1 (555) 0113',
     bio: 'Mathematics specialist with expertise in advanced calculus.',
-    projects: ['Advanced Mathematics', 'Data Analytics 2025'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '3'
   },
   {
@@ -215,7 +215,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'david.kim@company.com',
     phone: '+1 (555) 0114',
     bio: 'Leading computer science initiatives and curriculum development.',
-    projects: ['Cloud Computing', 'Programming Fundamentals'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1'
   },
   {
@@ -228,7 +228,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'sophie.anderson@company.com',
     phone: '+1 (555) 0115',
     bio: 'Web development and software engineering instructor.',
-    projects: ['Cloud Computing'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14'
   },
   {
@@ -241,7 +241,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'john.smith@company.com',
     phone: '+1 (555) 0201',
     bio: 'Computer Science student with interests in AI and machine learning.',
-    projects: ['Data Analytics 2025'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14'
   },
   {
@@ -254,7 +254,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'emily.brown@company.com',
     phone: '+1 (555) 0202',
     bio: 'Mathematics enthusiast focusing on data analysis.',
-    projects: ['Data Analytics 2025'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '13'
   },
   {
@@ -267,7 +267,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'michael.johnson@company.com',
     phone: '+1 (555) 0203',
     bio: 'Aspiring software developer with a passion for web technologies.',
-    projects: ['Cloud Computing'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14'
   },
   {
@@ -280,7 +280,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'sarah.davis@company.com',
     phone: '+1 (555) 0204',
     bio: 'Research-oriented student focusing on data science applications.',
-    projects: ['Design Research'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '12'
   },
   {
@@ -293,7 +293,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'alex.martinez@company.com',
     phone: '+1 (555) 0205',
     bio: 'Full-stack developer in training with focus on cloud technologies.',
-    projects: ['Cloud Computing'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '15'
   },
   {
@@ -306,7 +306,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'lisa.wang@company.com',
     phone: '+1 (555) 0206',
     bio: 'Mathematics student specializing in statistical analysis.',
-    projects: ['Data Analytics 2025'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '13'
   },
   {
@@ -319,7 +319,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'daniel.lee@company.com',
     phone: '+1 (555) 0207',
     bio: 'Passionate about cybersecurity and network infrastructure.',
-    projects: ['Cloud Computing'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14'
   },
   {
@@ -332,7 +332,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'rachel.chen@company.com',
     phone: '+1 (555) 0208',
     bio: 'Research assistant focusing on data analytics applications.',
-    projects: ['Design Research'],
+    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '12'
   }
 ];
@@ -522,7 +522,7 @@ const calculateAverageScore = (students: Student[]) => {
 export const mockProjects = [
   {
     id: '1',
-    name: 'Data Analytics 2025',
+    name: 'Computer Entreprenurship Bachelor (2409CEB1)',
     progress: 65,
     team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
     director: mockTeamMembers[0],
@@ -532,7 +532,7 @@ export const mockProjects = [
   },
   {
     id: '2',
-    name: 'Cloud Computing',
+    name: 'Computer Entreprenurship Bachelor (2309CEB2)',
     progress: 40,
     team: mockTeamMembers.filter(m => ['14', '15'].includes(m.id)),
     director: mockTeamMembers[13],
@@ -542,13 +542,43 @@ export const mockProjects = [
   },
   {
     id: '3',
-    name: 'Design Research',
+    name: 'Computer Entreprenurship Bachelor (2209CEB3)',
     progress: 85,
     team: mockTeamMembers.filter(m => ['3', '4'].includes(m.id)),
     director: mockTeamMembers[2],
     studentCount: 28,
     students: mockStudents.slice(11, 16),
     avgScore: calculateAverageScore(mockStudents.slice(11, 16))
+  },
+  {
+    id: '4',
+    name: 'Bootcamp en Diseño UX/UI (2410BUXS)',
+    progress: 20,
+    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
+    director: mockTeamMembers[4],
+    studentCount: 52,
+    students: mockStudents.slice(16),
+    avgScore: calculateAverageScore(mockStudents.slice(16))
+  },
+  {
+    id: '5',
+    name: 'Bootcamp en Cloud Computing & DevOps (2410BCCS)',
+    progress: 50,
+    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
+    director: mockTeamMembers[4],
+    studentCount: 48,
+    students: mockStudents.slice(16),
+    avgScore: calculateAverageScore(mockStudents.slice(16))
+  },
+  {
+    id: '6',
+    name: 'Bootcamp en Cloud Computing & DevOps (2503BCCS)',
+    progress: 75,
+    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
+    director: mockTeamMembers[4],
+    studentCount: 36,
+    students: mockStudents.slice(16),
+    avgScore: calculateAverageScore(mockStudents.slice(16))
   }
 ];
 

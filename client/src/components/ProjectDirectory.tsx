@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { mockProjects } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'wouter';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ProjectDirectory() {
+  const [showAll, setShowAll] = useState(false);
+  const displayMembers = showAll ? mockProjects : mockProjects.slice(0, 3);
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -14,7 +19,7 @@ export default function ProjectDirectory() {
       </div>
 
       <div className="space-y-4">
-        {mockProjects.slice(0, 3).map((project) => (
+        {displayMembers.map((project) => (
           <Link key={project.id} href={`/program/${project.id}`}>
             <a className="flex items-center justify-between py-2 hover:bg-muted/50 px-2 rounded-md cursor-pointer">
               <div className="flex items-center gap-3">
@@ -42,6 +47,26 @@ export default function ProjectDirectory() {
           </Link>
         ))}
       </div>
+      {mockProjects.length > 3 && (
+        <div className="mt-4 flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAll(!showAll)}
+            className="gap-2"
+          >
+            {showAll ? (
+              <>
+                Show Less <ChevronUp className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Show More <ChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
