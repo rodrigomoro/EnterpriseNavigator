@@ -15,9 +15,9 @@ import { useLanguage, type Language } from '@/lib/i18n/LanguageContext';
 export default function UserAvatar() {
   const { language, setLanguage } = useLanguage();
 
-  const languages: Record<Language, { flag: string }> = {
-    en: { flag: '🇺🇸' },
-    es: { flag: '🇪🇸' }
+  const languages: Record<Language, { name: string; flag: string }> = {
+    en: { name: 'English', flag: '🇺🇸' },
+    es: { name: 'Español', flag: '🇪🇸' }
   };
 
   return (
@@ -43,22 +43,25 @@ export default function UserAvatar() {
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <div className="flex items-center w-full">
-              <span className="mr-2">Language</span>
-              <div className="ml-auto flex gap-2">
-                {Object.entries(languages).map(([code, { flag }]) => (
-                  <button
-                    key={code}
-                    onClick={() => setLanguage(code as Language)}
-                    className={`text-lg ${code === language ? 'opacity-100' : 'opacity-50 hover:opacity-75'}`}
-                  >
-                    {flag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>
+            <span className="text-xs text-muted-foreground">Language</span>
+          </DropdownMenuLabel>
+          {(Object.entries(languages) as [Language, { name: string, flag: string }][]).map(([code, { name, flag }]) => (
+            <DropdownMenuItem
+              key={code}
+              onClick={() => setLanguage(code)}
+              className="flex items-center justify-between cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-lg">{flag}</span>
+                <span>{name}</span>
+              </span>
+              {language === code && (
+                <span className="text-xs text-primary">✓</span>
+              )}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
