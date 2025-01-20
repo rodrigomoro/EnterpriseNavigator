@@ -1,5 +1,6 @@
 import { Home, Calendar, Users, PieChart, Settings, LogOut, FolderKanban, Receipt, QrCode, BarChart, Network, Award } from 'lucide-react';
 import { Link } from 'wouter';
+import LanguageSelector from './LanguageSelector';
 
 const navigationItems = [
   { icon: Home, label: 'Home', href: '/' },
@@ -32,12 +33,13 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border space-y-2">
+        <LanguageSelector />
         <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full">
           <Settings className="h-4 w-4" />
           <span className="hidden md:block text-sm">Settings</span>
         </button>
-        <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full mt-1">
+        <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full">
           <LogOut className="h-4 w-4" />
           <span className="hidden md:block text-sm">Logout</span>
         </button>
