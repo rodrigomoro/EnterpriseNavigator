@@ -6,11 +6,9 @@ import UserAvatar from '@/components/UserAvatar';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function Team() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { language } = useLanguage();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -50,7 +48,7 @@ export default function Team() {
 
                     <div>
                       <h3 className="font-semibold">{member.name}</h3>
-                      <p className="text-sm text-muted-foreground">{member.role[language]}</p>
+                      <p className="text-sm text-muted-foreground">{member.role}</p>
                     </div>
                   </div>
                 </div>

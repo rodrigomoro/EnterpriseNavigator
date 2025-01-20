@@ -17,7 +17,6 @@ import FinancialDashboard from "@/pages/FinancialDashboard";
 import Analytics from "@/pages/Analytics";
 import Organization from "@/pages/Organization";
 import SkillsMatrix from "@/pages/SkillsMatrix";
-import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 
 function Router() {
   return (
@@ -46,10 +45,8 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <Router />
-        <Toaster />
-      </LanguageProvider>
+      <Router />
+      <Toaster />
     </QueryClientProvider>
   );
 }
