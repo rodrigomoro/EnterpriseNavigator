@@ -41,6 +41,11 @@ export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [, navigate] = useLocation();
 
+  const filteredInvoices = mockInvoices.filter(invoice => 
+    invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    invoice.customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -78,7 +83,7 @@ export default function Invoices() {
 
           <main className="p-6">
             <div className="grid grid-cols-1 gap-4">
-              {mockInvoices.map((invoice) => (
+              {filteredInvoices.map((invoice) => (
                 <div key={invoice.id} className="relative group">
                   <Link href={`/invoices/${invoice.id}`}>
                     <a className="block">
@@ -95,7 +100,7 @@ export default function Invoices() {
                             <p className="text-sm text-muted-foreground">{invoice.customer.name}</p>
                           </div>
 
-                          <div className="text-right">
+                          <div className="text-right mr-10">
                             <p className="font-semibold">€{invoice.totalAmount.toLocaleString()}</p>
                             <p className="text-sm text-muted-foreground">
                               Due: {new Date(invoice.dueDate).toLocaleDateString()}
@@ -115,7 +120,7 @@ export default function Invoices() {
                   </Link>
 
                   {/* Edit button overlay */}
-                  <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -124,7 +129,7 @@ export default function Invoices() {
                         e.stopPropagation();
                         navigate(`/invoices/${invoice.id}/edit`);
                       }}
-                      className="h-8 w-8"
+                      className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-background"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>

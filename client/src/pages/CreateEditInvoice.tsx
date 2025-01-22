@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useRoute } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
@@ -30,6 +30,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { mockInvoices } from "@/data/mockData";
 
 const invoiceSchema = z.object({
   // Invoice Basic Info
@@ -38,7 +39,7 @@ const invoiceSchema = z.object({
   type: z.enum(["standard", "simplified", "rectificative"]),
   issueDate: z.string(),
   operationDate: z.string(),
-  
+
   // Issuer Details
   issuer: z.object({
     name: z.string().min(1, "Name is required"),
@@ -47,7 +48,7 @@ const invoiceSchema = z.object({
     postalCode: z.string().min(5, "Valid postal code required"),
     city: z.string().min(1, "City is required"),
   }),
-  
+
   // Recipient Details
   recipient: z.object({
     name: z.string().min(1, "Name is required"),
@@ -56,7 +57,7 @@ const invoiceSchema = z.object({
     postalCode: z.string().min(5, "Valid postal code required"),
     city: z.string().min(1, "City is required"),
   }),
-  
+
   // Line Items
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
@@ -65,18 +66,23 @@ const invoiceSchema = z.object({
     vatRate: z.number(),
     irpfRate: z.number(),
   })).min(1, "At least one item is required"),
-  
+
   // Notes
   notes: z.string().optional(),
 });
+
+type InvoiceFormValues = z.infer<typeof invoiceSchema>;
 
 export default function CreateEditInvoice() {
   const [, params] = useRoute('/invoices/:id/edit');
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isEditing = Boolean(params?.id);
-  
-  const form = useForm<z.infer<typeof invoiceSchema>>({
+
+  // Find the invoice if we're editing
+  const existingInvoice = isEditing ? mockInvoices.find(i => i.id === params?.id) : null;
+
+  const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
       type: "standard",
@@ -89,13 +95,51 @@ export default function CreateEditInvoice() {
         address: "Calle Principal 123",
         postalCode: "28001",
         city: "Madrid"
+      },
+      recipient: {
+        name: "",
+        taxId: "",
+        address: "",
+        postalCode: "",
+        city: ""
       }
     },
   });
 
+  // Keep items state in sync with form
   const [items, setItems] = useState(form.getValues().items);
 
-  const onSubmit = (data: z.infer<typeof invoiceSchema>) => {
+  // Load existing invoice data when editing
+  useEffect(() => {
+    if (existingInvoice) {
+      // Extract the series and number from invoiceNumber (assuming format: SERIES-NUMBER)
+      const [series, number] = existingInvoice.invoiceNumber.split('-');
+
+      const formData = {
+        series,
+        number,
+        type: existingInvoice.type || 'standard',
+        issueDate: new Date(existingInvoice.issueDate).toISOString().split('T')[0],
+        operationDate: new Date(existingInvoice.operationDate || existingInvoice.issueDate).toISOString().split('T')[0],
+        issuer: existingInvoice.issuer,
+        recipient: existingInvoice.customer, // Map customer to recipient
+        items: existingInvoice.items.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          vatRate: 21, // Default VAT rate if not in mock data
+          irpfRate: 15, // Default IRPF rate if not in mock data
+        })),
+        notes: existingInvoice.notes || '',
+      };
+
+      // Reset form with existing data
+      form.reset(formData);
+      setItems(formData.items);
+    }
+  }, [existingInvoice, form]);
+
+  const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
     toast({
       title: `Invoice ${isEditing ? 'updated' : 'created'} successfully`,
@@ -105,16 +149,18 @@ export default function CreateEditInvoice() {
   };
 
   const addItem = () => {
-    const newItems = [...items, { description: '', quantity: 1, unitPrice: 0, vatRate: 21, irpfRate: 15 }];
+    const currentItems = form.getValues('items');
+    const newItems = [...currentItems, { description: '', quantity: 1, unitPrice: 0, vatRate: 21, irpfRate: 15 }];
     setItems(newItems);
-    form.setValue('items', newItems);
+    form.setValue('items', newItems, { shouldValidate: true });
   };
 
   const removeItem = (index: number) => {
     if (items.length === 1) return;
-    const newItems = items.filter((_, i) => i !== index);
+    const currentItems = form.getValues('items');
+    const newItems = currentItems.filter((_, i) => i !== index);
     setItems(newItems);
-    form.setValue('items', newItems);
+    form.setValue('items', newItems, { shouldValidate: true });
   };
 
   return (
