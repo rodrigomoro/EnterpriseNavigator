@@ -51,14 +51,11 @@ const calculateTotals = (items: InvoiceFormValues['items']) => {
 };
 
 const invoiceSchema = z.object({
-  // Invoice Basic Info
   series: z.string().min(1, "Series is required"),
   number: z.string().min(1, "Number is required"),
   type: z.enum(["standard", "simplified", "rectificative"]),
   issueDate: z.string(),
   operationDate: z.string(),
-
-  // Issuer Details
   issuer: z.object({
     name: z.string().min(1, "Name is required"),
     taxId: z.string().min(1, "Tax ID (NIF/CIF) is required"),
@@ -66,8 +63,6 @@ const invoiceSchema = z.object({
     postalCode: z.string().min(5, "Valid postal code required"),
     city: z.string().min(1, "City is required"),
   }),
-
-  // Recipient Details
   recipient: z.object({
     name: z.string().min(1, "Name is required"),
     taxId: z.string().min(1, "Tax ID (NIF/CIF) is required"),
@@ -75,8 +70,6 @@ const invoiceSchema = z.object({
     postalCode: z.string().min(5, "Valid postal code required"),
     city: z.string().min(1, "City is required"),
   }),
-
-  // Line Items
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
     quantity: z.number().min(1),
@@ -84,8 +77,6 @@ const invoiceSchema = z.object({
     vatRate: z.number(),
     irpfRate: z.number(),
   })).min(1, "At least one item is required"),
-
-  // Notes
   notes: z.string().optional(),
 });
 
@@ -96,8 +87,6 @@ export default function CreateEditInvoice() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isEditing = Boolean(params?.id);
-
-  // Find the invoice if we're editing
   const existingInvoice = isEditing ? mockInvoices.find(i => i.id === params?.id) : null;
 
   const form = useForm<InvoiceFormValues>({
@@ -124,38 +113,12 @@ export default function CreateEditInvoice() {
     },
   });
 
-  // Keep items state in sync with form
-  const [items, setItems] = useState(form.getValues().items);
+  const watchItems = form.watch('items');
+  const [totals, setTotals] = useState(calculateTotals(watchItems));
 
-  // Load existing invoice data when editing
   useEffect(() => {
-    if (existingInvoice) {
-      // Extract the series and number from invoiceNumber (assuming format: SERIES-NUMBER)
-      const [series, number] = existingInvoice.invoiceNumber.split('-');
-
-      const formData = {
-        series,
-        number,
-        type: existingInvoice.type || 'standard',
-        issueDate: new Date(existingInvoice.issueDate).toISOString().split('T')[0],
-        operationDate: new Date(existingInvoice.operationDate || existingInvoice.issueDate).toISOString().split('T')[0],
-        issuer: existingInvoice.issuer,
-        recipient: existingInvoice.customer, // Map customer to recipient
-        items: existingInvoice.items.map(item => ({
-          description: item.description,
-          quantity: item.quantity,
-          unitPrice: item.price,
-          vatRate: 21, // Default VAT rate if not in mock data
-          irpfRate: 15, // Default IRPF rate if not in mock data
-        })),
-        notes: existingInvoice.notes || '',
-      };
-
-      // Reset form with existing data
-      form.reset(formData);
-      setItems(formData.items);
-    }
-  }, [existingInvoice, form]);
+    setTotals(calculateTotals(watchItems));
+  }, [watchItems]);
 
   const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
@@ -169,7 +132,6 @@ export default function CreateEditInvoice() {
   const addItem = () => {
     const currentItems = form.getValues('items');
     const newItems = [...currentItems, { description: '', quantity: 1, unitPrice: 0, vatRate: 21, irpfRate: 15 }];
-    setItems(newItems);
     form.setValue('items', newItems, { shouldValidate: true });
   };
 
@@ -177,14 +139,39 @@ export default function CreateEditInvoice() {
     if (items.length === 1) return;
     const currentItems = form.getValues('items');
     const newItems = currentItems.filter((_, i) => i !== index);
-    setItems(newItems);
     form.setValue('items', newItems, { shouldValidate: true });
   };
+
+  const [items, setItems] = useState(form.getValues().items);
+
+  useEffect(() => {
+    if (existingInvoice) {
+      const [series, number] = existingInvoice.invoiceNumber.split('-');
+      const formData = {
+        series,
+        number,
+        type: existingInvoice.type || 'standard',
+        issueDate: new Date(existingInvoice.issueDate).toISOString().split('T')[0],
+        operationDate: new Date(existingInvoice.operationDate || existingInvoice.issueDate).toISOString().split('T')[0],
+        issuer: existingInvoice.issuer,
+        recipient: existingInvoice.customer, 
+        items: existingInvoice.items.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          vatRate: 21, 
+          irpfRate: 15, 
+        })),
+        notes: existingInvoice.notes || '',
+      };
+      form.reset(formData);
+      setItems(formData.items);
+    }
+  }, [existingInvoice, form]);
 
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
@@ -202,10 +189,8 @@ export default function CreateEditInvoice() {
                   {isEditing ? 'Edit Invoice' : 'Create New Invoice'}
                 </h1>
               </div>
-
               <UserAvatar />
             </div>
-
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Card>
@@ -224,7 +209,6 @@ export default function CreateEditInvoice() {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="number"
@@ -239,7 +223,6 @@ export default function CreateEditInvoice() {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="type"
@@ -262,7 +245,6 @@ export default function CreateEditInvoice() {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="issueDate"
@@ -276,7 +258,6 @@ export default function CreateEditInvoice() {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="operationDate"
@@ -293,7 +274,6 @@ export default function CreateEditInvoice() {
                     </div>
                   </CardContent>
                 </Card>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card>
                     <CardContent className="p-6">
@@ -312,7 +292,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="issuer.taxId"
@@ -326,7 +305,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="issuer.address"
@@ -340,7 +318,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={form.control}
@@ -355,7 +332,6 @@ export default function CreateEditInvoice() {
                               </FormItem>
                             )}
                           />
-
                           <FormField
                             control={form.control}
                             name="issuer.city"
@@ -373,7 +349,6 @@ export default function CreateEditInvoice() {
                       </div>
                     </CardContent>
                   </Card>
-
                   <Card>
                     <CardContent className="p-6">
                       <h3 className="text-lg font-semibold mb-4">Recipient Details</h3>
@@ -391,7 +366,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="recipient.taxId"
@@ -405,7 +379,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="recipient.address"
@@ -419,7 +392,6 @@ export default function CreateEditInvoice() {
                             </FormItem>
                           )}
                         />
-
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={form.control}
@@ -434,7 +406,6 @@ export default function CreateEditInvoice() {
                               </FormItem>
                             )}
                           />
-
                           <FormField
                             control={form.control}
                             name="recipient.city"
@@ -453,7 +424,6 @@ export default function CreateEditInvoice() {
                     </CardContent>
                   </Card>
                 </div>
-
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-center mb-4">
@@ -462,7 +432,6 @@ export default function CreateEditInvoice() {
                         Add Item
                       </Button>
                     </div>
-
                     <div className="space-y-4">
                       {items.map((_, index) => (
                         <div key={index} className="grid grid-cols-12 gap-4 items-start">
@@ -481,7 +450,6 @@ export default function CreateEditInvoice() {
                               )}
                             />
                           </div>
-
                           <div className="col-span-1">
                             <FormField
                               control={form.control}
@@ -501,7 +469,6 @@ export default function CreateEditInvoice() {
                               )}
                             />
                           </div>
-
                           <div className="col-span-2">
                             <FormField
                               control={form.control}
@@ -522,7 +489,6 @@ export default function CreateEditInvoice() {
                               )}
                             />
                           </div>
-
                           <div className="col-span-1">
                             <FormField
                               control={form.control}
@@ -542,7 +508,6 @@ export default function CreateEditInvoice() {
                               )}
                             />
                           </div>
-
                           <div className="col-span-1">
                             <FormField
                               control={form.control}
@@ -562,19 +527,17 @@ export default function CreateEditInvoice() {
                               )}
                             />
                           </div>
-
                           <div className="col-span-1">
                             <FormItem>
                               <FormLabel>Row Total</FormLabel>
                               <div className="h-10 flex items-center px-3 border rounded-md bg-muted">
                                 €{calculateRowTotal(
-                                  form.getValues(`items.${index}.quantity`) || 0,
-                                  form.getValues(`items.${index}.unitPrice`) || 0
+                                  watchItems[index]?.quantity || 0,
+                                  watchItems[index]?.unitPrice || 0
                                 ).toFixed(2)}
                               </div>
                             </FormItem>
                           </div>
-
                           <div className="col-span-2 pt-8">
                             <Button
                               type="button"
@@ -588,32 +551,29 @@ export default function CreateEditInvoice() {
                           </div>
                         </div>
                       ))}
-
-                      {/* Totals Section */}
                       <div className="border-t pt-4 mt-6">
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="font-medium">Subtotal:</span>
-                            <span>€{calculateTotals(form.getValues('items')).subtotal}</span>
+                            <span>€{totals.subtotal}</span>
                           </div>
                           <div className="flex justify-between text-blue-600">
                             <span>+ VAT Total:</span>
-                            <span>€{calculateTotals(form.getValues('items')).vatTotal}</span>
+                            <span>€{totals.vatTotal}</span>
                           </div>
                           <div className="flex justify-between text-red-600">
                             <span>- IRPF Total:</span>
-                            <span>€{calculateTotals(form.getValues('items')).irpfTotal}</span>
+                            <span>€{totals.irpfTotal}</span>
                           </div>
                           <div className="flex justify-between text-lg font-bold pt-2 border-t">
                             <span>Total Amount:</span>
-                            <span>€{calculateTotals(form.getValues('items')).total}</span>
+                            <span>€{totals.total}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-
                 <Card>
                   <CardContent className="p-6">
                     <FormField
@@ -631,7 +591,6 @@ export default function CreateEditInvoice() {
                     />
                   </CardContent>
                 </Card>
-
                 <div className="flex justify-end gap-4">
                   <Button type="button" variant="outline" onClick={() => navigate('/invoices')}>
                     Cancel
