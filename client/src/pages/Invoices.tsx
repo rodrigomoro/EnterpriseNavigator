@@ -6,7 +6,7 @@ import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, FileCheck, Send, AlertTriangle } from 'lucide-react';
+import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 
@@ -79,39 +79,57 @@ export default function Invoices() {
           <main className="p-6">
             <div className="grid grid-cols-1 gap-4">
               {mockInvoices.map((invoice) => (
-                <Link key={invoice.id} href={`/invoices/${invoice.id}`}>
-                  <a className="block">
-                    <Card className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">{invoice.invoiceNumber}</h3>
-                            <Badge className={statusColors[invoice.status as InvoiceStatus]}>
-                              {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                              <StatusIcon status={invoice.status as InvoiceStatus} />
-                            </Badge>
+                <div key={invoice.id} className="relative group">
+                  <Link href={`/invoices/${invoice.id}`}>
+                    <a className="block">
+                      <Card className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{invoice.invoiceNumber}</h3>
+                              <Badge className={statusColors[invoice.status as InvoiceStatus]}>
+                                {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                                <StatusIcon status={invoice.status as InvoiceStatus} />
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{invoice.customer.name}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{invoice.customer.name}</p>
+
+                          <div className="text-right">
+                            <p className="font-semibold">€{invoice.totalAmount.toLocaleString()}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Due: {new Date(invoice.dueDate).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
 
-                        <div className="text-right">
-                          <p className="font-semibold">€{invoice.totalAmount.toLocaleString()}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Due: {new Date(invoice.dueDate).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
+                        {invoice.submissionInfo.verificationId && (
+                          <div className="mt-2 pt-2 border-t">
+                            <p className="text-xs text-muted-foreground">
+                              VERIFACTU ID: {invoice.submissionInfo.verificationId}
+                            </p>
+                          </div>
+                        )}
+                      </Card>
+                    </a>
+                  </Link>
 
-                      {invoice.submissionInfo.verificationId && (
-                        <div className="mt-2 pt-2 border-t">
-                          <p className="text-xs text-muted-foreground">
-                            VERIFACTU ID: {invoice.submissionInfo.verificationId}
-                          </p>
-                        </div>
-                      )}
-                    </Card>
-                  </a>
-                </Link>
+                  {/* Edit button overlay */}
+                  <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/invoices/${invoice.id}/edit`);
+                      }}
+                      className="h-8 w-8"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
           </main>
