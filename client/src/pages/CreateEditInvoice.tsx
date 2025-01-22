@@ -127,12 +127,12 @@ export default function CreateEditInvoice() {
     },
   });
 
-  const watchItems = form.watch('items');
-  const [totals, setTotals] = useState(calculateTotals(watchItems));
+  const items = form.watch('items');
+  const [totals, setTotals] = useState(() => calculateTotals(items));
 
   useEffect(() => {
-    setTotals(calculateTotals(watchItems));
-  }, [watchItems]);
+    setTotals(calculateTotals(items));
+  }, [items]);
 
   const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
@@ -444,7 +444,7 @@ export default function CreateEditInvoice() {
                       </Button>
                     </div>
                     <div className="space-y-4">
-                      {watchItems.map((item, index) => (
+                      {items.map((item, index) => (
                         <div key={index} className="grid grid-cols-12 gap-4 items-start">
                           <div className="col-span-4">
                             <FormField
@@ -557,7 +557,7 @@ export default function CreateEditInvoice() {
                               variant="destructive"
                               onClick={() => removeItem(index)}
                               className="w-full"
-                              disabled={watchItems.length === 1}
+                              disabled={items.length === 1}
                             >
                               Remove
                             </Button>
