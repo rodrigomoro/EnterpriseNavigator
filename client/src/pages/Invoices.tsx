@@ -129,7 +129,7 @@ export default function Invoices() {
                         e.stopPropagation();
                         navigate(`/invoices/${invoice.id}/edit`);
                       }}
-                      className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-background"
+                      className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>

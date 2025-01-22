@@ -32,6 +32,24 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockData";
 
+const calculateRowTotal = (quantity: number, unitPrice: number) => {
+  return quantity * unitPrice;
+};
+
+const calculateTotals = (items: InvoiceFormValues['items']) => {
+  const subtotal = items.reduce((acc, item) => acc + calculateRowTotal(item.quantity, item.unitPrice), 0);
+  const vatTotal = items.reduce((acc, item) => acc + (calculateRowTotal(item.quantity, item.unitPrice) * item.vatRate / 100), 0);
+  const irpfTotal = items.reduce((acc, item) => acc + (calculateRowTotal(item.quantity, item.unitPrice) * item.irpfRate / 100), 0);
+  const total = subtotal + vatTotal - irpfTotal;
+
+  return {
+    subtotal: subtotal.toFixed(2),
+    vatTotal: vatTotal.toFixed(2),
+    irpfTotal: irpfTotal.toFixed(2),
+    total: total.toFixed(2)
+  };
+};
+
 const invoiceSchema = z.object({
   // Invoice Basic Info
   series: z.string().min(1, "Series is required"),
@@ -464,7 +482,7 @@ export default function CreateEditInvoice() {
                             />
                           </div>
 
-                          <div className="col-span-2">
+                          <div className="col-span-1">
                             <FormField
                               control={form.control}
                               name={`items.${index}.quantity`}
@@ -545,6 +563,18 @@ export default function CreateEditInvoice() {
                             />
                           </div>
 
+                          <div className="col-span-1">
+                            <FormItem>
+                              <FormLabel>Row Total</FormLabel>
+                              <div className="h-10 flex items-center px-3 border rounded-md bg-muted">
+                                €{calculateRowTotal(
+                                  form.getValues(`items.${index}.quantity`) || 0,
+                                  form.getValues(`items.${index}.unitPrice`) || 0
+                                ).toFixed(2)}
+                              </div>
+                            </FormItem>
+                          </div>
+
                           <div className="col-span-2 pt-8">
                             <Button
                               type="button"
@@ -558,6 +588,28 @@ export default function CreateEditInvoice() {
                           </div>
                         </div>
                       ))}
+
+                      {/* Totals Section */}
+                      <div className="border-t pt-4 mt-6">
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="font-medium">Subtotal:</span>
+                            <span>€{calculateTotals(form.getValues('items')).subtotal}</span>
+                          </div>
+                          <div className="flex justify-between text-blue-600">
+                            <span>+ VAT Total:</span>
+                            <span>€{calculateTotals(form.getValues('items')).vatTotal}</span>
+                          </div>
+                          <div className="flex justify-between text-red-600">
+                            <span>- IRPF Total:</span>
+                            <span>€{calculateTotals(form.getValues('items')).irpfTotal}</span>
+                          </div>
+                          <div className="flex justify-between text-lg font-bold pt-2 border-t">
+                            <span>Total Amount:</span>
+                            <span>€{calculateTotals(form.getValues('items')).total}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
