@@ -32,14 +32,28 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockData";
 
-const calculateRowTotal = (quantity: number, unitPrice: number) => {
-  return quantity * unitPrice;
+const calculateRowTotal = (quantity: number, unitPrice: number, vatRate: number, irpfRate: number) => {
+  const baseAmount = quantity * unitPrice;
+  const vatAmount = baseAmount * (vatRate / 100);
+  const irpfAmount = baseAmount * (irpfRate / 100);
+  return {
+    baseAmount,
+    vatAmount,
+    irpfAmount,
+    total: baseAmount + vatAmount - irpfAmount
+  };
 };
 
 const calculateTotals = (items: InvoiceFormValues['items']) => {
-  const subtotal = items.reduce((acc, item) => acc + calculateRowTotal(item.quantity, item.unitPrice), 0);
-  const vatTotal = items.reduce((acc, item) => acc + (calculateRowTotal(item.quantity, item.unitPrice) * item.vatRate / 100), 0);
-  const irpfTotal = items.reduce((acc, item) => acc + (calculateRowTotal(item.quantity, item.unitPrice) * item.irpfRate / 100), 0);
+  const subtotal = items.reduce((acc, item) => acc + (item.quantity || 0) * (item.unitPrice || 0), 0);
+  const vatTotal = items.reduce((acc, item) => {
+    const baseAmount = (item.quantity || 0) * (item.unitPrice || 0);
+    return acc + (baseAmount * (item.vatRate || 0) / 100);
+  }, 0);
+  const irpfTotal = items.reduce((acc, item) => {
+    const baseAmount = (item.quantity || 0) * (item.unitPrice || 0);
+    return acc + (baseAmount * (item.irpfRate || 0) / 100);
+  }, 0);
   const total = subtotal + vatTotal - irpfTotal;
 
   return {
@@ -136,13 +150,11 @@ export default function CreateEditInvoice() {
   };
 
   const removeItem = (index: number) => {
-    if (items.length === 1) return;
     const currentItems = form.getValues('items');
+    if (currentItems.length === 1) return;
     const newItems = currentItems.filter((_, i) => i !== index);
     form.setValue('items', newItems, { shouldValidate: true });
   };
-
-  const [items, setItems] = useState(form.getValues().items);
 
   useEffect(() => {
     if (existingInvoice) {
@@ -154,18 +166,17 @@ export default function CreateEditInvoice() {
         issueDate: new Date(existingInvoice.issueDate).toISOString().split('T')[0],
         operationDate: new Date(existingInvoice.operationDate || existingInvoice.issueDate).toISOString().split('T')[0],
         issuer: existingInvoice.issuer,
-        recipient: existingInvoice.customer, 
+        recipient: existingInvoice.customer,
         items: existingInvoice.items.map(item => ({
           description: item.description,
           quantity: item.quantity,
           unitPrice: item.price,
-          vatRate: 21, 
-          irpfRate: 15, 
+          vatRate: 21,
+          irpfRate: 15,
         })),
         notes: existingInvoice.notes || '',
       };
       form.reset(formData);
-      setItems(formData.items);
     }
   }, [existingInvoice, form]);
 
@@ -433,7 +444,7 @@ export default function CreateEditInvoice() {
                       </Button>
                     </div>
                     <div className="space-y-4">
-                      {items.map((_, index) => (
+                      {watchItems.map((item, index) => (
                         <div key={index} className="grid grid-cols-12 gap-4 items-start">
                           <div className="col-span-4">
                             <FormField
@@ -532,9 +543,11 @@ export default function CreateEditInvoice() {
                               <FormLabel>Row Total</FormLabel>
                               <div className="h-10 flex items-center px-3 border rounded-md bg-muted">
                                 €{calculateRowTotal(
-                                  watchItems[index]?.quantity || 0,
-                                  watchItems[index]?.unitPrice || 0
-                                ).toFixed(2)}
+                                  item.quantity || 0,
+                                  item.unitPrice || 0,
+                                  item.vatRate || 0,
+                                  item.irpfRate || 0
+                                ).total.toFixed(2)}
                               </div>
                             </FormItem>
                           </div>
@@ -544,7 +557,7 @@ export default function CreateEditInvoice() {
                               variant="destructive"
                               onClick={() => removeItem(index)}
                               className="w-full"
-                              disabled={items.length === 1}
+                              disabled={watchItems.length === 1}
                             >
                               Remove
                             </Button>
