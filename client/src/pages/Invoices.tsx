@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import Sidebar from '@/components/Sidebar';
 import { mockInvoices } from '@/data/mockData';
 import PageTransition from '@/components/PageTransition';
@@ -15,10 +15,14 @@ const statusColors = {
   signed: 'bg-blue-100 text-blue-700',
   submitted: 'bg-yellow-100 text-yellow-700',
   accepted: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700'
+  rejected: 'bg-red-100 text-red-700',
+  pending_approval: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-green-100 text-green-700'
 } as const;
 
-const StatusIcon = ({ status }: { status: keyof typeof statusIcons }) => {
+type InvoiceStatus = keyof typeof statusColors;
+
+const StatusIcon = ({ status }: { status: InvoiceStatus }) => {
   const Icon = statusIcons[status];
   return Icon ? <Icon className="h-3 w-3 ml-1" /> : null;
 };
@@ -28,11 +32,14 @@ const statusIcons = {
   signed: FileCheck,
   submitted: Send,
   accepted: FileCheck,
-  rejected: AlertTriangle
+  rejected: AlertTriangle,
+  pending_approval: Send,
+  approved: FileCheck
 } as const;
 
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [, navigate] = useLocation();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -60,7 +67,7 @@ export default function Invoices() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button>
+                <Button onClick={() => navigate('/invoices/new')}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Invoice
                 </Button>
@@ -79,9 +86,9 @@ export default function Invoices() {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{invoice.invoiceNumber}</h3>
-                            <Badge className={statusColors[invoice.status]}>
+                            <Badge className={statusColors[invoice.status as InvoiceStatus]}>
                               {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                              <StatusIcon status={invoice.status} />
+                              <StatusIcon status={invoice.status as InvoiceStatus} />
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">{invoice.customer.name}</p>

@@ -12,6 +12,7 @@ import ManagePerson from "@/pages/ManagePerson";
 import ManageProgram from "@/pages/ManageProgram";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
+import CreateEditInvoice from "@/pages/CreateEditInvoice";
 import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
 import FinancialDashboard from "@/pages/FinancialDashboard";
 import Analytics from "@/pages/Analytics";
@@ -31,6 +32,8 @@ function Router() {
       <Route path="/people/:id" component={PersonOverview} />
       <Route path="/people" component={People} />
       <Route path="/organization" component={Organization} />
+      <Route path="/invoices/new" component={CreateEditInvoice} />
+      <Route path="/invoices/:id/edit" component={CreateEditInvoice} />
       <Route path="/invoices/:id" component={InvoiceDetail} />
       <Route path="/invoices" component={Invoices} />
       <Route path="/qr-tracking" component={QRTrackingDashboard} />
