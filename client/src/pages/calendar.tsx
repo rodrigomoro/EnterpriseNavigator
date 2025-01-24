@@ -447,36 +447,74 @@ export default function CalendarPage() {
     window.URL.revokeObjectURL(url);
   };
 
-  const exportToICal = () => {
-    const icalEvents = mockEvents.map(event => {
-      const eventDate = format(event.date, "yyyyMMdd");
-      const [startTime, endTime] = event.time.split(" - ");
-      const start = startTime.replace(":", "") + "00";
-      const end = (endTime || startTime).replace(":", "") + "00";
+  const exportToPDFByProgram = () => {
+    // Group events by program
+    const eventsByProgram = mockEvents.reduce((acc, event) => {
+      if (!acc[event.program]) {
+        acc[event.program] = [];
+      }
+      acc[event.program].push(event);
+      return acc;
+    }, {} as Record<string, typeof mockEvents>);
 
-      return [
-        "BEGIN:VEVENT",
-        `DTSTART:${eventDate}T${start}`,
-        `DTEND:${eventDate}T${end}`,
-        `SUMMARY:${event.title}`,
-        `DESCRIPTION:Teacher: ${event.teacher}\\nProgram: ${event.program}`,
-        "END:VEVENT"
-      ].join("\n");
+    // Format content for PDF
+    let content = `Educational Calendar - Programs Overview\nGenerated on ${format(new Date(), "PPP")}\n\n`;
+
+    Object.entries(eventsByProgram).forEach(([program, events]) => {
+      content += `\n${program}\n${"=".repeat(program.length)}\n\n`;
+
+      // Sort events by date
+      events.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+      events.forEach(event => {
+        content += `${format(event.date, "PPP")}\n`;
+        content += `${event.time} - ${event.title}\n`;
+        content += `Teacher: ${event.teacher}\n\n`;
+      });
     });
 
-    const icalContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Educational Calendar//EN",
-      ...icalEvents,
-      "END:VCALENDAR"
-    ].join("\n");
-
-    const blob = new Blob([icalContent], { type: "text/calendar" });
+    // Create and download PDF
+    const blob = new Blob([content], { type: "text/plain" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `calendar-export-${format(date, "yyyy-MM-dd")}.ics`;
+    a.download = `calendar-by-program-${format(date, "yyyy-MM-dd")}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const exportToPDFByTeacher = () => {
+    // Group events by teacher
+    const eventsByTeacher = mockEvents.reduce((acc, event) => {
+      if (!acc[event.teacher]) {
+        acc[event.teacher] = [];
+      }
+      acc[event.teacher].push(event);
+      return acc;
+    }, {} as Record<string, typeof mockEvents>);
+
+    // Format content for PDF
+    let content = `Educational Calendar - Teachers Schedule\nGenerated on ${format(new Date(), "PPP")}\n\n`;
+
+    Object.entries(eventsByTeacher).forEach(([teacher, events]) => {
+      content += `\n${teacher}\n${"=".repeat(teacher.length)}\n\n`;
+
+      // Sort events by date
+      events.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+      events.forEach(event => {
+        content += `${format(event.date, "PPP")}\n`;
+        content += `${event.time} - ${event.title}\n`;
+        content += `Program: ${event.program}\n\n`;
+      });
+    });
+
+    // Create and download PDF
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `calendar-by-teacher-${format(date, "yyyy-MM-dd")}.txt`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -537,16 +575,11 @@ export default function CalendarPage() {
                   <DropdownMenuItem onClick={exportToCSV}>
                     Export to CSV
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToICal}>
-                    Export to iCal
+                  <DropdownMenuItem onClick={exportToPDFByProgram}>
+                    Export PDF by Program
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Share Calendar</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.open(`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(window.location.href)}`)}>
-                    Add to Google Calendar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.open(`outlookconnector:?url=${encodeURIComponent(window.location.href)}`)}>
-                    Add to Outlook
+                  <DropdownMenuItem onClick={exportToPDFByTeacher}>
+                    Export PDF by Teacher
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
