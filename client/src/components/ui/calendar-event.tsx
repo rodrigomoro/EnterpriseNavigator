@@ -8,6 +8,7 @@ interface CalendarEventProps {
   program?: string;
   className?: string;
   teacherClassName?: string;
+  hasConflict?: boolean;
 }
 
 export const CalendarEvent: FC<CalendarEventProps> = ({
@@ -17,11 +18,13 @@ export const CalendarEvent: FC<CalendarEventProps> = ({
   program,
   className,
   teacherClassName,
+  hasConflict,
 }) => {
   return (
     <div
       className={cn(
         "p-2 rounded-md text-sm mb-1",
+        hasConflict && "border-2 border-red-500",
         className
       )}
     >

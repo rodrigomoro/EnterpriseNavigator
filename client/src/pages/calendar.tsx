@@ -158,24 +158,63 @@ export default function CalendarPage() {
   const [, navigate] = useLocation();
 
   const weekDays = eachDayOfInterval({
-    start: startOfWeek(date, { weekStartsOn: 1 }), // Start week on Monday
+    start: startOfWeek(date, { weekStartsOn: 1 }),
     end: endOfWeek(date, { weekStartsOn: 1 }),
   });
 
+  // Function to detect teacher conflicts
+  const getTeacherConflicts = (date: Date) => {
+    const events = mockEvents.filter(event =>
+      event.date.getDate() === date.getDate() &&
+      event.date.getMonth() === date.getMonth() &&
+      event.date.getFullYear() === date.getFullYear()
+    );
+
+    const conflicts = new Map<string, { time: string, programs: string[] }>();
+
+    events.forEach(event => {
+      const key = `${event.teacher}-${event.time}`;
+      if (conflicts.has(key)) {
+        const existing = conflicts.get(key)!;
+        existing.programs.push(event.program);
+      } else {
+        conflicts.set(key, { time: event.time, programs: [event.program] });
+      }
+    });
+
+    return Array.from(conflicts.entries())
+      .filter(([_, value]) => value.programs.length > 1)
+      .map(([key, value]) => ({
+        teacher: key.split('-')[0],
+        time: value.time,
+        programs: value.programs
+      }));
+  };
+
   const getEventsForDate = (date: Date) => {
-    return mockEvents.filter(event => {
+    const events = mockEvents.filter(event => {
       const dateMatch = event.date.getDate() === date.getDate() &&
         event.date.getMonth() === date.getMonth() &&
         event.date.getFullYear() === date.getFullYear();
 
-      const teacherMatch = selectedTeacher === "all" || 
+      const teacherMatch = selectedTeacher === "all" ||
         teachers.find(t => t.id === selectedTeacher)?.name === event.teacher;
 
-      const programMatch = selectedProgram === "all" || 
+      const programMatch = selectedProgram === "all" ||
         programs.find(p => p.id === selectedProgram)?.name === event.program;
 
       return dateMatch && teacherMatch && programMatch;
     });
+
+    // Add conflict information to events
+    const conflicts = getTeacherConflicts(date);
+    return events.map(event => ({
+      ...event,
+      hasConflict: conflicts.some(conflict =>
+        conflict.teacher === event.teacher &&
+        conflict.time === event.time
+      )
+    }));
   };
 
   const handleNavigation = (direction: 'prev' | 'next') => {
@@ -207,7 +246,7 @@ export default function CalendarPage() {
             time={event.time}
             teacher={event.teacher}
             program={event.program}
-            className={programColors[event.program as keyof typeof programColors]}
+            className={cn(programColors[event.program as keyof typeof programColors], event.hasConflict ? "border-red-500" : "")}
             teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
           />
         ))}
@@ -232,7 +271,7 @@ export default function CalendarPage() {
                   time={event.time}
                   teacher={event.teacher}
                   program={event.program}
-                  className={programColors[event.program as keyof typeof programColors]}
+                  className={cn(programColors[event.program as keyof typeof programColors], event.hasConflict ? "border-red-500" : "")}
                   teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
                 />
               ))}
@@ -274,7 +313,7 @@ export default function CalendarPage() {
                 time={event.time}
                 teacher={event.teacher}
                 program={event.program}
-                className={programColors[event.program as keyof typeof programColors]}
+                className={cn(programColors[event.program as keyof typeof programColors], event.hasConflict ? "border-red-500" : "")}
                 teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
               />
             ))}
@@ -436,6 +475,23 @@ export default function CalendarPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Conflict Warnings */}
+                {view !== 'year' && (
+                  <div className="space-y-2 pt-4 border-t">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      Schedule Conflicts
+                    </label>
+                    {getTeacherConflicts(date).map((conflict, index) => (
+                      <div key={index} className="text-sm text-red-600 bg-red-50 p-2 rounded-md">
+                        <p className="font-medium">{conflict.teacher}</p>
+                        <p className="text-xs">{conflict.time}</p>
+                        <p className="text-xs">Teaching: {conflict.programs.join(', ')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Color coding legend */}
                 <div className="space-y-2 pt-4 border-t">
