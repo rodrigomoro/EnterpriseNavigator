@@ -314,18 +314,19 @@ export default function CalendarPage() {
   const renderMonthView = () => (
     <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
       {/* Week day headers */}
-      {weekDays.map((day, i) => (
+      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
         <div
           key={i}
           className="bg-background p-2 text-center text-sm font-medium"
         >
-          {format(day, "EEE")}
+          {day}
         </div>
       ))}
 
       {/* Calendar days */}
-      {Array.from({ length: 35 }, (_, i) => {
-        const currentDate = new Date(date.getFullYear(), date.getMonth(), i - date.getDay() + 1);
+      {Array.from({ length: 42 }, (_, i) => {
+        const startDate = startOfWeek(new Date(date.getFullYear(), date.getMonth(), 1), { weekStartsOn: 1 });
+        const currentDate = addDays(startDate, i);
         const isCurrentMonth = isSameMonth(currentDate, date);
         const dayEvents = getEventsForDate(currentDate);
 
