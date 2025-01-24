@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar as CalendarIcon, Filter, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Filter, ArrowLeft, ChevronLeft, ChevronRight, Download, Share } from "lucide-react";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, addDays, subDays, addMonths, subMonths, addYears, subYears, startOfYear, eachMonthOfInterval, endOfYear } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarEvent } from "@/components/ui/calendar-event";
@@ -21,6 +21,14 @@ import {
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type ViewType = "day" | "week" | "month" | "year";
 
@@ -76,7 +84,7 @@ const mockEvents = [
       teacher: teachers[weekIndex % teachers.length], // Rotate teachers
       program: "2410BCCS",
       time: "19:00 - 22:00",
-      date: addDays(new Date(2024, 9, 21), weekIndex * 7 + dayOffset -1), // Start from first Monday of Oct 2024
+      date: addDays(new Date(2024, 9, 21), weekIndex * 7 + dayOffset - 1), // Start from first Monday of Oct 2024
     }));
   }).flat().filter(event => event.date <= new Date(2025, 4, 31)), // Filter until May 2025
 
@@ -409,6 +417,70 @@ export default function CalendarPage() {
     );
   };
 
+  // Add export functions
+  const exportToCSV = () => {
+    const events = mockEvents.map(event => ({
+      date: format(event.date, "yyyy-MM-dd"),
+      time: event.time,
+      title: event.title,
+      teacher: event.teacher,
+      program: event.program
+    }));
+
+    const csv = [
+      ["Date", "Time", "Title", "Teacher", "Program"],
+      ...events.map(event => [
+        event.date,
+        event.time,
+        event.title,
+        event.teacher,
+        event.program
+      ])
+    ].map(row => row.join(",")).join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `calendar-export-${format(date, "yyyy-MM-dd")}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const exportToICal = () => {
+    const icalEvents = mockEvents.map(event => {
+      const eventDate = format(event.date, "yyyyMMdd");
+      const [startTime, endTime] = event.time.split(" - ");
+      const start = startTime.replace(":", "") + "00";
+      const end = (endTime || startTime).replace(":", "") + "00";
+
+      return [
+        "BEGIN:VEVENT",
+        `DTSTART:${eventDate}T${start}`,
+        `DTEND:${eventDate}T${end}`,
+        `SUMMARY:${event.title}`,
+        `DESCRIPTION:Teacher: ${event.teacher}\\nProgram: ${event.program}`,
+        "END:VEVENT"
+      ].join("\n");
+    });
+
+    const icalContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Educational Calendar//EN",
+      ...icalEvents,
+      "END:VCALENDAR"
+    ].join("\n");
+
+    const blob = new Blob([icalContent], { type: "text/calendar" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `calendar-export-${format(date, "yyyy-MM-dd")}.ics`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -451,6 +523,34 @@ export default function CalendarPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Add Export Dropdown before the view toggle */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Export Calendar</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={exportToCSV}>
+                    Export to CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportToICal}>
+                    Export to iCal
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Share Calendar</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.open(`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(window.location.href)}`)}>
+                    Add to Google Calendar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.open(`outlookconnector:?url=${encodeURIComponent(window.location.href)}`)}>
+                    Add to Outlook
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* View Toggle */}
               <div className="bg-muted rounded-lg p-1">
                 {(["day", "week", "month", "year"] as const).map((viewType) => (
