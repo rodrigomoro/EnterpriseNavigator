@@ -76,7 +76,7 @@ const mockEvents = [
       teacher: teachers[weekIndex % teachers.length], // Rotate teachers
       program: "2410BCCS",
       time: "19:00 - 22:00",
-      date: addDays(new Date(2024, 9, 7), weekIndex * 7 + dayOffset - 1), // Start from first Monday of Oct 2024
+      date: addDays(new Date(2024, 9, 21), weekIndex * 7 + dayOffset -1), // Start from first Monday of Oct 2024
     }));
   }).flat().filter(event => event.date <= new Date(2025, 4, 31)), // Filter until May 2025
 
