@@ -226,6 +226,19 @@ export default function CalendarPage() {
     }));
   };
 
+  // Function to get filtered events for any date range
+  const getFilteredEvents = () => {
+    return mockEvents.filter(event => {
+      const teacherMatch = selectedTeachers.includes("all") ||
+        selectedTeachers.some(id => teachers.find(t => t.id === id)?.name === event.teacher);
+
+      const programMatch = selectedPrograms.includes("all") ||
+        selectedPrograms.some(id => programs.find(p => p.id === id)?.name === event.program);
+
+      return teacherMatch && programMatch;
+    });
+  };
+
   const handleNavigation = (direction: 'prev' | 'next') => {
     switch (view) {
       case 'day':
@@ -419,7 +432,7 @@ export default function CalendarPage() {
 
   // Add export functions
   const exportToCSV = () => {
-    const events = mockEvents.map(event => ({
+    const events = getFilteredEvents().map(event => ({
       date: format(event.date, "yyyy-MM-dd"),
       time: event.time,
       title: event.title,
@@ -448,8 +461,8 @@ export default function CalendarPage() {
   };
 
   const exportToPDFByProgram = () => {
-    // Group events by program
-    const eventsByProgram = mockEvents.reduce((acc, event) => {
+    // Group filtered events by program
+    const eventsByProgram = getFilteredEvents().reduce((acc, event) => {
       if (!acc[event.program]) {
         acc[event.program] = [];
       }
@@ -484,8 +497,8 @@ export default function CalendarPage() {
   };
 
   const exportToPDFByTeacher = () => {
-    // Group events by teacher
-    const eventsByTeacher = mockEvents.reduce((acc, event) => {
+    // Group filtered events by teacher
+    const eventsByTeacher = getFilteredEvents().reduce((acc, event) => {
       if (!acc[event.teacher]) {
         acc[event.teacher] = [];
       }
