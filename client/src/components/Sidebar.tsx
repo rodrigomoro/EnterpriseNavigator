@@ -33,10 +33,12 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-3 border-t border-sidebar-border">
-        <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full">
-          <Settings className="h-4 w-4" />
-          <span className="hidden md:block text-sm">Settings</span>
-        </button>
+        <Link href="/settings">
+          <a className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full">
+            <Settings className="h-4 w-4" />
+            <span className="hidden md:block text-sm">Settings</span>
+          </a>
+        </Link>
         <button className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full mt-1">
           <LogOut className="h-4 w-4" />
           <span className="hidden md:block text-sm">Logout</span>

@@ -19,6 +19,7 @@ import Analytics from "@/pages/Analytics";
 import Organization from "@/pages/Organization";
 import SkillsMatrix from "@/pages/SkillsMatrix";
 import Calendar from "@/pages/calendar";
+import Settings from "@/pages/Settings";
 
 function Router() {
   return (
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/financial-dashboard" component={FinancialDashboard} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/skills-matrix" component={SkillsMatrix} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
