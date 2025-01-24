@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
+import Calendar from '@/components/Calendar';
+import PeopleDirectory from '@/components/PeopleDirectory';
+import ProjectDirectory from '@/components/ProjectDirectory';
+import TaskList from '@/components/TaskList';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
-import RoleDashboard from '@/components/RoleDashboard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRole, setSelectedRole] = useState('administrator');
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -22,10 +22,10 @@ export default function Home() {
             <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
               <div className="min-w-60">
                 <h1 className="text-2xl font-bold">Welcome, Juliana!</h1>
-                <p className="text-muted-foreground">Here is your role-based dashboard</p>
+                <p className="text-muted-foreground">Here is your agenda for today</p>
               </div>
 
-              <div className="flex-1 flex justify-center max-w-xl gap-4">
+              <div className="flex-1 flex justify-center max-w-xl">
                 <div className="relative w-full">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -35,18 +35,6 @@ export default function Home() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                {/* Role selector for demonstration */}
-                <Select value={selectedRole} onValueChange={setSelectedRole}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="administrator">Administrator</SelectItem>
-                    <SelectItem value="program_manager">Program Manager</SelectItem>
-                    <SelectItem value="instructor">Instructor</SelectItem>
-                    <SelectItem value="finance_manager">Finance Manager</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
               <div className="min-w-60 flex justify-end">
@@ -56,7 +44,29 @@ export default function Home() {
           </header>
 
           <main className="p-6">
-            <RoleDashboard userRole={selectedRole} />
+            <div className="grid grid-cols-12 gap-6">
+              {/* Left Column */}
+              <div className="col-span-12 lg:col-span-5">
+                <div className="bg-card rounded-lg shadow-sm p-4 mb-6">
+                  <Calendar />
+                </div>
+
+                <div className="bg-card rounded-lg shadow-sm p-4">
+                  <ProjectDirectory />
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="col-span-12 lg:col-span-7 space-y-6">
+                <div className="bg-card rounded-lg shadow-sm p-4">
+                  <TaskList />
+                </div>
+
+                <div className="bg-card rounded-lg shadow-sm p-4">
+                  <PeopleDirectory />
+                </div>
+              </div>
+            </div>
           </main>
         </PageTransition>
       </div>
