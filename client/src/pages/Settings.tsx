@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageTransition from "@/components/PageTransition";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
+import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
 import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
 
 // Mock data for settings
@@ -69,7 +70,7 @@ export default function Settings() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      
+
       <div className="flex-1">
         <PageTransition>
           <div className="p-6">
@@ -170,56 +171,70 @@ export default function Settings() {
               </TabsContent>
 
               <TabsContent value="communications">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Communication Preferences</CardTitle>
-                    <CardDescription>
-                      Manage how and when you receive notifications
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      {mockNotificationChannels.map((channel) => (
-                        <div key={channel.id} className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <channel.icon className="h-5 w-5 text-muted-foreground" />
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Communication Preferences</CardTitle>
+                      <CardDescription>
+                        Manage how and when you receive notifications
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="space-y-4">
+                        {mockNotificationChannels.map((channel) => (
+                          <div key={channel.id} className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <channel.icon className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <p className="font-medium">{channel.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Receive notifications via {channel.name.toLowerCase()}
+                                </p>
+                              </div>
+                            </div>
+                            <Switch defaultChecked={channel.enabled} />
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="space-y-4 pt-4 border-t">
+                        <h3 className="font-medium">Notification Types</h3>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-medium">{channel.name}</p>
+                              <p className="font-medium">Program Updates</p>
                               <p className="text-sm text-muted-foreground">
-                                Receive notifications via {channel.name.toLowerCase()}
+                                Changes to programs you're involved in
                               </p>
                             </div>
+                            <Switch defaultChecked />
                           </div>
-                          <Switch defaultChecked={channel.enabled} />
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t">
-                      <h3 className="font-medium">Notification Types</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Program Updates</p>
-                            <p className="text-sm text-muted-foreground">
-                              Changes to programs you're involved in
-                            </p>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">People Changes</p>
+                              <p className="text-sm text-muted-foreground">
+                                Updates to team members and roles
+                              </p>
+                            </div>
+                            <Switch defaultChecked />
                           </div>
-                          <Switch defaultChecked />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">People Changes</p>
-                            <p className="text-sm text-muted-foreground">
-                              Updates to team members and roles
-                            </p>
-                          </div>
-                          <Switch defaultChecked />
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Notification Templates</CardTitle>
+                      <CardDescription>
+                        Customize how your notifications appear across different channels
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <NotificationTemplateEditor />
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
               <TabsContent value="connectors">
