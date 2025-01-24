@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Calendar as CalendarIcon, Filter } from "lucide-react";
+import { Calendar as CalendarIcon, Filter, ArrowLeft } from "lucide-react";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarEvent } from "@/components/ui/calendar-event";
+import { Link, useLocation } from "wouter";
 import {
   Select,
   SelectContent,
@@ -17,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Sidebar from "@/components/Sidebar";
 
 type ViewType = "day" | "week" | "month";
 
@@ -56,6 +58,7 @@ export default function CalendarPage() {
   const [view, setView] = useState<ViewType>("month");
   const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
   const [selectedProgram, setSelectedProgram] = useState<string>("all");
+  const [, navigate] = useLocation();
 
   const weekDays = eachDayOfInterval({
     start: startOfWeek(date),
@@ -79,126 +82,140 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-8 w-8" />
-          <h1 className="text-2xl font-bold">Calendar</h1>
-          <span className="text-muted-foreground ml-2">
-            {format(date, "MMMM d, yyyy")}
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          {/* View Toggle */}
-          <div className="bg-muted rounded-lg p-1">
-            {(["day", "week", "month"] as const).map((viewType) => (
-              <Button
-                key={viewType}
-                variant={view === viewType ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setView(viewType)}
-                className="capitalize"
-              >
-                {viewType}
-              </Button>
-            ))}
+    <div className="flex h-screen">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        <div className="container p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/")}
+              className="rounded-full"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-8 w-8" />
+              <h1 className="text-2xl font-bold">Calendar</h1>
+              <span className="text-muted-foreground ml-2">
+                {format(date, "MMMM d, yyyy")}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex justify-end mb-6">
+            {/* View Toggle */}
+            <div className="bg-muted rounded-lg p-1">
+              {(["day", "week", "month"] as const).map((viewType) => (
+                <Button
+                  key={viewType}
+                  variant={view === viewType ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setView(viewType)}
+                  className="capitalize"
+                >
+                  {viewType}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-6">
+            {/* Filters Sidebar */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="h-5 w-5" />
+                  Filters
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Teacher</label>
+                  <Select
+                    value={selectedTeacher}
+                    onValueChange={setSelectedTeacher}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select teacher" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Teachers</SelectItem>
+                      {teachers.map((teacher) => (
+                        <SelectItem key={teacher.id} value={teacher.id}>
+                          {teacher.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Program</label>
+                  <Select
+                    value={selectedProgram}
+                    onValueChange={setSelectedProgram}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select program" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Programs</SelectItem>
+                      {programs.map((program) => (
+                        <SelectItem key={program.id} value={program.id}>
+                          {program.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Calendar Grid */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
+                  {/* Week day headers */}
+                  {weekDays.map((day, i) => (
+                    <div
+                      key={i}
+                      className="bg-background p-2 text-center text-sm font-medium"
+                    >
+                      {format(day, "EEE")}
+                    </div>
+                  ))}
+
+                  {/* Calendar days */}
+                  {Array.from({ length: 35 }, (_, i) => {
+                    const currentDate = new Date(date.getFullYear(), date.getMonth(), i - date.getDay() + 1);
+                    const isCurrentMonth = isSameMonth(currentDate, date);
+                    const dayEvents = getEventsForDate(currentDate);
+
+                    return (
+                      <div
+                        key={i}
+                        className={`min-h-[120px] p-2 bg-background ${!isCurrentMonth ? "text-muted-foreground" : ""}`}
+                      >
+                        <div className="text-right mb-2">{format(currentDate, "d")}</div>
+                        {dayEvents.map((event) => (
+                          <CalendarEvent
+                            key={event.id}
+                            title={event.title}
+                            time={event.time}
+                            teacher={event.teacher}
+                            program={event.program}
+                          />
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-6">
-        {/* Filters Sidebar */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filters
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Teacher</label>
-              <Select
-                value={selectedTeacher}
-                onValueChange={setSelectedTeacher}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select teacher" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Teachers</SelectItem>
-                  {teachers.map((teacher) => (
-                    <SelectItem key={teacher.id} value={teacher.id}>
-                      {teacher.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Program</label>
-              <Select
-                value={selectedProgram}
-                onValueChange={setSelectedProgram}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select program" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Programs</SelectItem>
-                  {programs.map((program) => (
-                    <SelectItem key={program.id} value={program.id}>
-                      {program.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Calendar Grid */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
-              {/* Week day headers */}
-              {weekDays.map((day, i) => (
-                <div
-                  key={i}
-                  className="bg-background p-2 text-center text-sm font-medium"
-                >
-                  {format(day, "EEE")}
-                </div>
-              ))}
-
-              {/* Calendar days */}
-              {Array.from({ length: 35 }, (_, i) => {
-                const currentDate = new Date(date.getFullYear(), date.getMonth(), i - date.getDay() + 1);
-                const isCurrentMonth = isSameMonth(currentDate, date);
-                const dayEvents = getEventsForDate(currentDate);
-
-                return (
-                  <div
-                    key={i}
-                    className={`min-h-[120px] p-2 bg-background ${!isCurrentMonth ? "text-muted-foreground" : ""}`}
-                  >
-                    <div className="text-right mb-2">{format(currentDate, "d")}</div>
-                    {dayEvents.map((event) => (
-                      <CalendarEvent
-                        key={event.id}
-                        title={event.title}
-                        time={event.time}
-                        teacher={event.teacher}
-                        program={event.program}
-                      />
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </main>
     </div>
   );
 }
