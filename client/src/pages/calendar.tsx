@@ -28,13 +28,16 @@ const programColors = {
   "STEM Excellence": "bg-blue-100 border-blue-200",
   "Computer Science": "bg-green-100 border-green-200",
   "AI Fundamentals": "bg-purple-100 border-purple-200",
-  "2410BCCS": "bg-orange-100 border-orange-200"
+  "2410BCCS": "bg-orange-100 border-orange-200",
+  "Bootcamp in UI/UX": "bg-pink-100 border-pink-200"
 };
 
 const teacherColors = {
   "Dr. Sarah Johnson": "text-blue-700",
   "Prof. Michael Chen": "text-green-700",
-  "Dr. Alan Turing": "text-orange-700"
+  "Dr. Alan Turing": "text-orange-700",
+  "Dr. Emma Wilson": "text-purple-700",
+  "Prof. James Miller": "text-pink-700"
 };
 
 // Mock data to better represent the educational context
@@ -65,29 +68,86 @@ const mockEvents = [
   },
   // Generate Bootcamp events (Mon-Thu, 19:00-22:00, Oct 2024 - May 2025)
   ...Array.from({ length: 32 }, (_, weekIndex) => {
+    const teachers = ["Dr. Alan Turing", "Dr. Emma Wilson", "Prof. James Miller"];
     return [1, 2, 3, 4].map((dayOffset) => ({
       id: 1000 + weekIndex * 4 + dayOffset,
       title: "Bootcamp in Cloud Computing",
-      teacher: "Dr. Alan Turing",
+      teacher: teachers[weekIndex % teachers.length], // Rotate teachers
       program: "2410BCCS",
       time: "19:00 - 22:00",
       date: addDays(new Date(2024, 9, 7), weekIndex * 7 + dayOffset - 1), // Start from first Monday of Oct 2024
     }));
-  }).flat().filter(event => event.date <= new Date(2025, 4, 31)) // Filter until May 2025
+  }).flat().filter(event => event.date <= new Date(2025, 4, 31)), // Filter until May 2025
+
+  // UI/UX Bootcamp (Mon-Thu, 19:00-22:00, Nov 2024 - Jun 2025)
+  ...Array.from({ length: 32 }, (_, weekIndex) => {
+    return [1, 2, 3, 4].map((dayOffset) => ({
+      id: 2000 + weekIndex * 4 + dayOffset,
+      title: "Bootcamp in UI/UX",
+      teacher: "Prof. James Miller",
+      program: "Bootcamp in UI/UX",
+      time: "19:00 - 22:00",
+      date: addDays(new Date(2024, 10, 4), weekIndex * 7 + dayOffset - 1), // Start from first Monday of Nov 2024
+    }));
+  }).flat().filter(event => event.date <= new Date(2025, 5, 30)), // Filter until June 2025
+
+  // Add conflicting schedules in February
+  // Week 1: Dr. Sarah Johnson teaching two programs at the same time
+  ...Array.from({ length: 4 }, (_, dayIndex) => ([
+    {
+      id: 3000 + dayIndex * 2,
+      title: "Advanced AI Applications",
+      teacher: "Dr. Sarah Johnson",
+      program: "AI Fundamentals",
+      time: "14:00 - 17:00",
+      date: addDays(new Date(2025, 1, 3), dayIndex), // First week of February
+    },
+    {
+      id: 3001 + dayIndex * 2,
+      title: "Mathematics for Machine Learning",
+      teacher: "Dr. Sarah Johnson",
+      program: "STEM Excellence",
+      time: "14:00 - 17:00",
+      date: addDays(new Date(2025, 1, 3), dayIndex), // Same time slot
+    }
+  ])).flat(),
+
+  // Week 2: Prof. Michael Chen teaching two programs at the same time
+  ...Array.from({ length: 4 }, (_, dayIndex) => ([
+    {
+      id: 4000 + dayIndex * 2,
+      title: "Advanced Algorithms",
+      teacher: "Prof. Michael Chen",
+      program: "Computer Science",
+      time: "10:00 - 13:00",
+      date: addDays(new Date(2025, 1, 10), dayIndex), // Second week of February
+    },
+    {
+      id: 4001 + dayIndex * 2,
+      title: "Data Structures Workshop",
+      teacher: "Prof. Michael Chen",
+      program: "2410BCCS",
+      time: "10:00 - 13:00",
+      date: addDays(new Date(2025, 1, 10), dayIndex), // Same time slot
+    }
+  ])).flat(),
 ];
 
 // Mock data for filters
 const teachers = [
   { id: "sj", name: "Dr. Sarah Johnson" },
   { id: "mc", name: "Prof. Michael Chen" },
-  { id: "at", name: "Dr. Alan Turing" }
+  { id: "at", name: "Dr. Alan Turing" },
+  { id: "ew", name: "Dr. Emma Wilson" },
+  { id: "jm", name: "Prof. James Miller" }
 ];
 
 const programs = [
   { id: "stem", name: "STEM Excellence" },
   { id: "cs", name: "Computer Science" },
   { id: "ai", name: "AI Fundamentals" },
-  { id: "bc", name: "2410BCCS" }
+  { id: "bc", name: "2410BCCS" },
+  { id: "ux", name: "Bootcamp in UI/UX" }
 ];
 
 export default function CalendarPage() {
@@ -98,8 +158,8 @@ export default function CalendarPage() {
   const [, navigate] = useLocation();
 
   const weekDays = eachDayOfInterval({
-    start: startOfWeek(date),
-    end: endOfWeek(date),
+    start: startOfWeek(date, { weekStartsOn: 1 }), // Start week on Monday
+    end: endOfWeek(date, { weekStartsOn: 1 }),
   });
 
   const getEventsForDate = (date: Date) => {
@@ -156,7 +216,7 @@ export default function CalendarPage() {
   };
 
   const renderWeekView = () => {
-    const weekStart = startOfWeek(date);
+    const weekStart = startOfWeek(date, { weekStartsOn: 1 });
     return (
       <div className="space-y-4">
         {Array.from({ length: 7 }, (_, i) => {
@@ -237,8 +297,8 @@ export default function CalendarPage() {
             <h3 className="font-medium mb-2">{format(month, "MMMM")}</h3>
             <div className="grid grid-cols-7 gap-1 text-sm">
               {eachDayOfInterval({
-                start: startOfWeek(month),
-                end: endOfWeek(addDays(month, 34)),
+                start: startOfWeek(month, { weekStartsOn: 1 }),
+                end: endOfWeek(addDays(month, 34), { weekStartsOn: 1 }),
               }).map((day, j) => {
                 const isCurrentMonth = isSameMonth(day, month);
                 const hasEvents = getEventsForDate(day).length > 0;
@@ -281,28 +341,27 @@ export default function CalendarPage() {
               <div className="flex items-center gap-2">
                 <CalendarIcon className="h-8 w-8" />
                 <h1 className="text-2xl font-bold">Calendar</h1>
-                <span className="text-muted-foreground ml-2">
-                  {format(date, "MMMM d, yyyy")}
-                </span>
+                {/* Navigation Controls - Now in fixed position */}
+                <div className="flex items-center gap-2 ml-4 min-w-[80px]">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleNavigation('prev')}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleNavigation('next')}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-
-              {/* Navigation Controls */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleNavigation('prev')}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleNavigation('next')}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <span className="text-muted-foreground">
+                {format(date, "MMMM d, yyyy")}
+              </span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -385,6 +444,17 @@ export default function CalendarPage() {
                     <div key={program} className="flex items-center gap-2">
                       <div className={`w-4 h-4 rounded ${colorClass.split(' ')[0]}`} />
                       <span className="text-sm">{program}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Teacher color coding legend */}
+                <div className="space-y-2 pt-4 border-t">
+                  <label className="text-sm font-medium">Teachers</label>
+                  {Object.entries(teacherColors).map(([teacher, colorClass]) => (
+                    <div key={teacher} className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded bg-gray-100`} />
+                      <span className={`text-sm ${colorClass}`}>{teacher}</span>
                     </div>
                   ))}
                 </div>
