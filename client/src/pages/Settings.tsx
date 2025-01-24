@@ -434,27 +434,32 @@ export default function Settings() {
                     </CardHeader>
                     <CardContent>
                       <ScrollArea className="h-[600px] pr-4">
-                        <div className="space-y-8">
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-8">
                           {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
                             <div key={category} className="space-y-4">
-                              <h3 className="font-medium">{category}</h3>
-                              <div className="grid gap-4">
-                                {mockPermissions
-                                  .filter(p => p.category === category)
-                                  .map((permission) => (
-                                    <div
-                                      key={permission.id}
-                                      className="flex items-start justify-between"
-                                    >
-                                      <div>
-                                        <p className="font-medium">{permission.name}</p>
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium">{category}</h3>
+                                <Badge variant="secondary" className="text-xs">
+                                  {mockPermissions.filter(p => p.category === category).length}
+                                </Badge>
+                              </div>
+                              <Card className="p-4">
+                                <div className="space-y-3">
+                                  {mockPermissions
+                                    .filter(p => p.category === category)
+                                    .map((permission) => (
+                                      <div
+                                        key={permission.id}
+                                        className="hover:bg-accent/5 p-2 rounded-sm"
+                                      >
+                                        <p className="font-medium text-sm">{permission.name}</p>
                                         <p className="text-sm text-muted-foreground">
                                           {permission.description}
                                         </p>
                                       </div>
-                                    </div>
-                                  ))}
-                              </div>
+                                    ))}
+                                </div>
+                              </Card>
                             </div>
                           ))}
                         </div>
