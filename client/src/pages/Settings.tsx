@@ -14,9 +14,8 @@ import UserAvatar from "@/components/UserAvatar";
 import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
 import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import PermissionGroupVisualization from "@/components/PermissionGroupVisualization";
 
 // Mock data for settings
 const mockNotificationChannels = [
@@ -364,121 +363,107 @@ export default function Settings() {
               </TabsContent>
 
               <TabsContent value="security">
-                <div className="space-y-6">
-                  <div className="grid gap-4 grid-cols-12">
-                    <Card className="col-span-12 lg:col-span-5">
-                      <CardHeader>
-                        <CardTitle>Roles</CardTitle>
-                        <CardDescription>Manage security roles and their permissions</CardDescription>
-                      </CardHeader>
-                      <CardContent className="p-0">
-                        <ScrollArea className="h-[600px]">
-                          {mockRoles.map((role) => (
-                            <div
-                              key={role.id}
-                              className="p-4 border-b last:border-0 hover:bg-accent/5"
-                            >
-                              <div className="flex items-start justify-between">
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="font-medium">{role.name}</h3>
-                                    {role.isSystem && (
-                                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                        System
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-muted-foreground">{role.description}</p>
+                <div className="grid gap-4 grid-cols-12">
+                  <Card className="col-span-12 lg:col-span-5">
+                    <CardHeader>
+                      <CardTitle>Roles</CardTitle>
+                      <CardDescription>Manage security roles and their permissions</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <ScrollArea className="h-[600px]">
+                        {mockRoles.map((role) => (
+                          <div
+                            key={role.id}
+                            className="p-4 border-b last:border-0 hover:bg-accent/5"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{role.name}</h3>
+                                  {role.isSystem && (
+                                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                      System
+                                    </Badge>
+                                  )}
                                 </div>
-                                {!role.isSystem && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleEditRole(role)}
-                                  >
-                                    Edit
-                                  </Button>
-                                )}
+                                <p className="text-sm text-muted-foreground">{role.description}</p>
                               </div>
+                              {!role.isSystem && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditRole(role)}
+                                >
+                                  Edit
+                                </Button>
+                              )}
+                            </div>
 
-                              <div className="mt-4">
-                                <h4 className="text-sm font-medium mb-2">Permissions:</h4>
-                                <div className="grid grid-cols-2 gap-2">
-                                  {Object.entries(
-                                    role.permissions.reduce((acc, curr) => ({
-                                      ...acc,
-                                      [curr.category]: [...(acc[curr.category] || []), curr],
-                                    }), {} as Record<string, typeof mockPermissions>)
-                                  ).map(([category, perms]) => (
-                                    <div key={category} className="space-y-1">
-                                      <p className="text-xs font-medium text-muted-foreground">
-                                        {category}
+                            <div className="mt-4">
+                              <h4 className="text-sm font-medium mb-2">Permissions:</h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                {Object.entries(
+                                  role.permissions.reduce((acc, curr) => ({
+                                    ...acc,
+                                    [curr.category]: [...(acc[curr.category] || []), curr],
+                                  }), {} as Record<string, typeof mockPermissions>)
+                                ).map(([category, perms]) => (
+                                  <div key={category} className="space-y-1">
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                      {category}
+                                    </p>
+                                    {perms.map(perm => (
+                                      <p key={perm.id} className="text-xs">
+                                        {perm.name}
                                       </p>
-                                      {perms.map(perm => (
-                                        <p key={perm.id} className="text-xs">
-                                          {perm.name}
-                                        </p>
-                                      ))}
-                                    </div>
-                                  ))}
-                                </div>
+                                    ))}
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                          ))}
-                        </ScrollArea>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="col-span-12 lg:col-span-7">
-                      <CardHeader>
-                        <CardTitle>Available Permissions</CardTitle>
-                        <CardDescription>System-defined permissions and their descriptions</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <ScrollArea className="h-[600px] pr-4">
-                          <div className="grid grid-cols-2 gap-x-6 gap-y-8">
-                            {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
-                              <div key={category} className="space-y-4">
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-medium">{category}</h3>
-                                  <Badge variant="secondary" className="text-xs">
-                                    {mockPermissions.filter(p => p.category === category).length}
-                                  </Badge>
-                                </div>
-                                <Card className="p-4">
-                                  <div className="space-y-3">
-                                    {mockPermissions
-                                      .filter(p => p.category === category)
-                                      .map((permission) => (
-                                        <div
-                                          key={permission.id}
-                                          className="hover:bg-accent/5 p-2 rounded-sm"
-                                        >
-                                          <p className="font-medium text-sm">{permission.name}</p>
-                                          <p className="text-sm text-muted-foreground">
-                                            {permission.description}
-                                          </p>
-                                        </div>
-                                      ))}
-                                  </div>
-                                </Card>
-                              </div>
-                            ))}
                           </div>
-                        </ScrollArea>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        ))}
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
 
-                  <Card>
+                  <Card className="col-span-12 lg:col-span-7">
                     <CardHeader>
-                      <CardTitle>Permission Group Visualization</CardTitle>
-                      <CardDescription>
-                        Interactive visualization of roles and their permission categories
-                      </CardDescription>
+                      <CardTitle>Available Permissions</CardTitle>
+                      <CardDescription>System-defined permissions and their descriptions</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <PermissionGroupVisualization roles={mockRoles} />
+                      <ScrollArea className="h-[600px] pr-4">
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-8">
+                          {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
+                            <div key={category} className="space-y-4">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium">{category}</h3>
+                                <Badge variant="secondary" className="text-xs">
+                                  {mockPermissions.filter(p => p.category === category).length}
+                                </Badge>
+                              </div>
+                              <Card className="p-4">
+                                <div className="space-y-3">
+                                  {mockPermissions
+                                    .filter(p => p.category === category)
+                                    .map((permission) => (
+                                      <div
+                                        key={permission.id}
+                                        className="hover:bg-accent/5 p-2 rounded-sm"
+                                      >
+                                        <p className="font-medium text-sm">{permission.name}</p>
+                                        <p className="text-sm text-muted-foreground">
+                                          {permission.description}
+                                        </p>
+                                      </div>
+                                    ))}
+                                </div>
+                              </Card>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     </CardContent>
                   </Card>
                 </div>
