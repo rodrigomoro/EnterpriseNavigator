@@ -184,6 +184,8 @@ export default function CreateEditInvoice() {
         notes: existingInvoice.notes || '',
       };
       form.reset(formData);
+      // Initialize totals after form reset
+      setTotals(calculateTotals(formData.items));
     }
   }, [existingInvoice, form]);
 
