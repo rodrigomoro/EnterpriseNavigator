@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockData";
+import TaxBreakdownChart from "@/components/TaxBreakdownChart";
 
 const calculateRowTotal = (quantity: number, unitPrice: number, vatRate: number, irpfRate: number) => {
   const baseAmount = quantity * unitPrice;
@@ -574,22 +575,32 @@ export default function CreateEditInvoice() {
                         </div>
                       ))}
                       <div className="border-t pt-4 mt-6">
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="font-medium">Subtotal:</span>
-                            <span>€{totals.subtotal}</span>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="font-medium">Subtotal:</span>
+                              <span>€{totals.subtotal}</span>
+                            </div>
+                            <div className="flex justify-between text-blue-600">
+                              <span>+ VAT Total:</span>
+                              <span>€{totals.vatTotal}</span>
+                            </div>
+                            <div className="flex justify-between text-red-600">
+                              <span>- IRPF Total:</span>
+                              <span>€{totals.irpfTotal}</span>
+                            </div>
+                            <div className="flex justify-between text-lg font-bold pt-2 border-t">
+                              <span>Total Amount:</span>
+                              <span>€{totals.total}</span>
+                            </div>
                           </div>
-                          <div className="flex justify-between text-blue-600">
-                            <span>+ VAT Total:</span>
-                            <span>€{totals.vatTotal}</span>
-                          </div>
-                          <div className="flex justify-between text-red-600">
-                            <span>- IRPF Total:</span>
-                            <span>€{totals.irpfTotal}</span>
-                          </div>
-                          <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                            <span>Total Amount:</span>
-                            <span>€{totals.total}</span>
+                          <div>
+                            <TaxBreakdownChart
+                              subtotal={parseFloat(totals.subtotal)}
+                              vatTotal={parseFloat(totals.vatTotal)}
+                              irpfTotal={parseFloat(totals.irpfTotal)}
+                              total={parseFloat(totals.total)}
+                            />
                           </div>
                         </div>
                       </div>
