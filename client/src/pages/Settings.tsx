@@ -465,7 +465,7 @@ export default function Settings() {
 
                 {/* Edit Role Dialog */}
                 <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Edit Role: {selectedRole?.name}</DialogTitle>
                       <DialogDescription>
@@ -473,37 +473,52 @@ export default function Settings() {
                       </DialogDescription>
                     </DialogHeader>
 
-                    <div className="grid gap-6 py-4">
-                      <div className="space-y-4">
+                    <div className="py-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
                           <div key={category} className="space-y-2">
-                            <h4 className="font-medium">{category}</h4>
-                            <div className="grid gap-2">
-                              {mockPermissions
-                                .filter(p => p.category === category)
-                                .map((permission) => (
-                                  <div key={permission.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                      id={`permission-${permission.id}`}
-                                      checked={selectedPermissions.includes(permission.id)}
-                                      onCheckedChange={(checked) =>
-                                        handlePermissionChange(permission.id, checked === true)
-                                      }
-                                    />
-                                    <label
-                                      htmlFor={`permission-${permission.id}`}
-                                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                      {permission.name}
-                                    </label>
-                                  </div>
-                                ))}
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium text-sm">{category}</h4>
+                              <Badge variant="secondary" className="text-xs">
+                                {mockPermissions.filter(p => p.category === category).length}
+                              </Badge>
                             </div>
+                            <Card className="p-3">
+                              <div className="space-y-2">
+                                {mockPermissions
+                                  .filter(p => p.category === category)
+                                  .map((permission) => (
+                                    <div
+                                      key={permission.id}
+                                      className="flex items-start space-x-2 hover:bg-accent/5 p-1 rounded-sm"
+                                    >
+                                      <Checkbox
+                                        id={`permission-${permission.id}`}
+                                        checked={selectedPermissions.includes(permission.id)}
+                                        onCheckedChange={(checked) =>
+                                          handlePermissionChange(permission.id, checked === true)
+                                        }
+                                      />
+                                      <div className="grid gap-0.5">
+                                        <label
+                                          htmlFor={`permission-${permission.id}`}
+                                          className="text-sm font-medium leading-none cursor-pointer"
+                                        >
+                                          {permission.name}
+                                        </label>
+                                        <p className="text-xs text-muted-foreground">
+                                          {permission.description}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </Card>
                           </div>
                         ))}
                       </div>
 
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2 mt-6">
                         <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
                           Cancel
                         </Button>
