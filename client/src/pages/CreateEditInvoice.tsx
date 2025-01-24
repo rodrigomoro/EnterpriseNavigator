@@ -127,12 +127,19 @@ export default function CreateEditInvoice() {
     },
   });
 
+  // Watch all form fields that affect totals
   const items = form.watch('items');
   const [totals, setTotals] = useState(() => calculateTotals(items));
 
+  // Update totals whenever any item field changes
   useEffect(() => {
-    setTotals(calculateTotals(items));
-  }, [items]);
+    const subscription = form.watch((value, { name, type }) => {
+      if (name?.startsWith('items.') || type === 'change') {
+        setTotals(calculateTotals(value.items || []));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
