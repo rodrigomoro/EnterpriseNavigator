@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Calendar as CalendarIcon, Filter, ArrowLeft } from "lucide-react";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, addDays } from "date-fns";
+import { Calendar as CalendarIcon, Filter, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, addDays, subDays, addMonths, subMonths, addYears, subYears, startOfYear, eachMonthOfInterval, endOfYear } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarEvent } from "@/components/ui/calendar-event";
 import { Link, useLocation } from "wouter";
@@ -21,7 +21,21 @@ import {
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type ViewType = "day" | "week" | "month";
+type ViewType = "day" | "week" | "month" | "year";
+
+// Color coding for programs and teachers
+const programColors = {
+  "STEM Excellence": "bg-blue-100 border-blue-200",
+  "Computer Science": "bg-green-100 border-green-200",
+  "AI Fundamentals": "bg-purple-100 border-purple-200",
+  "2410BCCS": "bg-orange-100 border-orange-200"
+};
+
+const teacherColors = {
+  "Dr. Sarah Johnson": "text-blue-700",
+  "Prof. Michael Chen": "text-green-700",
+  "Dr. Alan Turing": "text-orange-700"
+};
 
 // Mock data to better represent the educational context
 const mockEvents = [
@@ -49,34 +63,31 @@ const mockEvents = [
     time: "02:00 PM",
     date: new Date(2025, 0, 24),
   },
-  {
-    id: 4,
-    title: "Algorithm Design",
-    teacher: "Prof. Michael Chen",
-    program: "Computer Science",
-    time: "09:00 AM",
-    date: new Date(2025, 0, 25),
-  },
-  {
-    id: 5,
-    title: "Statistical Analysis",
-    teacher: "Dr. Sarah Johnson",
-    program: "STEM Excellence",
-    time: "02:00 PM",
-    date: new Date(2025, 0, 25),
-  }
+  // Generate Bootcamp events (Mon-Thu, 19:00-22:00, Oct 2024 - May 2025)
+  ...Array.from({ length: 32 }, (_, weekIndex) => {
+    return [1, 2, 3, 4].map((dayOffset) => ({
+      id: 1000 + weekIndex * 4 + dayOffset,
+      title: "Bootcamp in Cloud Computing",
+      teacher: "Dr. Alan Turing",
+      program: "2410BCCS",
+      time: "19:00 - 22:00",
+      date: addDays(new Date(2024, 9, 7), weekIndex * 7 + dayOffset - 1), // Start from first Monday of Oct 2024
+    }));
+  }).flat().filter(event => event.date <= new Date(2025, 4, 31)) // Filter until May 2025
 ];
 
 // Mock data for filters
 const teachers = [
   { id: "sj", name: "Dr. Sarah Johnson" },
-  { id: "mc", name: "Prof. Michael Chen" }
+  { id: "mc", name: "Prof. Michael Chen" },
+  { id: "at", name: "Dr. Alan Turing" }
 ];
 
 const programs = [
   { id: "stem", name: "STEM Excellence" },
   { id: "cs", name: "Computer Science" },
-  { id: "ai", name: "AI Fundamentals" }
+  { id: "ai", name: "AI Fundamentals" },
+  { id: "bc", name: "2410BCCS" }
 ];
 
 export default function CalendarPage() {
@@ -107,6 +118,23 @@ export default function CalendarPage() {
     });
   };
 
+  const handleNavigation = (direction: 'prev' | 'next') => {
+    switch (view) {
+      case 'day':
+        setDate(direction === 'prev' ? subDays(date, 1) : addDays(date, 1));
+        break;
+      case 'week':
+        setDate(direction === 'prev' ? subDays(date, 7) : addDays(date, 7));
+        break;
+      case 'month':
+        setDate(direction === 'prev' ? subMonths(date, 1) : addMonths(date, 1));
+        break;
+      case 'year':
+        setDate(direction === 'prev' ? subYears(date, 1) : addYears(date, 1));
+        break;
+    }
+  };
+
   const renderDayView = () => {
     const dayEvents = getEventsForDate(date);
     return (
@@ -119,6 +147,8 @@ export default function CalendarPage() {
             time={event.time}
             teacher={event.teacher}
             program={event.program}
+            className={programColors[event.program as keyof typeof programColors]}
+            teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
           />
         ))}
       </div>
@@ -142,6 +172,8 @@ export default function CalendarPage() {
                   time={event.time}
                   teacher={event.teacher}
                   program={event.program}
+                  className={programColors[event.program as keyof typeof programColors]}
+                  teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
                 />
               ))}
             </div>
@@ -182,6 +214,8 @@ export default function CalendarPage() {
                 time={event.time}
                 teacher={event.teacher}
                 program={event.program}
+                className={programColors[event.program as keyof typeof programColors]}
+                teacherClassName={teacherColors[event.teacher as keyof typeof teacherColors]}
               />
             ))}
           </div>
@@ -189,6 +223,45 @@ export default function CalendarPage() {
       })}
     </div>
   );
+
+  const renderYearView = () => {
+    const months = eachMonthOfInterval({
+      start: startOfYear(date),
+      end: endOfYear(date),
+    });
+
+    return (
+      <div className="grid grid-cols-3 gap-6">
+        {months.map((month, i) => (
+          <Card key={i} className="p-4">
+            <h3 className="font-medium mb-2">{format(month, "MMMM")}</h3>
+            <div className="grid grid-cols-7 gap-1 text-sm">
+              {eachDayOfInterval({
+                start: startOfWeek(month),
+                end: endOfWeek(addDays(month, 34)),
+              }).map((day, j) => {
+                const isCurrentMonth = isSameMonth(day, month);
+                const hasEvents = getEventsForDate(day).length > 0;
+
+                return (
+                  <div
+                    key={j}
+                    className={`
+                      h-6 w-6 flex items-center justify-center rounded-full
+                      ${!isCurrentMonth ? "text-muted-foreground" : ""}
+                      ${hasEvents ? "bg-primary text-primary-foreground" : ""}
+                    `}
+                  >
+                    {format(day, "d")}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="flex h-screen">
@@ -212,12 +285,30 @@ export default function CalendarPage() {
                   {format(date, "MMMM d, yyyy")}
                 </span>
               </div>
+
+              {/* Navigation Controls */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleNavigation('prev')}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleNavigation('next')}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
               {/* View Toggle */}
               <div className="bg-muted rounded-lg p-1">
-                {(["day", "week", "month"] as const).map((viewType) => (
+                {(["day", "week", "month", "year"] as const).map((viewType) => (
                   <Button
                     key={viewType}
                     variant={view === viewType ? "default" : "ghost"}
@@ -286,6 +377,17 @@ export default function CalendarPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Color coding legend */}
+                <div className="space-y-2 pt-4 border-t">
+                  <label className="text-sm font-medium">Programs</label>
+                  {Object.entries(programColors).map(([program, colorClass]) => (
+                    <div key={program} className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded ${colorClass.split(' ')[0]}`} />
+                      <span className="text-sm">{program}</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
@@ -295,6 +397,7 @@ export default function CalendarPage() {
                 {view === "day" && renderDayView()}
                 {view === "week" && renderWeekView()}
                 {view === "month" && renderMonthView()}
+                {view === "year" && renderYearView()}
               </CardContent>
             </Card>
           </div>
@@ -304,7 +407,6 @@ export default function CalendarPage() {
   );
 }
 
-// Utility function to combine class names (This was already present in the original code)
 function cn(...classes: (string | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }

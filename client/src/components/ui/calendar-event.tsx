@@ -7,6 +7,7 @@ interface CalendarEventProps {
   teacher?: string;
   program?: string;
   className?: string;
+  teacherClassName?: string;
 }
 
 export const CalendarEvent: FC<CalendarEventProps> = ({
@@ -15,12 +16,12 @@ export const CalendarEvent: FC<CalendarEventProps> = ({
   teacher,
   program,
   className,
+  teacherClassName,
 }) => {
   return (
     <div
       className={cn(
-        "p-2 rounded-md text-sm mb-1 bg-primary/10 border border-primary/20",
-        "hover:bg-primary/20 transition-colors cursor-pointer",
+        "p-2 rounded-md text-sm mb-1",
         className
       )}
     >
@@ -28,7 +29,7 @@ export const CalendarEvent: FC<CalendarEventProps> = ({
       <div className="font-medium">{title}</div>
       {(teacher || program) && (
         <div className="text-xs text-muted-foreground mt-1">
-          {teacher && <span>{teacher}</span>}
+          {teacher && <span className={teacherClassName}>{teacher}</span>}
           {teacher && program && " · "}
           {program && <span>{program}</span>}
         </div>
