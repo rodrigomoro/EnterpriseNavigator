@@ -40,11 +40,22 @@ const mockEvents = [
   },
 ];
 
+// Mock data for filters
+const teachers = [
+  { id: "jd", name: "John Doe" },
+  { id: "js", name: "Jane Smith" }
+];
+
+const programs = [
+  { id: "math", name: "Mathematics" },
+  { id: "phys", name: "Physics" }
+];
+
 export default function CalendarPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<ViewType>("month");
-  const [selectedTeacher, setSelectedTeacher] = useState<string>("");
-  const [selectedProgram, setSelectedProgram] = useState<string>("");
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
+  const [selectedProgram, setSelectedProgram] = useState<string>("all");
 
   const weekDays = eachDayOfInterval({
     start: startOfWeek(date),
@@ -52,11 +63,19 @@ export default function CalendarPage() {
   });
 
   const getEventsForDate = (date: Date) => {
-    return mockEvents.filter(event => 
-      event.date.getDate() === date.getDate() &&
-      event.date.getMonth() === date.getMonth() &&
-      event.date.getFullYear() === date.getFullYear()
-    );
+    return mockEvents.filter(event => {
+      const dateMatch = event.date.getDate() === date.getDate() &&
+        event.date.getMonth() === date.getMonth() &&
+        event.date.getFullYear() === date.getFullYear();
+
+      const teacherMatch = selectedTeacher === "all" || 
+        teachers.find(t => t.id === selectedTeacher)?.name === event.teacher;
+
+      const programMatch = selectedProgram === "all" || 
+        programs.find(p => p.id === selectedProgram)?.name === event.program;
+
+      return dateMatch && teacherMatch && programMatch;
+    });
   };
 
   return (
@@ -107,9 +126,12 @@ export default function CalendarPage() {
                   <SelectValue placeholder="Select teacher" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Teachers</SelectItem>
-                  <SelectItem value="1">John Doe</SelectItem>
-                  <SelectItem value="2">Jane Smith</SelectItem>
+                  <SelectItem value="all">All Teachers</SelectItem>
+                  {teachers.map((teacher) => (
+                    <SelectItem key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -123,9 +145,12 @@ export default function CalendarPage() {
                   <SelectValue placeholder="Select program" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Programs</SelectItem>
-                  <SelectItem value="1">Mathematics</SelectItem>
-                  <SelectItem value="2">Physics</SelectItem>
+                  <SelectItem value="all">All Programs</SelectItem>
+                  {programs.map((program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -155,10 +180,7 @@ export default function CalendarPage() {
                 return (
                   <div
                     key={i}
-                    className={cn(
-                      "min-h-[120px] p-2 bg-background",
-                      !isCurrentMonth && "text-muted-foreground"
-                    )}
+                    className={`min-h-[120px] p-2 bg-background ${!isCurrentMonth ? "text-muted-foreground" : ""}`}
                   >
                     <div className="text-right mb-2">{format(currentDate, "d")}</div>
                     {dayEvents.map((event) => (
