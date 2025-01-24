@@ -18,11 +18,13 @@ import FinancialDashboard from "@/pages/FinancialDashboard";
 import Analytics from "@/pages/Analytics";
 import Organization from "@/pages/Organization";
 import SkillsMatrix from "@/pages/SkillsMatrix";
+import Calendar from "@/pages/calendar";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/calendar" component={Calendar} />
       <Route path="/programs/new" component={ManageProgram} />
       <Route path="/programs/:id/edit" component={ManageProgram} />
       <Route path="/programs/:id" component={ProjectOverview} />
