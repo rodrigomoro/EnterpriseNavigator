@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 type ViewType = "day" | "week" | "month" | "year";
 
@@ -47,7 +48,7 @@ const mockEvents = [
     title: "Advanced Mathematics",
     teacher: "Dr. Sarah Johnson",
     program: "STEM Excellence",
-    time: "09:00 AM",
+    time: "09:00 - 12:00",
     date: new Date(2025, 0, 24),
   },
   {
@@ -55,7 +56,7 @@ const mockEvents = [
     title: "Data Structures",
     teacher: "Prof. Michael Chen",
     program: "Computer Science",
-    time: "11:00 AM",
+    time: "11:00 - 14:00",
     date: new Date(2025, 0, 24),
   },
   {
@@ -153,8 +154,8 @@ const programs = [
 export default function CalendarPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<ViewType>("month");
-  const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
-  const [selectedProgram, setSelectedProgram] = useState<string>("all");
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>(["all"]);
+  const [selectedPrograms, setSelectedPrograms] = useState<string[]>(["all"]);
   const [, navigate] = useLocation();
 
   const weekDays = eachDayOfInterval({
@@ -197,11 +198,11 @@ export default function CalendarPage() {
         event.date.getMonth() === date.getMonth() &&
         event.date.getFullYear() === date.getFullYear();
 
-      const teacherMatch = selectedTeacher === "all" ||
-        teachers.find(t => t.id === selectedTeacher)?.name === event.teacher;
+      const teacherMatch = selectedTeachers.includes("all") ||
+        selectedTeachers.some(id => teachers.find(t => t.id === id)?.name === event.teacher);
 
-      const programMatch = selectedProgram === "all" ||
-        programs.find(p => p.id === selectedProgram)?.name === event.program;
+      const programMatch = selectedPrograms.includes("all") ||
+        selectedPrograms.some(id => programs.find(p => p.id === id)?.name === event.program);
 
       return dateMatch && teacherMatch && programMatch;
     });
@@ -231,6 +232,34 @@ export default function CalendarPage() {
       case 'year':
         setDate(direction === 'prev' ? subYears(date, 1) : addYears(date, 1));
         break;
+    }
+  };
+
+  const handleTeacherSelect = (value: string) => {
+    if (value === "all") {
+      setSelectedTeachers(["all"]);
+    } else {
+      const newSelection = selectedTeachers.filter(id => id !== "all");
+      if (newSelection.includes(value)) {
+        const filtered = newSelection.filter(id => id !== value);
+        setSelectedTeachers(filtered.length === 0 ? ["all"] : filtered);
+      } else {
+        setSelectedTeachers([...newSelection, value]);
+      }
+    }
+  };
+
+  const handleProgramSelect = (value: string) => {
+    if (value === "all") {
+      setSelectedPrograms(["all"]);
+    } else {
+      const newSelection = selectedPrograms.filter(id => id !== "all");
+      if (newSelection.includes(value)) {
+        const filtered = newSelection.filter(id => id !== value);
+        setSelectedPrograms(filtered.length === 0 ? ["all"] : filtered);
+      } else {
+        setSelectedPrograms([...newSelection, value]);
+      }
     }
   };
 
@@ -340,7 +369,22 @@ export default function CalendarPage() {
                 end: endOfWeek(addDays(month, 34), { weekStartsOn: 1 }),
               }).map((day, j) => {
                 const isCurrentMonth = isSameMonth(day, month);
-                const hasEvents = getEventsForDate(day).length > 0;
+                const dayEvents = getEventsForDate(day);
+                const hasEvents = dayEvents.length > 0;
+
+                // Get unique colors for selected programs and teachers
+                const uniquePrograms = [...new Set(dayEvents.map(event => event.program))];
+                const uniqueTeachers = [...new Set(dayEvents.map(event => event.teacher))];
+
+                let bgColor = "bg-transparent";
+                if (hasEvents) {
+                  if (uniquePrograms.length === 1) {
+                    const programColor = programColors[uniquePrograms[0] as keyof typeof programColors];
+                    bgColor = programColor.split(' ')[0];
+                  } else if (uniquePrograms.length > 1) {
+                    bgColor = "bg-gradient-to-br from-primary/40 to-secondary/40";
+                  }
+                }
 
                 return (
                   <div
@@ -348,8 +392,10 @@ export default function CalendarPage() {
                     className={`
                       h-6 w-6 flex items-center justify-center rounded-full
                       ${!isCurrentMonth ? "text-muted-foreground" : ""}
-                      ${hasEvents ? "bg-primary text-primary-foreground" : ""}
+                      ${bgColor}
+                      ${hasEvents ? "hover:ring-2 ring-primary cursor-pointer" : ""}
                     `}
+                    title={hasEvents ? `${uniquePrograms.join(", ")}\n${uniqueTeachers.join(", ")}` : ""}
                   >
                     {format(day, "d")}
                   </div>
@@ -438,42 +484,48 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Teacher</label>
-                  <Select
-                    value={selectedTeacher}
-                    onValueChange={setSelectedTeacher}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select teacher" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Teachers</SelectItem>
-                      {teachers.map((teacher) => (
-                        <SelectItem key={teacher.id} value={teacher.id}>
-                          {teacher.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label className="text-sm font-medium">Teachers</label>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge
+                      variant={selectedTeachers.includes("all") ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => handleTeacherSelect("all")}
+                    >
+                      All Teachers
+                    </Badge>
+                    {teachers.map((teacher) => (
+                      <Badge
+                        key={teacher.id}
+                        variant={selectedTeachers.includes(teacher.id) ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => handleTeacherSelect(teacher.id)}
+                      >
+                        {teacher.name}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Program</label>
-                  <Select
-                    value={selectedProgram}
-                    onValueChange={setSelectedProgram}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select program" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Programs</SelectItem>
-                      {programs.map((program) => (
-                        <SelectItem key={program.id} value={program.id}>
-                          {program.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label className="text-sm font-medium">Programs</label>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge
+                      variant={selectedPrograms.includes("all") ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => handleProgramSelect("all")}
+                    >
+                      All Programs
+                    </Badge>
+                    {programs.map((program) => (
+                      <Badge
+                        key={program.id}
+                        variant={selectedPrograms.includes(program.id) ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => handleProgramSelect(program.id)}
+                      >
+                        {program.name}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Conflict Warnings */}
