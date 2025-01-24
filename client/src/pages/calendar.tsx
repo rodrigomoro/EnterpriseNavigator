@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Calendar as CalendarIcon, Filter, ArrowLeft } from "lucide-react";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth } from "date-fns";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, addDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarEvent } from "@/components/ui/calendar-event";
 import { Link, useLocation } from "wouter";
@@ -19,38 +19,64 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Sidebar from "@/components/Sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type ViewType = "day" | "week" | "month";
 
-// Mock data for demonstration
+// Mock data to better represent the educational context
 const mockEvents = [
   {
     id: 1,
-    title: "Mathematics 101",
-    teacher: "John Doe",
-    program: "Mathematics",
-    time: "10:00 AM",
+    title: "Advanced Mathematics",
+    teacher: "Dr. Sarah Johnson",
+    program: "STEM Excellence",
+    time: "09:00 AM",
     date: new Date(2025, 0, 24),
   },
   {
     id: 2,
-    title: "Physics Basic",
-    teacher: "Jane Smith",
-    program: "Physics",
-    time: "2:00 PM",
+    title: "Data Structures",
+    teacher: "Prof. Michael Chen",
+    program: "Computer Science",
+    time: "11:00 AM",
     date: new Date(2025, 0, 24),
   },
+  {
+    id: 3,
+    title: "Machine Learning Basics",
+    teacher: "Dr. Sarah Johnson",
+    program: "AI Fundamentals",
+    time: "02:00 PM",
+    date: new Date(2025, 0, 24),
+  },
+  {
+    id: 4,
+    title: "Algorithm Design",
+    teacher: "Prof. Michael Chen",
+    program: "Computer Science",
+    time: "09:00 AM",
+    date: new Date(2025, 0, 25),
+  },
+  {
+    id: 5,
+    title: "Statistical Analysis",
+    teacher: "Dr. Sarah Johnson",
+    program: "STEM Excellence",
+    time: "02:00 PM",
+    date: new Date(2025, 0, 25),
+  }
 ];
 
 // Mock data for filters
 const teachers = [
-  { id: "jd", name: "John Doe" },
-  { id: "js", name: "Jane Smith" }
+  { id: "sj", name: "Dr. Sarah Johnson" },
+  { id: "mc", name: "Prof. Michael Chen" }
 ];
 
 const programs = [
-  { id: "math", name: "Mathematics" },
-  { id: "phys", name: "Physics" }
+  { id: "stem", name: "STEM Excellence" },
+  { id: "cs", name: "Computer Science" },
+  { id: "ai", name: "AI Fundamentals" }
 ];
 
 export default function CalendarPage() {
@@ -81,43 +107,134 @@ export default function CalendarPage() {
     });
   };
 
+  const renderDayView = () => {
+    const dayEvents = getEventsForDate(date);
+    return (
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">{format(date, "MMMM d, yyyy")}</h2>
+        {dayEvents.map((event) => (
+          <CalendarEvent
+            key={event.id}
+            title={event.title}
+            time={event.time}
+            teacher={event.teacher}
+            program={event.program}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const renderWeekView = () => {
+    const weekStart = startOfWeek(date);
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 7 }, (_, i) => {
+          const currentDate = addDays(weekStart, i);
+          const dayEvents = getEventsForDate(currentDate);
+          return (
+            <div key={i} className="space-y-2">
+              <h3 className="font-medium">{format(currentDate, "EEEE, MMMM d")}</h3>
+              {dayEvents.map((event) => (
+                <CalendarEvent
+                  key={event.id}
+                  title={event.title}
+                  time={event.time}
+                  teacher={event.teacher}
+                  program={event.program}
+                />
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderMonthView = () => (
+    <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
+      {/* Week day headers */}
+      {weekDays.map((day, i) => (
+        <div
+          key={i}
+          className="bg-background p-2 text-center text-sm font-medium"
+        >
+          {format(day, "EEE")}
+        </div>
+      ))}
+
+      {/* Calendar days */}
+      {Array.from({ length: 35 }, (_, i) => {
+        const currentDate = new Date(date.getFullYear(), date.getMonth(), i - date.getDay() + 1);
+        const isCurrentMonth = isSameMonth(currentDate, date);
+        const dayEvents = getEventsForDate(currentDate);
+
+        return (
+          <div
+            key={i}
+            className={`min-h-[120px] p-2 bg-background ${!isCurrentMonth ? "text-muted-foreground" : ""}`}
+          >
+            <div className="text-right mb-2">{format(currentDate, "d")}</div>
+            {dayEvents.map((event) => (
+              <CalendarEvent
+                key={event.id}
+                title={event.title}
+                time={event.time}
+                teacher={event.teacher}
+                program={event.program}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div className="flex h-screen">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="container p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-              className="rounded-full"
-            >
-              <ArrowLeft className="h-6 w-6" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">Calendar</h1>
-              <span className="text-muted-foreground ml-2">
-                {format(date, "MMMM d, yyyy")}
-              </span>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/")}
+                className="rounded-full"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-8 w-8" />
+                <h1 className="text-2xl font-bold">Calendar</h1>
+                <span className="text-muted-foreground ml-2">
+                  {format(date, "MMMM d, yyyy")}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="flex justify-end mb-6">
-            {/* View Toggle */}
-            <div className="bg-muted rounded-lg p-1">
-              {(["day", "week", "month"] as const).map((viewType) => (
-                <Button
-                  key={viewType}
-                  variant={view === viewType ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setView(viewType)}
-                  className="capitalize"
-                >
-                  {viewType}
-                </Button>
-              ))}
+            <div className="flex items-center gap-4">
+              {/* View Toggle */}
+              <div className="bg-muted rounded-lg p-1">
+                {(["day", "week", "month"] as const).map((viewType) => (
+                  <Button
+                    key={viewType}
+                    variant={view === viewType ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setView(viewType)}
+                    className="capitalize"
+                  >
+                    {viewType}
+                  </Button>
+                ))}
+              </div>
+
+              {/* User Avatar */}
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="/avatars/01.png" alt="User" />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
             </div>
           </div>
 
@@ -172,45 +289,12 @@ export default function CalendarPage() {
               </CardContent>
             </Card>
 
-            {/* Calendar Grid */}
+            {/* Calendar Content */}
             <Card>
               <CardContent className="p-6">
-                <div className="grid grid-cols-7 gap-px bg-muted rounded-lg overflow-hidden">
-                  {/* Week day headers */}
-                  {weekDays.map((day, i) => (
-                    <div
-                      key={i}
-                      className="bg-background p-2 text-center text-sm font-medium"
-                    >
-                      {format(day, "EEE")}
-                    </div>
-                  ))}
-
-                  {/* Calendar days */}
-                  {Array.from({ length: 35 }, (_, i) => {
-                    const currentDate = new Date(date.getFullYear(), date.getMonth(), i - date.getDay() + 1);
-                    const isCurrentMonth = isSameMonth(currentDate, date);
-                    const dayEvents = getEventsForDate(currentDate);
-
-                    return (
-                      <div
-                        key={i}
-                        className={`min-h-[120px] p-2 bg-background ${!isCurrentMonth ? "text-muted-foreground" : ""}`}
-                      >
-                        <div className="text-right mb-2">{format(currentDate, "d")}</div>
-                        {dayEvents.map((event) => (
-                          <CalendarEvent
-                            key={event.id}
-                            title={event.title}
-                            time={event.time}
-                            teacher={event.teacher}
-                            program={event.program}
-                          />
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
+                {view === "day" && renderDayView()}
+                {view === "week" && renderWeekView()}
+                {view === "month" && renderMonthView()}
               </CardContent>
             </Card>
           </div>
@@ -220,7 +304,7 @@ export default function CalendarPage() {
   );
 }
 
-// Utility function to combine class names
+// Utility function to combine class names (This was already present in the original code)
 function cn(...classes: (string | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
