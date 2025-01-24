@@ -45,25 +45,90 @@ const mockConnectors = [
 ];
 
 const mockPermissions = [
+  // Programs
   { id: 1, name: "View Programs", description: "Can view program details", category: "Programs" },
-  { id: 2, name: "Manage Programs", description: "Can create and edit programs", category: "Programs" },
-  { id: 3, name: "View People", description: "Can view people profiles", category: "People" },
-  { id: 4, name: "Manage People", description: "Can add and edit people", category: "People" },
+  { id: 2, name: "Create Programs", description: "Can create new programs", category: "Programs" },
+  { id: 3, name: "Edit Programs", description: "Can modify existing programs", category: "Programs" },
+  { id: 4, name: "Delete Programs", description: "Can delete programs", category: "Programs" },
+
+  // People
+  { id: 5, name: "View People", description: "Can view people profiles", category: "People" },
+  { id: 6, name: "Manage People", description: "Can add and edit people", category: "People" },
+  { id: 7, name: "Delete People", description: "Can remove people", category: "People" },
+
+  // Calendar
+  { id: 8, name: "View Calendar", description: "Can view calendar events", category: "Calendar" },
+  { id: 9, name: "Manage Events", description: "Can create and edit calendar events", category: "Calendar" },
+
+  // Organization
+  { id: 10, name: "View Organization", description: "Can view organization structure", category: "Organization" },
+  { id: 11, name: "Manage Organization", description: "Can modify organization structure", category: "Organization" },
+
+  // Skills Matrix
+  { id: 12, name: "View Skills", description: "Can view skills matrix", category: "Skills Matrix" },
+  { id: 13, name: "Manage Skills", description: "Can update skills and assessments", category: "Skills Matrix" },
+
+  // Invoices
+  { id: 14, name: "View Invoices", description: "Can view invoice details", category: "Invoices" },
+  { id: 15, name: "Create Invoices", description: "Can create new invoices", category: "Invoices" },
+  { id: 16, name: "Manage Invoices", description: "Can edit and process invoices", category: "Invoices" },
+
+  // QR Tracking
+  { id: 17, name: "View QR Codes", description: "Can view QR tracking dashboard", category: "QR Tracking" },
+  { id: 18, name: "Generate QR Codes", description: "Can generate new QR codes", category: "QR Tracking" },
+
+  // Analytics
+  { id: 19, name: "View Analytics", description: "Can access analytics dashboard", category: "Analytics" },
+  { id: 20, name: "Export Reports", description: "Can export analytical reports", category: "Analytics" },
+
+  // Settings
+  { id: 21, name: "Manage Communications", description: "Can configure notification settings", category: "Settings" },
+  { id: 22, name: "Manage Identity", description: "Can configure identity providers", category: "Settings" },
+  { id: 23, name: "Manage Security", description: "Can manage roles and permissions", category: "Settings" }
 ];
 
 const mockRoles = [
   { 
-    id: 1, 
-    name: "Administrator", 
+    id: 1,
+    name: "Administrator",
     description: "Full system access",
+    isSystem: true,
     permissions: mockPermissions,
   },
   {
     id: 2,
+    name: "Editor",
+    description: "Can manage all content except settings",
+    isSystem: true,
+    permissions: mockPermissions.filter(p => p.category !== "Settings"),
+  },
+  {
+    id: 3,
+    name: "Reader",
+    description: "Read-only access to all content",
+    isSystem: true,
+    permissions: mockPermissions.filter(p => p.name.startsWith("View")),
+  },
+  {
+    id: 4,
     name: "Program Manager",
     description: "Can manage programs and view people",
-    permissions: mockPermissions.filter(p => p.category === "Programs" || p.name === "View People"),
+    isSystem: false,
+    permissions: [
+      ...mockPermissions.filter(p => p.category === "Programs"),
+      ...mockPermissions.filter(p => p.name === "View People"),
+    ],
   },
+  {
+    id: 5,
+    name: "HR Manager",
+    description: "Can manage people and skills",
+    isSystem: false,
+    permissions: [
+      ...mockPermissions.filter(p => p.category === "People"),
+      ...mockPermissions.filter(p => p.category === "Skills Matrix"),
+    ],
+  }
 ];
 
 export default function Settings() {
@@ -291,7 +356,14 @@ export default function Settings() {
                             className="flex items-start justify-between p-4 border-b last:border-0"
                           >
                             <div className="space-y-1">
-                              <h3 className="font-medium">{role.name}</h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium">{role.name}</h3>
+                                {role.isSystem && (
+                                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                    System
+                                  </Badge>
+                                )}
+                              </div>
                               <p className="text-sm text-muted-foreground">{role.description}</p>
                               <div className="flex flex-wrap gap-1 mt-2">
                                 {role.permissions.slice(0, 2).map((permission) => (
@@ -306,7 +378,9 @@ export default function Settings() {
                                 )}
                               </div>
                             </div>
-                            <Button variant="ghost" size="sm">Edit</Button>
+                            {!role.isSystem && (
+                              <Button variant="ghost" size="sm">Edit</Button>
+                            )}
                           </div>
                         ))}
                       </ScrollArea>
