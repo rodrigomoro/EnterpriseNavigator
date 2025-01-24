@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,9 @@ import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
 import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Mock data for settings
 const mockNotificationChannels = [
@@ -88,7 +91,7 @@ const mockPermissions = [
 ];
 
 const mockRoles = [
-  { 
+  {
     id: 1,
     name: "Administrator",
     description: "Full system access",
@@ -132,6 +135,24 @@ const mockRoles = [
 ];
 
 export default function Settings() {
+  const [selectedRole, setSelectedRole] = useState<(typeof mockRoles)[0] | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+
+  const handleEditRole = (role: typeof mockRoles[0]) => {
+    setSelectedRole(role);
+    setSelectedPermissions(role.permissions.map(p => p.id));
+    setEditDialogOpen(true);
+  };
+
+  const handlePermissionChange = (permissionId: number, checked: boolean) => {
+    setSelectedPermissions(prev =>
+      checked
+        ? [...prev, permissionId]
+        : prev.filter(id => id !== permissionId)
+    );
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -343,83 +364,157 @@ export default function Settings() {
 
               <TabsContent value="security">
                 <div className="grid gap-4 grid-cols-12">
-                  <Card className="col-span-12 lg:col-span-4">
+                  <Card className="col-span-12 lg:col-span-5">
                     <CardHeader>
                       <CardTitle>Roles</CardTitle>
                       <CardDescription>Manage security roles and their permissions</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
-                      <ScrollArea className="h-[400px]">
+                      <ScrollArea className="h-[600px]">
                         {mockRoles.map((role) => (
                           <div
                             key={role.id}
-                            className="flex items-start justify-between p-4 border-b last:border-0"
+                            className="p-4 border-b last:border-0 hover:bg-accent/5"
                           >
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-medium">{role.name}</h3>
-                                {role.isSystem && (
-                                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                    System
-                                  </Badge>
-                                )}
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{role.name}</h3>
+                                  {role.isSystem && (
+                                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                      System
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">{role.description}</p>
                               </div>
-                              <p className="text-sm text-muted-foreground">{role.description}</p>
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {role.permissions.slice(0, 2).map((permission) => (
-                                  <Badge key={permission.id} variant="secondary" className="text-xs">
-                                    {permission.name}
-                                  </Badge>
+                              {!role.isSystem && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditRole(role)}
+                                >
+                                  Edit
+                                </Button>
+                              )}
+                            </div>
+
+                            <div className="mt-4">
+                              <h4 className="text-sm font-medium mb-2">Permissions:</h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                {Object.entries(
+                                  role.permissions.reduce((acc, curr) => ({
+                                    ...acc,
+                                    [curr.category]: [...(acc[curr.category] || []), curr],
+                                  }), {} as Record<string, typeof mockPermissions>)
+                                ).map(([category, perms]) => (
+                                  <div key={category} className="space-y-1">
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                      {category}
+                                    </p>
+                                    {perms.map(perm => (
+                                      <p key={perm.id} className="text-xs">
+                                        {perm.name}
+                                      </p>
+                                    ))}
+                                  </div>
                                 ))}
-                                {role.permissions.length > 2 && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    +{role.permissions.length - 2} more
-                                  </Badge>
-                                )}
                               </div>
                             </div>
-                            {!role.isSystem && (
-                              <Button variant="ghost" size="sm">Edit</Button>
-                            )}
                           </div>
                         ))}
                       </ScrollArea>
                     </CardContent>
                   </Card>
 
-                  <Card className="col-span-12 lg:col-span-8">
+                  <Card className="col-span-12 lg:col-span-7">
                     <CardHeader>
-                      <CardTitle>Permissions</CardTitle>
-                      <CardDescription>Available permissions in the system</CardDescription>
+                      <CardTitle>Available Permissions</CardTitle>
+                      <CardDescription>System-defined permissions and their descriptions</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-6">
+                      <ScrollArea className="h-[600px] pr-4">
+                        <div className="space-y-8">
+                          {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
+                            <div key={category} className="space-y-4">
+                              <h3 className="font-medium">{category}</h3>
+                              <div className="grid gap-4">
+                                {mockPermissions
+                                  .filter(p => p.category === category)
+                                  .map((permission) => (
+                                    <div
+                                      key={permission.id}
+                                      className="flex items-start justify-between"
+                                    >
+                                      <div>
+                                        <p className="font-medium">{permission.name}</p>
+                                        <p className="text-sm text-muted-foreground">
+                                          {permission.description}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Edit Role Dialog */}
+                <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Edit Role: {selectedRole?.name}</DialogTitle>
+                      <DialogDescription>
+                        Select the permissions for this role
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-6 py-4">
+                      <div className="space-y-4">
                         {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
-                          <div key={category} className="space-y-4">
-                            <h3 className="font-medium">{category}</h3>
-                            <div className="grid gap-4">
+                          <div key={category} className="space-y-2">
+                            <h4 className="font-medium">{category}</h4>
+                            <div className="grid gap-2">
                               {mockPermissions
                                 .filter(p => p.category === category)
                                 .map((permission) => (
-                                  <div
-                                    key={permission.id}
-                                    className="flex items-start justify-between"
-                                  >
-                                    <div>
-                                      <p className="font-medium">{permission.name}</p>
-                                      <p className="text-sm text-muted-foreground">
-                                        {permission.description}
-                                      </p>
-                                    </div>
+                                  <div key={permission.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`permission-${permission.id}`}
+                                      checked={selectedPermissions.includes(permission.id)}
+                                      onCheckedChange={(checked) =>
+                                        handlePermissionChange(permission.id, checked === true)
+                                      }
+                                    />
+                                    <label
+                                      htmlFor={`permission-${permission.id}`}
+                                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                      {permission.name}
+                                    </label>
                                   </div>
                                 ))}
                             </div>
                           </div>
                         ))}
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
+
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={() => setEditDialogOpen(false)}>
+                          Save Changes
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
               </TabsContent>
             </Tabs>
           </div>
