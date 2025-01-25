@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from "wouter";
+import { Link, useLocation, useParams } from 'wouter';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,6 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,7 +44,54 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import PeoplePicker from "@/components/ui/PeoplePicker";
-import { useEffect } from "react";
+
+// Status descriptions for each role type
+const statusDescriptions: Record<string, Record<string, string>> = {
+  Staff: {
+    'Active': 'Currently employed and active in their role',
+    'Inactive': 'Temporarily not working but still associated with the institution',
+    'Terminated': 'Employment has ended permanently',
+    'On Probation': 'Newly hired staff under evaluation',
+    'Retired': 'Former staff who have retired but may still be part of the system',
+    'Contractual': 'Working on a fixed-term contract',
+    'Resigned': 'Staff who resigned but may still have outstanding formalities',
+    'On Leave': 'On approved leave (medical, maternity, personal, etc.)',
+    'Suspended': 'Temporarily barred from duties for disciplinary reasons',
+    'Pending Approval': 'New staff awaiting HR or administrative approval'
+  },
+  Teacher: {
+    'Active': 'Actively teaching and engaged in academic duties',
+    'Inactive': 'Temporarily not teaching',
+    'Retired': 'Former teacher who has retired',
+    'Adjunct': 'External faculty teaching part-time or specific courses',
+    'Visiting': 'Guest or visiting faculty from another institution',
+    'Probationary': 'New teacher under evaluation',
+    'On Leave': 'On approved leave (personal, research, or study leave)',
+    'Suspended': 'Temporarily barred from teaching for disciplinary reasons',
+    'Resigned': 'Teacher who has resigned but still in the system',
+    'Contractual': 'Temporary or fixed-term teaching staff'
+  },
+  Student: {
+    'Enrolled': 'Actively attending classes and participating in programs',
+    'Graduated': 'Successfully completed the academic program',
+    'Withdrawn': 'Dropped out or withdrew from the program voluntarily',
+    'Dismissed': 'Removed from the institution due to disciplinary or academic issues',
+    'Deferred': 'Temporarily paused enrollment',
+    'Alumni': 'Former student who has graduated and is now part of the alumni network',
+    'Suspended': 'Temporarily barred from academic activities',
+    'Prospective': 'Applied to the institution and awaiting confirmation',
+    'Pending Enrollment': 'Admitted but not yet enrolled in classes',
+    'Audit': 'Attending classes but not formally enrolled for credit',
+    'Exchange': 'Participating in a student exchange program',
+    'Interning': 'On internship as part of their program requirements',
+    'Dropped Out': 'Left the institution without completing the program'
+  }
+};
+
+// Function to get status description
+const getStatusDescription = (role: string, status: string): string => {
+  return statusDescriptions[role]?.[status] || status;
+};
 
 // Status options based on role
 const statusOptions = {
@@ -148,8 +202,8 @@ export default function ManagePerson() {
 
   // Get the current role to determine status options
   const currentRole = form.watch('role');
-  const roleCategory = currentRole === 'Student' ? 'Student' : 
-                      (currentRole === 'Teacher' || currentRole === 'Director') ? 'Teacher' : 'Staff';
+  const roleCategory = currentRole === 'Student' ? 'Student' :
+    (currentRole === 'Teacher' || currentRole === 'Director') ? 'Teacher' : 'Staff';
   const availableStatuses = statusOptions[roleCategory as keyof typeof statusOptions] || [];
 
   useEffect(() => {
@@ -299,12 +353,30 @@ export default function ManagePerson() {
                             </FormControl>
                             <SelectContent>
                               {availableStatuses.map(status => (
-                                <SelectItem key={status} value={status}>
-                                  {status}
-                                </SelectItem>
+                                <TooltipProvider key={status}>
+                                  <Tooltip delayDuration={200}>
+                                    <TooltipTrigger asChild>
+                                      <SelectItem value={status}>
+                                        {status}
+                                      </SelectItem>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="right"
+                                      align="center"
+                                      sideOffset={5}
+                                      className="max-w-[200px]"
+                                    >
+                                      <p>{getStatusDescription(roleCategory, status)}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               ))}
                             </SelectContent>
                           </Select>
+                          <FormDescription>
+                            Select the current status for this person based on their role.
+                            Hover over options to see detailed descriptions.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
