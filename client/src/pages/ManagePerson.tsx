@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useLocation, useParams } from "wouter";
-import { Button } from "@/components/ui/button";
+
+// UI Components
 import {
   Form,
   FormControl,
@@ -13,13 +14,14 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockProjects } from "@/data/mockData";
-import { FormSection } from "@/components/ui/FormSection";
-import Sidebar from "@/components/Sidebar";
-import UserAvatar from "@/components/UserAvatar";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Globe, AlertCircle, Database, Key } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -27,18 +29,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Icons and Utils
+import { ArrowLeft, Globe, AlertCircle, Database, Key } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// Custom Components
+import Sidebar from "@/components/Sidebar";
+import UserAvatar from "@/components/UserAvatar";
 import PeoplePicker from "@/components/ui/PeoplePicker";
-import { useState } from "react";
+
+// Mock Data
+import { mockTeamMembers, mockProjects } from "@/data/mockData";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -344,7 +355,9 @@ export default function ManagePerson() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="Administrator">Administrator</SelectItem>
+                                  <SelectItem value="Administrator">
+                                    Administrator
+                                  </SelectItem>
                                   <SelectItem value="Editor">Editor</SelectItem>
                                   <SelectItem value="Viewer">Viewer</SelectItem>
                                 </SelectContent>
@@ -414,6 +427,7 @@ export default function ManagePerson() {
                           Changes to synced fields will be overwritten during the next synchronization
                         </AlertDescription>
                       </Alert>
+
                       <FormField
                         control={form.control}
                         name="syncEnabled"
@@ -434,6 +448,7 @@ export default function ManagePerson() {
                           </div>
                         )}
                       />
+
                       <div className="space-y-4">
                         <FormField
                           control={form.control}
@@ -459,6 +474,7 @@ export default function ManagePerson() {
                             </div>
                           )}
                         />
+
                         <FormField
                           control={form.control}
                           name="googleSync"
@@ -480,6 +496,7 @@ export default function ManagePerson() {
                             </div>
                           )}
                         />
+
                         <FormField
                           control={form.control}
                           name="awsSync"
