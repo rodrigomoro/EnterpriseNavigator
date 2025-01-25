@@ -246,8 +246,8 @@ export default function People() {
                 </Avatar>
 
                 <div className="flex-grow">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{member.name}</h3>
+                  <h3 className="font-semibold">{member.name}</h3>
+                  <div className="my-1">
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
