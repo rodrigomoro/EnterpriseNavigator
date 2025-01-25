@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -281,7 +281,7 @@ export default function Settings() {
 
     return (
       <Dialog open={!!configureProvider} onOpenChange={() => setConfigureProvider(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>
@@ -290,53 +290,129 @@ export default function Settings() {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {fields.map(field => (
-              <div key={field.name} className="space-y-2">
-                <Label>{field.label}</Label>
-                {field.type === "textarea" ? (
-                  <textarea
-                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder={`Enter ${field.label.toLowerCase()}`}
-                  />
-                ) : (
-                  <Input
-                    type={field.type}
-                    placeholder={`Enter ${field.label.toLowerCase()}`}
-                  />
-                )}
-              </div>
-            ))}
+            <Alert>
+              <Key className="h-4 w-4" />
+              <AlertDescription>
+                Ensure you have the necessary permissions and access to configure this integration.
+                All credentials are encrypted before storage.
+              </AlertDescription>
+            </Alert>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Field Mappings</CardTitle>
-                <CardDescription>
-                  Select which fields to sync with this provider
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {fieldMappings
-                    .filter(mapping => mapping.source === configureProvider)
-                    .map(mapping => (
-                      <div key={mapping.field} className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>{mapping.description}</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Field: {mapping.field}
-                          </p>
-                        </div>
-                        <Switch
-                          checked={mapping.enabled}
-                          onCheckedChange={(checked) => handleToggleFieldMapping(mapping.field, checked)}
+            <div className="grid grid-cols-2 gap-6">
+              {/* Authentication Configuration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Authentication</CardTitle>
+                  <CardDescription>
+                    Provide credentials for secure API access
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {fields.map(field => (
+                    <div key={field.name} className="space-y-2">
+                      <Label>{field.label}</Label>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          className="w-full min-h-[200px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
                         />
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
+                      ) : (
+                        <Input
+                          type={field.type}
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
+                          className={field.type === "password" ? "font-mono" : ""}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-            <div className="flex justify-between">
+              {/* Sync Configuration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Sync Settings</CardTitle>
+                  <CardDescription>
+                    Configure synchronization behavior
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Sync Frequency</Label>
+                    <Select defaultValue="15">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">Every 5 minutes</SelectItem>
+                        <SelectItem value="15">Every 15 minutes</SelectItem>
+                        <SelectItem value="30">Every 30 minutes</SelectItem>
+                        <SelectItem value="60">Every hour</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Conflict Resolution</Label>
+                    <Select defaultValue="provider">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="provider">Provider is source of truth</SelectItem>
+                        <SelectItem value="system">System is source of truth</SelectItem>
+                        <SelectItem value="manual">Manual resolution</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between space-x-2">
+                    <div className="space-y-0.5">
+                      <Label>Enable Real-time Updates</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Receive immediate updates when changes occur
+                      </p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Field Mappings */}
+              <Card className="col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base">Field Mappings</CardTitle>
+                  <CardDescription>
+                    Select which fields to sync with this provider
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {fieldMappings
+                      .filter(mapping => mapping.source === configureProvider)
+                      .map(mapping => (
+                        <div
+                          key={mapping.field}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
+                          <div className="space-y-0.5">
+                            <Label>{mapping.description}</Label>
+                            <p className="text-sm text-muted-foreground">
+                              Field: {mapping.field}
+                            </p>
+                          </div>
+                          <Switch
+                            checked={mapping.enabled}
+                            onCheckedChange={(checked) => handleToggleFieldMapping(mapping.field, checked)}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="flex justify-between pt-4 border-t">
               <Button
                 variant="outline"
                 onClick={() => setConfigureProvider(null)}
