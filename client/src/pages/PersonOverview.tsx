@@ -65,6 +65,20 @@ const mockTeacherData = {
       students: 18,
       startDate: "2023-11-15",
     }
+  ],
+  certifications: [
+    {
+      name: "Advanced Web Development Certificate",
+      issueDate: "2023-08-15",
+      status: "Completed",
+      score: 9.8
+    },
+    {
+      name: "Cloud Architecture Certification",
+      issueDate: "2023-12-01",
+      status: "Completed",
+      score: 9.5
+    }
   ]
 };
 
@@ -159,13 +173,13 @@ export default function PersonOverview() {
                     </div>
 
                     <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium">{person.name}</h3>
+                        <Badge variant="outline">{person.status || 'Active'}</Badge>
+                      </div>
+
                       <DataField
-                        label="Full Name"
-                        value={person.name}
-                        source="Microsoft Entra ID"
-                      />
-                      <DataField
-                        label="Job Title"
+                        label="Role"
                         value={person.role}
                         source="Microsoft Entra ID"
                       />
@@ -176,17 +190,27 @@ export default function PersonOverview() {
                       />
                       <DataField
                         label="Email"
-                        value="example@email.com"
+                        value={person.email}
                         source="Google Cloud Identity"
                       />
                       <DataField
                         label="Phone"
-                        value="+1 234 567 890"
+                        value={person.phone}
+                        source="internal"
+                      />
+                      <DataField
+                        label="Birth Date"
+                        value={new Date(person.birthDate || '').toLocaleDateString()}
+                        source="internal"
+                      />
+                      <DataField
+                        label="LinkedIn"
+                        value={person.linkedinUrl}
                         source="internal"
                       />
                       <DataField
                         label="Location"
-                        value="San Francisco, CA"
+                        value={person.location}
                         source="Microsoft Entra ID"
                       />
                     </div>
@@ -260,7 +284,7 @@ export default function PersonOverview() {
                                 <span>Score: {program.score}/10</span>
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {program.completionDate 
+                                {program.completionDate
                                   ? `Completed: ${new Date(program.completionDate).toLocaleDateString()}`
                                   : `Expected: ${new Date(program.expectedCompletion).toLocaleDateString()}`}
                               </div>
@@ -303,37 +327,69 @@ export default function PersonOverview() {
                 )}
 
                 {(person.role === 'Teacher' || person.role === 'Director') && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <BookOpen className="h-5 w-5" />
-                        <div>
-                          <CardTitle>Current Programs</CardTitle>
-                          <CardDescription>Programs currently teaching or supervising</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        {mockTeacherData.programs.map((program, index) => (
-                          <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
-                            <div>
-                              <h4 className="font-medium">{program.name}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Role: {program.role}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <Badge variant="secondary">{program.students} Students</Badge>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Since: {new Date(program.startDate).toLocaleDateString()}
-                              </p>
-                            </div>
+                  <>
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-5 w-5" />
+                          <div>
+                            <CardTitle>Current Programs</CardTitle>
+                            <CardDescription>Programs currently teaching or supervising</CardDescription>
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          {mockTeacherData.programs.map((program, index) => (
+                            <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
+                              <div>
+                                <h4 className="font-medium">{program.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Role: {program.role}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <Badge variant="secondary">{program.students} Students</Badge>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Since: {new Date(program.startDate).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <Award className="h-5 w-5" />
+                          <div>
+                            <CardTitle>Certifications</CardTitle>
+                            <CardDescription>Professional certifications and achievements</CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {mockTeacherData.certifications.map((cert, index) => (
+                            <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
+                              <div>
+                                <h4 className="font-medium">{cert.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <Badge className="mb-1">{cert.status}</Badge>
+                                <p className="text-sm text-muted-foreground">Score: {cert.score}/10</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </>
                 )}
               </div>
             </div>

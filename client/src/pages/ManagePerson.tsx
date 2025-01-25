@@ -36,33 +36,76 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { useEffect } from "react";
 
+// Status options based on role
+const statusOptions = {
+  Student: [
+    'Enrolled',
+    'Graduated',
+    'Withdrawn',
+    'Dismissed',
+    'Deferred',
+    'Alumni',
+    'Suspended',
+    'Prospective',
+    'Pending Enrollment',
+    'Audit',
+    'Exchange',
+    'Interning',
+    'Dropped Out'
+  ],
+  Teacher: [
+    'Active',
+    'Inactive',
+    'Retired',
+    'Adjunct',
+    'Visiting',
+    'Probationary',
+    'On Leave',
+    'Suspended',
+    'Resigned',
+    'Contractual'
+  ],
+  Staff: [
+    'Active',
+    'Inactive',
+    'Terminated',
+    'On Probation',
+    'Retired',
+    'Contractual',
+    'Resigned',
+    'On Leave',
+    'Suspended',
+    'Pending Approval'
+  ]
+};
+
 const formSchema = z.object({
-  // Identity Provider Fields
+  // Basic Information
   name: z.string().min(1, "Name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   department: z.string().min(1, "Department is required"),
   email: z.string().email("Invalid email address"),
-  location: z.string().min(1, "Location is required"),
-  reportsTo: z.string().optional(),
-  officeLocation: z.string().optional(),
-
-  // Internal Fields
-  role: z.string().min(1, "Role is required"),
   phone: z.string().min(1, "Phone number is required"),
-  startDate: z.string().optional(),
-  bio: z.string(),
+  role: z.string().min(1, "Role is required"),
+  status: z.string().min(1, "Status is required"),
+
+  // Additional Information
+  birthDate: z.string().optional(),
+  linkedinUrl: z.string().optional(),
+  location: z.string().min(1, "Location is required"),
+  officeLocation: z.string().optional(),
+  bio: z.string().optional(),
   notes: z.string().optional(),
+
+  // Relations
+  reportsTo: z.string().optional(),
   programIds: z.array(z.string()).optional(),
 
-  // Sync Settings
-  syncEnabled: z.boolean().default(true),
-  microsoftSync: z.boolean().default(true),
-  googleSync: z.boolean().default(true),
-  awsSync: z.boolean().default(false),
+  // Start Date
+  startDate: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -96,12 +139,18 @@ export default function ManagePerson() {
       officeLocation: personData?.officeLocation ?? "",
       notes: personData?.notes ?? "",
       startDate: personData?.startDate ?? "",
-      syncEnabled: true,
-      microsoftSync: true,
-      googleSync: true,
-      awsSync: false,
+      birthDate: personData?.birthDate ?? "",
+      linkedinUrl: personData?.linkedinUrl ?? "",
+      status: personData?.status ?? "Active",
+      role: personData?.role ?? "",
     },
   });
+
+  // Get the current role to determine status options
+  const currentRole = form.watch('role');
+  const roleCategory = currentRole === 'Student' ? 'Student' : 
+                      (currentRole === 'Teacher' || currentRole === 'Director') ? 'Teacher' : 'Staff';
+  const availableStatuses = statusOptions[roleCategory as keyof typeof statusOptions] || [];
 
   useEffect(() => {
     return () => {
@@ -163,385 +212,277 @@ export default function ManagePerson() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <Tabs defaultValue="details" className="space-y-6">
-                <TabsList>
-                  <TabsTrigger value="details">Person Details</TabsTrigger>
-                  <TabsTrigger value="sync">Sync Settings</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="details">
-                  <div className="grid grid-cols-3 gap-6">
-                    {/* Identity Provider Information */}
-                    <Card>
-                      <CardHeader>
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          <div>
-                            <CardTitle>Identity Information</CardTitle>
-                            <CardDescription>
-                              Synced with identity providers
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Full Name</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormDescription className="flex items-center gap-1">
-                                <Globe className="h-3 w-3" />
-                                Synced with Microsoft Entra ID
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="jobTitle"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Job Title</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormDescription className="flex items-center gap-1">
-                                <Globe className="h-3 w-3" />
-                                Synced with Microsoft Entra ID
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="department"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Department</FormLabel>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select department" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {departments.map((dept) => (
-                                    <SelectItem key={dept} value={dept}>
-                                      {dept}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormDescription className="flex items-center gap-1">
-                                <Globe className="h-3 w-3" />
-                                Synced with Microsoft Entra ID
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email</FormLabel>
-                              <FormControl>
-                                <Input type="email" {...field} />
-                              </FormControl>
-                              <FormDescription className="flex items-center gap-1">
-                                <Globe className="h-3 w-3" />
-                                Synced with Google Cloud Identity
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
-
-                    {/* Internal Information */}
-                    <Card>
-                      <CardHeader>
-                        <div className="flex items-center gap-2">
-                          <Database className="h-4 w-4" />
-                          <div>
-                            <CardTitle>Internal Information</CardTitle>
-                            <CardDescription>
-                              Managed internally
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Phone</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="startDate"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Start Date</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="officeLocation"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Office Location</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="notes"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Internal Notes</FormLabel>
-                              <FormControl>
-                                <textarea
-                                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
-                                  placeholder="Add internal notes..."
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
-
-                    {/* System Access & Programs */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>System Access</CardTitle>
+              <div className="grid grid-cols-3 gap-6">
+                {/* Basic Information */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <div>
+                        <CardTitle>Basic Information</CardTitle>
                         <CardDescription>
-                          Role and program assignments
+                          Personal and contact details
                         </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="role"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>System Role</FormLabel>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select role" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="Administrator">Administrator</SelectItem>
-                                  <SelectItem value="Editor">Editor</SelectItem>
-                                  <SelectItem value="Viewer">Viewer</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="reportsTo"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Reports To</FormLabel>
-                              <FormControl>
-                                <PeoplePicker
-                                  people={mockTeamMembers}
-                                  selectedIds={field.value ? [field.value] : []}
-                                  onChange={(ids) => field.onChange(ids[0] || "")}
-                                  placeholder="Select manager"
-                                  multiple={false}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="programIds"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Associated Programs</FormLabel>
-                              <FormControl>
-                                <PeoplePicker
-                                  people={mockProjects.map((p) => ({
-                                    id: p.id,
-                                    name: p.name,
-                                    role: "Program",
-                                  }))}
-                                  selectedIds={field.value || []}
-                                  onChange={field.onChange}
-                                  placeholder="Select programs"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="sync">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Identity Provider Synchronization</CardTitle>
-                      <CardDescription>
-                        Configure how this person's data is synchronized with external systems
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <Alert>
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
-                          Changes to synced fields will be overwritten during the next synchronization
-                        </AlertDescription>
-                      </Alert>
-
-                      <FormField
-                        control={form.control}
-                        name="syncEnabled"
-                        render={({ field }) => (
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <FormLabel>Enable Synchronization</FormLabel>
-                              <FormDescription>
-                                Automatically sync data with identity providers
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </div>
-                        )}
-                      />
-
-                      <div className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="microsoftSync"
-                          render={({ field }) => (
-                            <div className="flex items-center justify-between space-x-2">
-                              <div className="space-y-0.5">
-                                <div className="flex items-center gap-2">
-                                  <FormLabel>Microsoft Entra ID</FormLabel>
-                                  <Badge variant="outline">Primary</Badge>
-                                </div>
-                                <FormDescription>
-                                  Sync name, job title, and department
-                                </FormDescription>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  disabled={!form.watch("syncEnabled")}
-                                />
-                              </FormControl>
-                            </div>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="googleSync"
-                          render={({ field }) => (
-                            <div className="flex items-center justify-between space-x-2">
-                              <div className="space-y-0.5">
-                                <FormLabel>Google Cloud Identity</FormLabel>
-                                <FormDescription>
-                                  Sync email and calendar access
-                                </FormDescription>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  disabled={!form.watch("syncEnabled")}
-                                />
-                              </FormControl>
-                            </div>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="awsSync"
-                          render={({ field }) => (
-                            <div className="flex items-center justify-between space-x-2">
-                              <div className="space-y-0.5">
-                                <FormLabel>AWS Cognito</FormLabel>
-                                <FormDescription>
-                                  Sync cloud resource access
-                                </FormDescription>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  disabled={!form.watch("syncEnabled")}
-                                />
-                              </FormControl>
-                            </div>
-                          )}
-                        />
                       </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="jobTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Job Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Student">Student</SelectItem>
+                              <SelectItem value="Teacher">Teacher</SelectItem>
+                              <SelectItem value="Director">Director</SelectItem>
+                              <SelectItem value="Staff">Staff</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Status</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {availableStatuses.map(status => (
+                                <SelectItem key={status} value={status}>
+                                  {status}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="department"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Department</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select department" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {departments.map((dept) => (
+                                <SelectItem key={dept} value={dept}>
+                                  {dept}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Contact Information */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Database className="h-4 w-4" />
+                      <div>
+                        <CardTitle>Contact Information</CardTitle>
+                        <CardDescription>
+                          Contact details and social profiles
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="linkedinUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>LinkedIn URL</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://linkedin.com/in/username" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Location</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Additional Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Additional Information</CardTitle>
+                    <CardDescription>
+                      Dates and other details
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Birth Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="officeLocation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Office Location</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="notes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Internal Notes</FormLabel>
+                          <FormControl>
+                            <textarea
+                              className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                              placeholder="Add internal notes..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
 
               <div className="flex justify-end gap-4">
                 <Button
