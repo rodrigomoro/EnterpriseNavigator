@@ -182,8 +182,8 @@ export default function People() {
                          member.department.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesRole = selectedRole === 'All' || member.role === selectedRole;
-    const matchesDepartment = !selectedDepartment || member.department === selectedDepartment;
-    const matchesStatus = !selectedStatus || member.status === selectedStatus;
+    const matchesDepartment = selectedDepartment === 'all' || member.department === selectedDepartment;
+    const matchesStatus = selectedStatus === 'all' || member.status === selectedStatus;
 
     return matchesSearch && matchesRole && matchesDepartment && matchesStatus;
   });
@@ -379,7 +379,7 @@ export default function People() {
                             <SelectValue placeholder="Select department" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Departments</SelectItem>
+                            <SelectItem key="all-departments" value="all">All Departments</SelectItem>
                             {departments.map(dept => (
                               <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                             ))}
@@ -397,7 +397,7 @@ export default function People() {
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Statuses</SelectItem>
+                            <SelectItem key="all-statuses" value="all">All Statuses</SelectItem>
                             {(selectedRole === 'All' ? ['Active', 'Inactive'] : statusOptions[selectedRole as keyof typeof statusOptions] || [])
                               .map(status => (
                                 <SelectItem key={status} value={status}>{status}</SelectItem>
