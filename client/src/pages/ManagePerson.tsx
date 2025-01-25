@@ -20,7 +20,6 @@ import UserAvatar from "@/components/UserAvatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Globe, AlertCircle, Database, Key } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
 import {
   Select,
   SelectContent,
@@ -38,8 +37,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useCallback, useEffect } from "react";
 import PeoplePicker from "@/components/ui/PeoplePicker";
+import { useCallback, useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -72,6 +71,7 @@ export default function ManagePerson() {
   const personData = isEdit
     ? mockTeamMembers.find((m) => m.id === params?.id)
     : null;
+
   const departments = Array.from(
     new Set(mockTeamMembers.map((member) => member.department))
   );
@@ -86,11 +86,12 @@ export default function ManagePerson() {
       phone: personData?.phone ?? "",
       bio: personData?.bio ?? "",
       reportsTo: personData?.reportsTo ?? "",
-      programIds: personData?.programIds ?? [],
-      location: personData?.location ?? "",
-      officeLocation: personData?.officeLocation ?? "",
-      notes: personData?.notes ?? "",
-      startDate: personData?.startDate ?? "",
+      programIds: [],
+      location: "",
+      officeLocation: "",
+      notes: "",
+      startDate: "",
+      role: personData?.role ?? "",
       syncEnabled: true,
       microsoftSync: true,
       googleSync: true,
@@ -117,8 +118,7 @@ export default function ManagePerson() {
   };
 
   if (isEdit && !personData) {
-    navigate("/people");
-    return null;
+    return navigate("/people");
   }
 
   return (
@@ -185,7 +185,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="jobTitle"
@@ -203,7 +202,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="department"
@@ -235,7 +233,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="email"
@@ -282,7 +279,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="startDate"
@@ -296,7 +292,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="officeLocation"
@@ -310,7 +305,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="notes"
@@ -333,10 +327,15 @@ export default function ManagePerson() {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>System Access</CardTitle>
-                        <CardDescription>
-                          Role and program assignments
-                        </CardDescription>
+                        <div className="flex items-center gap-2">
+                          <Key className="h-4 w-4" />
+                          <div>
+                            <CardTitle>System Access</CardTitle>
+                            <CardDescription>
+                              Role and program assignments
+                            </CardDescription>
+                          </div>
+                        </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <FormField
@@ -364,7 +363,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="reportsTo"
@@ -384,7 +382,6 @@ export default function ManagePerson() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="programIds"
@@ -427,7 +424,6 @@ export default function ManagePerson() {
                           Changes to synced fields will be overwritten during the next synchronization
                         </AlertDescription>
                       </Alert>
-
                       <FormField
                         control={form.control}
                         name="syncEnabled"
@@ -448,7 +444,6 @@ export default function ManagePerson() {
                           </div>
                         )}
                       />
-
                       <div className="space-y-4">
                         <FormField
                           control={form.control}
@@ -474,7 +469,6 @@ export default function ManagePerson() {
                             </div>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="googleSync"
@@ -496,7 +490,6 @@ export default function ManagePerson() {
                             </div>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="awsSync"
