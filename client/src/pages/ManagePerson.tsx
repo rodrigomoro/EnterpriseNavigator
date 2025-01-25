@@ -18,7 +18,7 @@ import { FormSection } from "@/components/ui/FormSection";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Globe, AlertCircle, Database } from "lucide-react";
+import { ArrowLeft, Globe, AlertCircle, Database, Key } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import {
@@ -30,6 +30,14 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { useCallback, useEffect } from "react";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 
