@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLocation, useParams } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import PeoplePicker from "@/components/ui/PeoplePicker";
-import { useCallback, useEffect } from "react";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -100,25 +100,17 @@ export default function ManagePerson() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    try {
-      console.log("Form submitted:", data);
-      toast({
-        title: isEdit ? "Person Updated" : "Person Created",
-        description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
-      });
-      navigate("/people");
-    } catch (error) {
-      console.error("Form submission error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save changes. Please try again.",
-        variant: "destructive",
-      });
-    }
+    console.log("Form submitted:", data);
+    toast({
+      title: isEdit ? "Person Updated" : "Person Created",
+      description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
+    });
+    navigate("/people");
   };
 
   if (isEdit && !personData) {
-    return navigate("/people");
+    navigate("/people");
+    return null;
   }
 
   return (
@@ -129,14 +121,12 @@ export default function ManagePerson() {
           <div className="flex justify-between items-center mb-6">
             <div>
               <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                <Button
-                  variant="ghost"
-                  className="gap-1 p-0 hover:bg-transparent"
-                  onClick={() => navigate("/people")}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  People Directory
-                </Button>
+                <Link href="/people">
+                  <a className="flex items-center gap-1 hover:text-foreground">
+                    <ArrowLeft className="h-4 w-4" />
+                    People Directory
+                  </a>
+                </Link>
               </div>
               <h1 className="text-2xl font-bold">
                 {isEdit ? `Edit ${personData?.name}` : "Add New Person"}
@@ -518,13 +508,11 @@ export default function ManagePerson() {
               </Tabs>
 
               <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => navigate("/people")}
-                >
-                  Cancel
-                </Button>
+                <Link href="/people">
+                  <Button variant="secondary" type="button">
+                    Cancel
+                  </Button>
+                </Link>
                 <Button type="submit">
                   {isEdit ? "Save Changes" : "Create Person"}
                 </Button>
