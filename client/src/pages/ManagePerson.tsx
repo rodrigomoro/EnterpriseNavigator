@@ -356,9 +356,7 @@ export default function ManagePerson() {
                                 <TooltipProvider key={status}>
                                   <Tooltip delayDuration={200}>
                                     <TooltipTrigger asChild>
-                                      <SelectItem value={status}>
-                                        {status}
-                                      </SelectItem>
+                                      <SelectItem value={status}>{status}</SelectItem>
                                     </TooltipTrigger>
                                     <TooltipContent
                                       side="right"
