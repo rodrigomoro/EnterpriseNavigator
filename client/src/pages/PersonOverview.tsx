@@ -1,4 +1,4 @@
-import { ArrowLeft, Edit, RefreshCw, Globe, Database } from "lucide-react";
+import { ArrowLeft, Edit, RefreshCw, Globe, Database, GraduationCap, Award, BookOpen } from "lucide-react";
 import { Link, useRoute } from 'wouter';
 import { mockTeamMembers } from '@/data/mockData';
 import Sidebar from '@/components/Sidebar';
@@ -9,6 +9,55 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
+
+// Mock student data (in a real app, this would come from your LMS/CRM integration)
+const mockStudentData = {
+  enrollmentStatus: "Active",
+  academicStanding: "Good Standing",
+  gpa: 3.8,
+  totalCredits: 45,
+  enrolledPrograms: [
+    {
+      name: "Full Stack Development",
+      progress: 75,
+      startDate: "2023-09-01",
+      expectedCompletion: "2024-08-31",
+    },
+    {
+      name: "UI/UX Design Fundamentals",
+      progress: 100,
+      startDate: "2023-06-01",
+      completionDate: "2023-12-15",
+    }
+  ],
+  certifications: [
+    {
+      name: "UI/UX Design Certificate",
+      issueDate: "2023-12-15",
+      status: "Completed",
+      score: 95
+    },
+    {
+      name: "JavaScript Fundamentals",
+      issueDate: "2023-10-30",
+      status: "Completed",
+      score: 88
+    }
+  ],
+  currentCourses: [
+    {
+      name: "Advanced React Development",
+      progress: 65,
+      grade: "A"
+    },
+    {
+      name: "Cloud Architecture",
+      progress: 45,
+      grade: "B+"
+    }
+  ]
+};
 
 export default function PersonOverview() {
   const [, params] = useRoute('/people/:id');
@@ -18,7 +67,6 @@ export default function PersonOverview() {
     return <div>Person not found</div>;
   }
 
-  // Mock data for demo purposes
   const lastSync = new Date("2024-01-24T10:30:00");
   const connectedProviders = ["Microsoft Entra ID", "Google Cloud Identity"];
 
@@ -55,7 +103,6 @@ export default function PersonOverview() {
               <UserAvatar />
             </div>
 
-            {/* Identity Provider Status */}
             <div className="mb-6">
               <Card>
                 <CardContent className="pt-6">
@@ -88,7 +135,6 @@ export default function PersonOverview() {
             </div>
 
             <div className="grid grid-cols-12 gap-6">
-              {/* Personal Information */}
               <div className="col-span-12 lg:col-span-4">
                 <Card>
                   <CardHeader>
@@ -96,7 +142,6 @@ export default function PersonOverview() {
                     <CardDescription>Basic details and contact information</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* Profile Picture */}
                     <div className="flex flex-col items-center text-center">
                       <Avatar className="h-24 w-24">
                         <AvatarImage src={person.avatar} alt={person.name} />
@@ -104,7 +149,6 @@ export default function PersonOverview() {
                       </Avatar>
                     </div>
 
-                    {/* Identity Information */}
                     <div className="space-y-4">
                       <DataField
                         label="Full Name"
@@ -141,75 +185,123 @@ export default function PersonOverview() {
                 </Card>
               </div>
 
-              {/* Work Information */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
-                {/* Organization Details */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Organization Details</CardTitle>
-                    <CardDescription>Work-related information and reporting structure</CardDescription>
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5" />
+                      <div>
+                        <CardTitle>Academic Status</CardTitle>
+                        <CardDescription>Current academic standing and progress</CardDescription>
+                      </div>
+                    </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <DataField
-                      label="Reports To"
-                      value="Jane Smith"
-                      source="Microsoft Entra ID"
-                    />
-                    <DataField
-                      label="Team"
-                      value="Engineering"
-                      source="Microsoft Entra ID"
-                    />
-                    <DataField
-                      label="Office"
-                      value="HQ - Floor 3"
-                      source="internal"
-                    />
-                    <DataField
-                      label="Start Date"
-                      value="January 15, 2024"
-                      source="internal"
-                    />
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Enrollment Status</p>
+                        <p className="font-medium">{mockStudentData.enrollmentStatus}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Academic Standing</p>
+                        <p className="font-medium">{mockStudentData.academicStanding}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">GPA</p>
+                        <p className="font-medium">{mockStudentData.gpa}</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                {/* System Access */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>System Access</CardTitle>
-                    <CardDescription>Account status and permissions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <DataField
-                      label="Account Status"
-                      value="Active"
-                      source="Microsoft Entra ID"
-                    />
-                    <DataField
-                      label="Role"
-                      value="Administrator"
-                      source="internal"
-                    />
-                    <DataField
-                      label="Last Login"
-                      value="Today at 9:30 AM"
-                      source="internal"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Internal Notes */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Internal Notes</CardTitle>
-                    <CardDescription>Additional information for internal use</CardDescription>
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-5 w-5" />
+                      <div>
+                        <CardTitle>Program Enrollment</CardTitle>
+                        <CardDescription>Current and completed programs</CardDescription>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <DataField
-                      label="Notes"
-                      value="Team lead for the new cloud migration project. Excellent communication skills and project management experience."
-                      source="internal"
-                    />
+                    <div className="space-y-6">
+                      {mockStudentData.enrolledPrograms.map((program, index) => (
+                        <div key={index} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">{program.name}</h4>
+                            <Badge variant={program.progress === 100 ? "default" : "secondary"}>
+                              {program.progress === 100 ? "Completed" : "In Progress"}
+                            </Badge>
+                          </div>
+                          <Progress value={program.progress} className="h-2" />
+                          <div className="flex justify-between text-sm text-muted-foreground">
+                            <span>Started: {new Date(program.startDate).toLocaleDateString()}</span>
+                            <span>
+                              {program.completionDate 
+                                ? `Completed: ${new Date(program.completionDate).toLocaleDateString()}`
+                                : `Expected: ${new Date(program.expectedCompletion).toLocaleDateString()}`}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Award className="h-5 w-5" />
+                      <div>
+                        <CardTitle>Certifications</CardTitle>
+                        <CardDescription>Earned certificates and achievements</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {mockStudentData.certifications.map((cert, index) => (
+                        <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
+                          <div>
+                            <h4 className="font-medium">{cert.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <Badge className="mb-1">{cert.status}</Badge>
+                            <p className="text-sm text-muted-foreground">Score: {cert.score}%</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-5 w-5" />
+                      <div>
+                        <CardTitle>Current Courses</CardTitle>
+                        <CardDescription>Active course enrollment and progress</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {mockStudentData.currentCourses.map((course, index) => (
+                        <div key={index} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">{course.name}</h4>
+                            <Badge variant="outline">Grade: {course.grade}</Badge>
+                          </div>
+                          <Progress value={course.progress} className="h-2" />
+                          <p className="text-sm text-muted-foreground">{course.progress}% Complete</p>
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
