@@ -346,6 +346,25 @@ export interface Student {
     programming: number;
   };
   avatar: string;
+  enrollments: {
+    programId: string;
+    enrollmentDate: string;
+    status: 'active' | 'completed' | 'dropped';
+    progress: number;
+  }[];
+  certifications: {
+    id: string;
+    name: string;
+    issueDate: string;
+    expiryDate?: string;
+    credentialUrl: string;
+  }[];
+  previousEducation?: {
+    institution: string;
+    degree: string;
+    field: string;
+    graduationYear: string;
+  };
 }
 
 export const mockStudents: Student[] = [
@@ -357,7 +376,36 @@ export const mockStudents: Student[] = [
       science: 92,
       programming: 88
     },
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    enrollments: [
+      {
+        programId: '1',
+        enrollmentDate: '2024-09-15',
+        status: 'active',
+        progress: 65
+      },
+      {
+        programId: '4',
+        enrollmentDate: '2024-10-01',
+        status: 'active',
+        progress: 45
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert-1',
+        name: 'AWS Cloud Practitioner',
+        issueDate: '2024-12-15',
+        expiryDate: '2027-12-15',
+        credentialUrl: 'https://aws.amazon.com/verification/12345'
+      }
+    ],
+    previousEducation: {
+      institution: 'State University',
+      degree: 'Bachelor',
+      field: 'Computer Science',
+      graduationYear: '2023'
+    }
   },
   {
     id: 'student-2',
@@ -367,7 +415,29 @@ export const mockStudents: Student[] = [
       science: 88,
       programming: 91
     },
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+    enrollments: [
+      {
+        programId: '2',
+        enrollmentDate: '2024-08-01',
+        status: 'active',
+        progress: 78
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert-2',
+        name: 'Google UX Design',
+        issueDate: '2024-11-20',
+        credentialUrl: 'https://coursera.org/verify/GOOGUX12345'
+      }
+    ],
+    previousEducation: {
+      institution: 'Tech Institute',
+      degree: 'Associate',
+      field: 'Digital Design',
+      graduationYear: '2023'
+    }
   },
   {
     id: 'student-3',
@@ -718,8 +788,7 @@ export const mockInvoices: Invoice[] = [
         details: 'Invoice created'
       },
       {
-        timestamp: '2025-01-15T10:30:00Z',
-        action: 'approval_requested',
+        timestamp: '2025-01-15T10:30:00Z',        action: 'approval_requested',
         actor: 'Dana R.',
         details: 'Approval requested from Department Manager',
         level: 1
@@ -925,7 +994,8 @@ export const mockInvoices: Invoice[] = [
         quantity: 1,
         price: 4500,
         total: 4500
-      },{
+      },
+      {
         description: 'Implementation Services',
         quantity: 1,
         price: 1500,
