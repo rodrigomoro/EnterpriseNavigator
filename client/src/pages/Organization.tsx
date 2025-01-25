@@ -9,8 +9,8 @@ import UserAvatar from "@/components/UserAvatar";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
-// Only include relevant roles
-const INCLUDED_ROLES = ['Chief Academic Officer', 'Director', 'Teacher', 'Staff'];
+// Only include relevant roles for the org chart
+const INCLUDED_ROLES = ['Director', 'Chief Academic Officer', 'Teacher'];
 
 // Get unique departments for filter buttons
 const departments = Array.from(new Set(
@@ -30,7 +30,7 @@ export default function Organization() {
   // Filter members based on department, search query, and included roles
   const filteredMembers = useMemo(() => {
     return mockTeamMembers.filter(member => {
-      const matchesRole = INCLUDED_ROLES.includes(member.role);
+      const matchesRole = INCLUDED_ROLES.includes(member.role) || member.id === '1'; // Include CEO
       const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
       const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          member.role.toLowerCase().includes(searchQuery.toLowerCase());
@@ -68,12 +68,16 @@ export default function Organization() {
     const isExpanded = expandedNodes.has(employee.id);
 
     return (
-      <div key={employee.id} className="relative" style={{ marginLeft: `${level * 40}px` }}>
-        <div className="flex items-center gap-2 mb-4">
+      <div key={employee.id} className="flex flex-col items-center">
+        <div className="flex flex-col items-center">
+          <EmployeeCard
+            employee={employee}
+            isCurrentUser={employee.id === LOGGED_IN_USER_ID}
+          />
           {hasChildren && (
             <button
               onClick={() => toggleExpand(employee.id)}
-              className="p-1 hover:bg-accent rounded-sm"
+              className="mt-2 p-1 hover:bg-accent rounded-full border"
             >
               {isExpanded ? (
                 <ChevronDown className="h-4 w-4" />
@@ -82,15 +86,24 @@ export default function Organization() {
               )}
             </button>
           )}
-          <EmployeeCard
-            employee={employee}
-            isCurrentUser={employee.id === LOGGED_IN_USER_ID}
-          />
         </div>
+
         {hasChildren && isExpanded && (
-          <div className="border-l-2 border-border pl-4">
-            {membersByManager[employee.id].map(child => renderOrgNode(child, level + 1))}
-          </div>
+          <>
+            <div className="w-px h-8 bg-border"></div>
+            <div className="relative">
+              <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-border"></div>
+              <div className="absolute top-8 left-0 right-0 h-px bg-border"></div>
+              <div className="pt-8 flex gap-8">
+                {membersByManager[employee.id].map((child, index) => (
+                  <div key={child.id} className="relative">
+                    <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-border"></div>
+                    {renderOrgNode(child, level + 1)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
@@ -147,8 +160,10 @@ export default function Organization() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="min-h-[600px] pt-8">
-                  {ceo && renderOrgNode(ceo)}
+                <div className="min-h-[600px] pt-8 overflow-x-auto">
+                  <div className="min-w-[800px] flex justify-center">
+                    {ceo && renderOrgNode(ceo)}
+                  </div>
                 </div>
               </CardContent>
             </Card>
