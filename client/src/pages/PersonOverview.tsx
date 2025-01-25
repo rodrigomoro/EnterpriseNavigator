@@ -31,6 +31,13 @@ export default function PersonOverview() {
     return <div>Person not found</div>;
   }
 
+  // Add safe default values for student data
+  const safeStudentData = studentData ? {
+    ...studentData,
+    enrollments: studentData.enrollments || [],
+    certifications: studentData.certifications || []
+  } : null;
+
   // Mock data for demo purposes
   const lastSync = new Date("2024-01-24T10:30:00");
   const connectedProviders = ["Microsoft Entra ID", "Google Cloud Identity"];
@@ -228,7 +235,7 @@ export default function PersonOverview() {
               </div>
 
               {/* Add Academic Information section for students */}
-              {person.role === "Student" && studentData && (
+              {person.role === "Student" && safeStudentData && (
                 <div className="col-span-12 space-y-6">
                   <Card>
                     <CardHeader>
@@ -239,28 +246,28 @@ export default function PersonOverview() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                       {/* Previous Education */}
-                      {studentData.previousEducation && (
+                      {safeStudentData.previousEducation && (
                         <div className="space-y-2">
                           <h3 className="font-semibold">Previous Education</h3>
                           <div className="grid grid-cols-2 gap-4">
                             <DataField
                               label="Institution"
-                              value={studentData.previousEducation.institution}
+                              value={safeStudentData.previousEducation.institution}
                               source="internal"
                             />
                             <DataField
                               label="Degree"
-                              value={studentData.previousEducation.degree}
+                              value={safeStudentData.previousEducation.degree}
                               source="internal"
                             />
                             <DataField
                               label="Field of Study"
-                              value={studentData.previousEducation.field}
+                              value={safeStudentData.previousEducation.field}
                               source="internal"
                             />
                             <DataField
                               label="Graduation Year"
-                              value={studentData.previousEducation.graduationYear}
+                              value={safeStudentData.previousEducation.graduationYear}
                               source="internal"
                             />
                           </div>
@@ -268,55 +275,57 @@ export default function PersonOverview() {
                       )}
 
                       {/* Current Enrollments */}
-                      <div className="space-y-2">
-                        <h3 className="font-semibold">Current Enrollments</h3>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Program</TableHead>
-                              <TableHead>Enrollment Date</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Progress</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {studentData.enrollments.map(enrollment => {
-                              const program = mockProjects.find(p => p.id === enrollment.programId);
-                              return (
-                                <TableRow key={enrollment.programId}>
-                                  <TableCell className="font-medium">
-                                    {program?.name || 'Unknown Program'}
-                                  </TableCell>
-                                  <TableCell>
-                                    {new Date(enrollment.enrollmentDate).toLocaleDateString()}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge
-                                      variant={
-                                        enrollment.status === 'active'
-                                          ? 'default'
-                                          : enrollment.status === 'completed'
-                                          ? 'success'
-                                          : 'destructive'
-                                      }
-                                    >
-                                      {enrollment.status}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <Progress value={enrollment.progress} className="w-[60px]" />
-                                      <span className="text-sm text-muted-foreground">
-                                        {enrollment.progress}%
-                                      </span>
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                          </TableBody>
-                        </Table>
-                      </div>
+                      {safeStudentData.enrollments.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Current Enrollments</h3>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Program</TableHead>
+                                <TableHead>Enrollment Date</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Progress</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {safeStudentData.enrollments.map(enrollment => {
+                                const program = mockProjects.find(p => p.id === enrollment.programId);
+                                return (
+                                  <TableRow key={enrollment.programId}>
+                                    <TableCell className="font-medium">
+                                      {program?.name || 'Unknown Program'}
+                                    </TableCell>
+                                    <TableCell>
+                                      {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      <Badge
+                                        variant={
+                                          enrollment.status === 'active'
+                                            ? 'default'
+                                            : enrollment.status === 'completed'
+                                            ? 'outline'
+                                            : 'destructive'
+                                        }
+                                      >
+                                        {enrollment.status}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-2">
+                                        <Progress value={enrollment.progress} className="w-[60px]" />
+                                        <span className="text-sm text-muted-foreground">
+                                          {enrollment.progress}%
+                                        </span>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
 
                       {/* Academic Performance */}
                       <div className="space-y-2">
@@ -330,10 +339,10 @@ export default function PersonOverview() {
                             </CardHeader>
                             <CardContent>
                               <div className="text-2xl font-bold">
-                                {studentData.scores.mathematics}%
+                                {safeStudentData.scores.mathematics}%
                               </div>
                               <Progress
-                                value={studentData.scores.mathematics}
+                                value={safeStudentData.scores.mathematics}
                                 className="mt-2"
                               />
                             </CardContent>
@@ -346,10 +355,10 @@ export default function PersonOverview() {
                             </CardHeader>
                             <CardContent>
                               <div className="text-2xl font-bold">
-                                {studentData.scores.science}%
+                                {safeStudentData.scores.science}%
                               </div>
                               <Progress
-                                value={studentData.scores.science}
+                                value={safeStudentData.scores.science}
                                 className="mt-2"
                               />
                             </CardContent>
@@ -362,10 +371,10 @@ export default function PersonOverview() {
                             </CardHeader>
                             <CardContent>
                               <div className="text-2xl font-bold">
-                                {studentData.scores.programming}%
+                                {safeStudentData.scores.programming}%
                               </div>
                               <Progress
-                                value={studentData.scores.programming}
+                                value={safeStudentData.scores.programming}
                                 className="mt-2"
                               />
                             </CardContent>
@@ -374,7 +383,7 @@ export default function PersonOverview() {
                       </div>
 
                       {/* Certifications */}
-                      {studentData.certifications && studentData.certifications.length > 0 && (
+                      {safeStudentData.certifications.length > 0 && (
                         <div className="space-y-2">
                           <h3 className="font-semibold">Certifications</h3>
                           <Table>
@@ -387,7 +396,7 @@ export default function PersonOverview() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {studentData.certifications.map(cert => (
+                              {safeStudentData.certifications.map(cert => (
                                 <TableRow key={cert.id}>
                                   <TableCell className="font-medium">
                                     {cert.name}
