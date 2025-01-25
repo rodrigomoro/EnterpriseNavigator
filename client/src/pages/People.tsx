@@ -272,22 +272,22 @@ export default function People() {
   };
 
   const GridView = () => (
-    <motion.div 
+    <motion.div
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       variants={container}
       initial="hidden"
       animate="show"
     >
       {filteredMembers.map((member) => (
-        <motion.div 
-          key={member.id} 
+        <motion.div
+          key={member.id}
           variants={item}
           onClick={() => handleCardClick(member.id)}
         >
           <div className="relative group">
-            <motion.div 
+            <motion.div
               className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
-              whileHover={{ 
+              whileHover={{
                 scale: 1.02,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
               }}
@@ -309,13 +309,19 @@ export default function People() {
 
               <div className="absolute bottom-4 right-4">
                 <TooltipProvider>
-                  <Tooltip delayDuration={500}> {/* Added delayDuration */}
+                  <Tooltip delayDuration={200}>
                     <TooltipTrigger asChild>
                       <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                         {member.status}
                       </Badge>
                     </TooltipTrigger>
-                    <TooltipContent side="left" align="center" className="max-w-[300px]">
+                    <TooltipContent
+                      side="top"
+                      align="end"
+                      sideOffset={5}
+                      alignOffset={-5}
+                      className="max-w-[200px]"
+                    >
                       <p>{getStatusDescription(member.role, member.status)}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -364,7 +370,7 @@ export default function People() {
       </TableHeader>
       <TableBody>
         {filteredMembers.map((member) => (
-          <TableRow 
+          <TableRow
             key={member.id}
             className="cursor-pointer hover:bg-muted/50"
             onClick={() => handleCardClick(member.id)}
@@ -383,13 +389,18 @@ export default function People() {
             <TableCell>{member.location}</TableCell>
             <TableCell>
               <TooltipProvider>
-                <Tooltip delayDuration={500}> {/* Added delayDuration */}
+                <Tooltip delayDuration={200}>
                   <TooltipTrigger asChild>
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent side="left" align="center" className="max-w-[300px]">
+                  <TooltipContent 
+                    side="top"
+                    align="center"
+                    sideOffset={5}
+                    className="max-w-[200px]"
+                  >
                     <p>{getStatusDescription(member.role, member.status)}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -505,11 +516,11 @@ export default function People() {
                             <SelectItem key="all-statuses" value="all">All Statuses</SelectItem>
                             {getAvailableStatuses(selectedRole).map(status => (
                               <TooltipProvider key={status}>
-                                <Tooltip delayDuration={500}> {/* Added delayDuration */}
+                                <Tooltip delayDuration={200}>
                                   <TooltipTrigger asChild>
                                     <SelectItem value={status}>{status}</SelectItem>
                                   </TooltipTrigger>
-                                  <TooltipContent side="left" align="center" sideOffset={5} className="max-w-[300px]">
+                                  <TooltipContent side="top" align="end" sideOffset={5} alignOffset={-5} className="max-w-[200px]">
                                     <p>{getStatusDescription(selectedRole, status)}</p>
                                   </TooltipContent>
                                 </Tooltip>
