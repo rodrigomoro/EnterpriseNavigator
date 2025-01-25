@@ -1,4 +1,4 @@
-import { ArrowLeft, Edit, RefreshCw, Globe, Database, GraduationCap, Award, ScrollText } from "lucide-react";
+import { ArrowLeft, Edit, RefreshCw, Globe, Database } from "lucide-react";
 import { Link, useRoute } from 'wouter';
 import { mockTeamMembers } from '@/data/mockData';
 import Sidebar from '@/components/Sidebar';
@@ -9,54 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-const mockAcademicData = {
-  enrollments: [
-    {
-      id: 1,
-      programName: "Full Stack Development",
-      status: "active",
-      enrollmentDate: "2024-01-15",
-      completionDate: null,
-      source: "website",
-    },
-    {
-      id: 2,
-      programName: "UI/UX Design Fundamentals",
-      status: "completed",
-      enrollmentDate: "2023-09-01",
-      completionDate: "2023-12-15",
-      source: "referral",
-    },
-  ],
-  certifications: [
-    {
-      id: 1,
-      name: "UI/UX Design Certificate",
-      issueDate: "2023-12-15",
-      expiryDate: "2025-12-15",
-      programName: "UI/UX Design Fundamentals",
-    },
-  ],
-  scores: [
-    {
-      id: 1,
-      assessmentName: "Final Project",
-      score: 95,
-      maxScore: 100,
-      assessmentDate: "2023-12-10",
-      programName: "UI/UX Design Fundamentals",
-    },
-    {
-      id: 2,
-      assessmentName: "Midterm Assessment",
-      score: 88,
-      maxScore: 100,
-      assessmentDate: "2023-10-15",
-      programName: "UI/UX Design Fundamentals",
-    },
-  ],
-};
 
 export default function PersonOverview() {
   const [, params] = useRoute('/people/:id');
@@ -258,110 +210,6 @@ export default function PersonOverview() {
                       value="Team lead for the new cloud migration project. Excellent communication skills and project management experience."
                       source="internal"
                     />
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Academic Information */}
-              <div className="col-span-12 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5" />
-                      <div>
-                        <CardTitle>Academic Information</CardTitle>
-                        <CardDescription>Program enrollments and academic achievements</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {/* Program Enrollments */}
-                    <div className="mb-8">
-                      <h3 className="text-lg font-semibold mb-4">Program Enrollments</h3>
-                      <div className="space-y-4">
-                        {mockAcademicData.enrollments.map((enrollment) => (
-                          <div
-                            key={enrollment.id}
-                            className="flex items-center justify-between p-4 rounded-lg border"
-                          >
-                            <div>
-                              <p className="font-medium">{enrollment.programName}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Enrolled: {new Date(enrollment.enrollmentDate).toLocaleDateString()}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                Source: {enrollment.source}
-                              </p>
-                            </div>
-                            <Badge
-                              variant={enrollment.status === "completed" ? "default" : "secondary"}
-                            >
-                              {enrollment.status}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Certifications */}
-                    <div className="mb-8">
-                      <h3 className="text-lg font-semibold mb-4">Certifications</h3>
-                      <div className="space-y-4">
-                        {mockAcademicData.certifications.map((cert) => (
-                          <div
-                            key={cert.id}
-                            className="flex items-center justify-between p-4 rounded-lg border"
-                          >
-                            <div className="flex items-center gap-3">
-                              <Award className="h-8 w-8 text-primary" />
-                              <div>
-                                <p className="font-medium">{cert.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {cert.programName}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  Issued: {new Date(cert.issueDate).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                            <Button variant="outline" size="sm">
-                              View Certificate
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Academic Scores */}
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Academic Performance</h3>
-                      <div className="space-y-4">
-                        {mockAcademicData.scores.map((score) => (
-                          <div
-                            key={score.id}
-                            className="flex items-center justify-between p-4 rounded-lg border"
-                          >
-                            <div>
-                              <p className="font-medium">{score.assessmentName}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {score.programName}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                Date: {new Date(score.assessmentDate).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-2xl font-bold">
-                                {score.score}/{score.maxScore}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {((score.score / score.maxScore) * 100).toFixed(1)}%
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </div>

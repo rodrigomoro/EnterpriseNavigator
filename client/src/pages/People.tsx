@@ -4,24 +4,13 @@ import Sidebar from '@/components/Sidebar';
 import { mockTeamMembers } from '@/data/mockData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Pencil, Trash2, LayoutGrid, Table } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
 import { Input } from '@/components/ui/input';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Table as TableComponent,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-
-// ... (keep existing animations)
 
 const container = {
   hidden: { opacity: 0 },
@@ -41,7 +30,6 @@ const item = {
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
@@ -77,12 +65,6 @@ export default function People() {
     navigate(`/people/${id}/edit`);
   };
 
-  const filteredMembers = mockTeamMembers.filter(member =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.department.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -109,22 +91,6 @@ export default function People() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <div className="flex items-center gap-2 border rounded-lg p-1">
-                  <Button
-                    variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                    size="icon"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                    size="icon"
-                    onClick={() => setViewMode('table')}
-                  >
-                    <Table className="h-4 w-4" />
-                  </Button>
-                </div>
                 <Button onClick={() => navigate("/people/new")}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Person
@@ -135,136 +101,68 @@ export default function People() {
           </header>
 
           <main className="p-6">
-            <AnimatePresence mode="wait">
-              {viewMode === 'grid' ? (
-                <motion.div
-                  key="grid"
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  variants={container}
-                  initial="hidden"
-                  animate="show"
-                  exit={{ opacity: 0 }}
-                >
-                  {filteredMembers.map((member) => (
-                    <motion.div
-                      key={member.id}
-                      variants={item}
-                      onClick={() => handleCardClick(member.id)}
-                    >
-                      <div className="relative group">
-                        <motion.div
-                          className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
-                          whileHover={{
-                            scale: 1.02,
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-                          }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="flex items-center gap-4">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={member.avatar} alt={member.name} />
-                              <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                            </Avatar>
+            <AnimatePresence>
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {mockTeamMembers.map((member) => (
+                  <motion.div 
+                    key={member.id} 
+                    variants={item}
+                    onClick={() => handleCardClick(member.id)}
+                  >
+                    <div className="relative group">
+                      <motion.div 
+                        className="bg-card rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        whileHover={{ 
+                          scale: 1.02,
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={member.avatar} alt={member.name} />
+                            <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
 
-                            <div>
-                              <h3 className="font-semibold">{member.name}</h3>
-                              <p className="text-sm text-muted-foreground">{member.role}</p>
-                              <p className="text-sm text-muted-foreground">{member.department}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-
-                        {/* Action buttons */}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="secondary"
-                              size="icon"
-                              onClick={(e) => handleEditClick(e, member.id)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDeletingPersonId(member.id);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <div>
+                            <h3 className="font-semibold">{member.name}</h3>
+                            <p className="text-sm text-muted-foreground">{member.role}</p>
+                            <p className="text-sm text-muted-foreground">{member.department}</p>
                           </div>
                         </div>
+                      </motion.div>
+
+                      {/* Action buttons */}
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-2">
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            onClick={(e) => handleEditClick(e, member.id)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeletingPersonId(member.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="table"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <TableComponent>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredMembers.map((member) => (
-                        <TableRow
-                          key={member.id}
-                          className="cursor-pointer hover:bg-muted/50"
-                          onClick={() => handleCardClick(member.id)}
-                        >
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage src={member.avatar} alt={member.name} />
-                                <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                              </Avatar>
-                              {member.name}
-                            </div>
-                          </TableCell>
-                          <TableCell>{member.role}</TableCell>
-                          <TableCell>{member.department}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">Active</Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => handleEditClick(e, member.id)}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDeletingPersonId(member.id);
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </TableComponent>
-                </motion.div>
-              )}
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
             </AnimatePresence>
           </main>
         </PageTransition>
