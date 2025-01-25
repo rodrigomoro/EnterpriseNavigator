@@ -239,20 +239,22 @@ export default function People() {
               }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={member.avatar} alt={member.name} />
-                  <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                </Avatar>
-
-                <div className="flex-grow">
-                  <h3 className="font-semibold">{member.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
+              <div className="flex items-start gap-4">
+                <div>
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={member.avatar} alt={member.name} />
+                    <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                  </Avatar>
+                  <div className="mt-2">
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
                   </div>
+                </div>
+
+                <div className="flex-grow">
+                  <h3 className="font-semibold">{member.name}</h3>
+                  <p className="text-sm text-muted-foreground">{member.role}</p>
                   <p className="text-sm text-muted-foreground">{member.department}</p>
                   <p className="text-sm text-muted-foreground">{member.location}</p>
                 </div>
