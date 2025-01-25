@@ -58,6 +58,7 @@ const mockConnectors = [
     description: "Connect with HubSpot CRM for student and lead management",
     connected: false,
     category: "CRM",
+    fields: ["contacts", "companies", "deals", "tickets"]
   },
   {
     id: "salesforce",
@@ -65,6 +66,7 @@ const mockConnectors = [
     description: "Integrate with Salesforce for comprehensive CRM capabilities",
     connected: false,
     category: "CRM",
+    fields: ["accounts", "contacts", "opportunities", "cases"]
   },
   {
     id: "dynamics",
@@ -72,6 +74,7 @@ const mockConnectors = [
     description: "Connect with Microsoft's CRM solution for education",
     connected: false,
     category: "CRM",
+    fields: ["contacts", "accounts", "leads", "opportunities"]
   },
   // Learning Management Systems
   {
@@ -209,6 +212,15 @@ const defaultFieldMappings: FieldMapping[] = [
   { field: "location", source: "microsoft", description: "Office Location", enabled: true },
   { field: "phone", source: "internal", description: "Phone Number", enabled: false },
   { field: "startDate", source: "internal", description: "Start Date", enabled: false },
+  // CRM mappings
+  { field: "student_id", source: "hubspot", description: "Student ID", enabled: true },
+  { field: "enrollment_status", source: "salesforce", description: "Enrollment Status", enabled: true },
+  { field: "program_track", source: "dynamics", description: "Program Track", enabled: true },
+
+  // LMS mappings
+  { field: "courses", source: "google-classroom", description: "Enrolled Courses", enabled: true },
+  { field: "grades", source: "canvas", description: "Course Grades", enabled: true },
+  { field: "certifications", source: "aws-academy", description: "AWS Certifications", enabled: true },
 ];
 
 export default function Settings() {
@@ -251,6 +263,7 @@ export default function Settings() {
 
     let title = "";
     let fields = [];
+    let category = mockConnectors.find(c => c.id === configureProvider)?.category;
 
     switch (configureProvider) {
       case "microsoft":
@@ -277,6 +290,61 @@ export default function Settings() {
           { name: "secretAccessKey", label: "Secret Access Key", type: "password" },
         ];
         break;
+      // CRM Systems
+      case "hubspot":
+        title = "HubSpot Configuration";
+        fields = [
+          { name: "apiKey", label: "API Key", type: "password" },
+          { name: "portalId", label: "Portal ID", type: "text" },
+          { name: "accessToken", label: "Access Token", type: "password" },
+        ];
+        break;
+      case "salesforce":
+        title = "Salesforce Configuration";
+        fields = [
+          { name: "clientId", label: "Client ID", type: "text" },
+          { name: "clientSecret", label: "Client Secret", type: "password" },
+          { name: "username", label: "Username", type: "text" },
+          { name: "password", label: "Password", type: "password" },
+          { name: "securityToken", label: "Security Token", type: "password" },
+        ];
+        break;
+      case "dynamics":
+        title = "Microsoft Dynamics 365 Configuration";
+        fields = [
+          { name: "tenantId", label: "Tenant ID", type: "text" },
+          { name: "clientId", label: "Client ID", type: "text" },
+          { name: "clientSecret", label: "Client Secret", type: "password" },
+          { name: "environment", label: "Environment URL", type: "text" },
+        ];
+        break;
+
+      // LMS Systems
+      case "google-classroom":
+        title = "Google Classroom Configuration";
+        fields = [
+          { name: "clientId", label: "Client ID", type: "text" },
+          { name: "clientSecret", label: "Client Secret", type: "password" },
+          { name: "projectId", label: "Project ID", type: "text" },
+          { name: "serviceAccount", label: "Service Account JSON", type: "textarea" },
+        ];
+        break;
+      case "canvas":
+        title = "Canvas LMS Configuration";
+        fields = [
+          { name: "domain", label: "Canvas Domain", type: "text" },
+          { name: "accessToken", label: "Access Token", type: "password" },
+          { name: "accountId", label: "Account ID", type: "text" },
+        ];
+        break;
+      case "aws-academy":
+        title = "AWS Academy Configuration";
+        fields = [
+          { name: "apiKey", label: "API Key", type: "password" },
+          { name: "region", label: "Region", type: "text" },
+          { name: "academyId", label: "Academy ID", type: "text" },
+        ];
+        break;
     }
 
     return (
@@ -285,7 +353,7 @@ export default function Settings() {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>
-              Configure authentication and permissions for identity provider integration
+              Configure authentication and synchronization settings for {category?.toLowerCase()} integration
             </DialogDescription>
           </DialogHeader>
 
@@ -293,7 +361,11 @@ export default function Settings() {
             <Alert>
               <Key className="h-4 w-4" />
               <AlertDescription>
-                Ensure you have the necessary permissions and access to configure this integration.
+                {category === "CRM"
+                  ? "This integration will sync student and program data with your CRM system."
+                  : category === "LMS"
+                  ? "This integration will sync course and enrollment data with your learning management system."
+                  : "Ensure you have the necessary permissions and access to configure this integration."}
                 All credentials are encrypted before storage.
               </AlertDescription>
             </Alert>
@@ -353,18 +425,50 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Conflict Resolution</Label>
-                    <Select defaultValue="provider">
+                    <Label>Data Flow Direction</Label>
+                    <Select defaultValue="bidirectional">
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="provider">Provider is source of truth</SelectItem>
-                        <SelectItem value="system">System is source of truth</SelectItem>
-                        <SelectItem value="manual">Manual resolution</SelectItem>
+                        <SelectItem value="bidirectional">Bidirectional</SelectItem>
+                        <SelectItem value="import">Import Only</SelectItem>
+                        <SelectItem value="export">Export Only</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {category === "CRM" && (
+                    <div className="space-y-2">
+                      <Label>Lead Assignment</Label>
+                      <Select defaultValue="auto">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="auto">Automatic</SelectItem>
+                          <SelectItem value="manual">Manual Review</SelectItem>
+                          <SelectItem value="round-robin">Round Robin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {category === "LMS" && (
+                    <div className="space-y-2">
+                      <Label>Grade Sync</Label>
+                      <Select defaultValue="auto">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="auto">Automatic</SelectItem>
+                          <SelectItem value="manual">Manual Approval</SelectItem>
+                          <SelectItem value="disabled">Disabled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between space-x-2">
                     <div className="space-y-0.5">
@@ -383,7 +487,7 @@ export default function Settings() {
                 <CardHeader>
                   <CardTitle className="text-base">Field Mappings</CardTitle>
                   <CardDescription>
-                    Select which fields to sync with this provider
+                    Select which fields to sync with this {category?.toLowerCase()} system
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -629,9 +733,9 @@ export default function Settings() {
                           <div key={category} className="space-y-4">
                             <div className="flex items-center justify-between">
                               <h3 className="text-lg font-semibold">
-                                {category === "LMS" ? "Learning Management Systems" : 
-                                 category === "CRM" ? "Customer Relationship Management" : 
-                                 "Identity Providers"}
+                                {category === "LMS" ? "Learning Management Systems" :
+                                  category === "CRM" ? "Customer Relationship Management" :
+                                    "Identity Providers"}
                               </h3>
                               <Badge variant="secondary" className="text-xs">
                                 {mockConnectors.filter(c => c.category === category).length} Available
@@ -671,6 +775,7 @@ export default function Settings() {
                                     ) : (
                                       <Button
                                         variant={connector.connected ? "outline" : "default"}
+                                        onClick={() => setConfigureProvider(connector.id)}
                                       >
                                         {connector.connected ? "Configure" : "Connect"}
                                       </Button>
@@ -704,9 +809,15 @@ export default function Settings() {
                               <p className="font-medium">{mapping.description}</p>
                               <p className="text-sm text-muted-foreground">
                                 Source: {mapping.source === "internal" ? "Internal System" :
-                                        mapping.source === "microsoft" ? "Microsoft Entra ID" :
-                                        mapping.source === "google" ? "Google Cloud Identity" :
-                                        "AWS Cognito"}
+                                    mapping.source === "microsoft" ? "Microsoft Entra ID" :
+                                      mapping.source === "google" ? "Google Cloud Identity" :
+                                        mapping.source === "hubspot" ? "HubSpot" :
+                                          mapping.source === "salesforce" ? "Salesforce" :
+                                            mapping.source === "dynamics" ? "Microsoft Dynamics 365" :
+                                              mapping.source === "google-classroom" ? "Google Classroom" :
+                                                mapping.source === "canvas" ? "Canvas LMS" :
+                                                  mapping.source === "aws-academy" ? "AWS Academy" :
+                                                    "Moodle"}
                               </p>
                             </div>
                             <Switch
@@ -723,98 +834,157 @@ export default function Settings() {
 
               <TabsContent value="security">
                 <div className="grid gap-4 grid-cols-12">
-                  <Card className="col-span-12 lg:col-span-5">
-                    <CardHeader>
-                      <CardTitle>Roles</CardTitle>
-                      <CardDescription>Manage security roles and their permissions</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <ScrollArea className="h-[600px]">
-                        {mockRoles.map((role) => (
-                          <div
-                            key={role.id}
-                            className="p-4 border-b last:border-0 hover:bg-accent/5"
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-medium">{role.name}</h3>
-                                  {role.isSystem && (
-                                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                      System
-                                    </Badge>
-                                  )}
-                                </div>
-                                <p className="text-sm text-muted-foreground">{role.description}</p>
-                              </div>
-                              {!role.isSystem && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleEditRole(role)}
-                                >
-                                  Edit
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="mt-4">
-                              <h4 className="text-sm font-medium mb-2">Permissions:</h4>
-                              <div className="grid grid-cols-2 gap-2">
-                                {Object.entries(
-                                  role.permissions.reduce((acc, curr) => ({
-                                    ...acc,
-                                    [curr.category]: [...(acc[curr.category] || []), curr],
-                                  }), {} as Record<string, typeof mockPermissions>)
-                                ).map(([category, perms]) => (
-                                  <div key={category} className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                      {category}
-                                    </p>
-                                    {perms.map(perm => (
-                                      <p key={perm.id} className="text-xs">
-                                        {perm.name}
-                                      </p>
-                                    ))}
+                    <Card className="col-span-12 lg:col-span-5">
+                      <CardHeader>
+                        <CardTitle>Roles</CardTitle>
+                        <CardDescription>Manage security roles and their permissions</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <ScrollArea className="h-[600px]">
+                          {mockRoles.map((role) => (
+                            <div
+                              key={role.id}
+                              className="p-4 border-b last:border-0 hover:bg-accent/5"
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="font-medium">{role.name}</h3>
+                                    {role.isSystem && (
+                                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                        System
+                                      </Badge>
+                                    )}
                                   </div>
-                                ))}
+                                  <p className="text-sm text-muted-foreground">{role.description}</p>
+                                </div>
+                                {!role.isSystem && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEditRole(role)}
+                                  >
+                                    Edit
+                                  </Button>
+                                )}
+                              </div>
+
+                              <div className="mt-4">
+                                <h4 className="text-sm font-medium mb-2">Permissions:</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {Object.entries(
+                                    role.permissions.reduce((acc, curr) => ({
+                                      ...acc,
+                                      [curr.category]: [...(acc[curr.category] || []), curr],
+                                    }), {} as Record<string, typeof mockPermissions>)
+                                  ).map(([category, perms]) => (
+                                    <div key={category} className="space-y-1">
+                                      <p className="text-xs font-medium text-muted-foreground">
+                                        {category}
+                                      </p>
+                                      {perms.map(perm => (
+                                        <p key={perm.id} className="text-xs">
+                                          {perm.name}
+                                        </p>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </ScrollArea>
-                    </CardContent>
-                  </Card>
+                          ))}
+                        </ScrollArea>
+                      </CardContent>
+                    </Card>
 
-                  <Card className="col-span-12 lg:col-span-7">
-                    <CardHeader>
-                      <CardTitle>Available Permissions</CardTitle>
-                      <CardDescription>System-defined permissions and their descriptions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ScrollArea className="h-[600px] pr-4">
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-8">
+                    <Card className="col-span-12 lg:col-span-7">
+                      <CardHeader>
+                        <CardTitle>Available Permissions</CardTitle>
+                        <CardDescription>System-defined permissions and their descriptions</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ScrollArea className="h-[600px] pr-4">
+                          <div className="grid grid-cols-2 gap-x-6 gap-y-8">
+                            {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
+                              <div key={category} className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{category}</h3>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {mockPermissions.filter(p => p.category === category).length}
+                                  </Badge>
+                                </div>
+                                <Card className="p-4">
+                                  <div className="space-y-3">
+                                    {mockPermissions
+                                      .filter(p => p.category === category)
+                                      .map((permission) => (
+                                        <div
+                                          key={permission.id}
+                                          className="hover:bg-accent/5 p-2 rounded-sm"
+                                        >
+                                          <p className="font-medium text-sm">{permission.name}</p>
+                                          <p className="text-sm text-muted-foreground">
+                                            {permission.description}
+                                          </p>
+                                        </div>
+                                      ))}
+                                  </div>
+                                </Card>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Edit Role Dialog */}
+                  <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Edit Role: {selectedRole?.name}</DialogTitle>
+                        <DialogDescription>
+                          Select the permissions for this role
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="py-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                           {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
-                            <div key={category} className="space-y-4">
+                            <div key={category} className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-medium">{category}</h3>
+                                <h4 className="font-medium text-sm">{category}</h4>
                                 <Badge variant="secondary" className="text-xs">
                                   {mockPermissions.filter(p => p.category === category).length}
                                 </Badge>
                               </div>
-                              <Card className="p-4">
-                                <div className="space-y-3">
+                              <Card className="p-3">
+                                <div className="space-y-2">
                                   {mockPermissions
                                     .filter(p => p.category === category)
                                     .map((permission) => (
                                       <div
                                         key={permission.id}
-                                        className="hover:bg-accent/5 p-2 rounded-sm"
+                                        className="flex items-start space-x-2 hover:bg-accent/5 p-1 rounded-sm"
                                       >
-                                        <p className="font-medium text-sm">{permission.name}</p>
-                                        <p className="text-sm text-muted-foreground">
-                                          {permission.description}
-                                        </p>
+                                        <Checkbox
+                                          id={`permission-${permission.id}`}
+                                          checked={selectedPermissions.includes(permission.id)}
+                                          onCheckedChange={(checked) =>
+                                            handlePermissionChange(permission.id, checked === true)
+                                          }
+                                        />
+                                        <div className="grid gap-0.5">
+                                          <label
+                                            htmlFor={`permission-${permission.id}`}
+                                            className="text-sm font-medium leading-none cursor-pointer"
+                                          >
+                                            {permission.name}
+                                          </label>
+                                          <p className="text-xs text-muted-foreground">
+                                            {permission.description}
+                                          </p>
+                                        </div>
                                       </div>
                                     ))}
                                 </div>
@@ -822,83 +992,24 @@ export default function Settings() {
                             </div>
                           ))}
                         </div>
-                      </ScrollArea>
-                    </CardContent>
-                  </Card>
-                </div>
 
-                {/* Edit Role Dialog */}
-                <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Edit Role: {selectedRole?.name}</DialogTitle>
-                      <DialogDescription>
-                        Select the permissions for this role
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="py-4">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        {Array.from(new Set(mockPermissions.map(p => p.category))).map((category) => (
-                          <div key={category} className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-sm">{category}</h4>
-                              <Badge variant="secondary" className="text-xs">
-                                {mockPermissions.filter(p => p.category === category).length}
-                              </Badge>
-                            </div>
-                            <Card className="p-3">
-                              <div className="space-y-2">
-                                {mockPermissions
-                                  .filter(p => p.category === category)
-                                  .map((permission) => (
-                                    <div
-                                      key={permission.id}
-                                      className="flex items-start space-x-2 hover:bg-accent/5 p-1 rounded-sm"
-                                    >
-                                      <Checkbox
-                                        id={`permission-${permission.id}`}
-                                        checked={selectedPermissions.includes(permission.id)}
-                                        onCheckedChange={(checked) =>
-                                          handlePermissionChange(permission.id, checked === true)
-                                        }
-                                      />
-                                      <div className="grid gap-0.5">
-                                        <label
-                                          htmlFor={`permission-${permission.id}`}
-                                          className="text-sm font-medium leading-none cursor-pointer"
-                                        >
-                                          {permission.name}
-                                        </label>
-                                        <p className="text-xs text-muted-foreground">
-                                          {permission.description}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
-                              </div>
-                            </Card>
-                          </div>
-                        ))}
+                        <div className="flex justify-end gap-2 mt-6">
+                          <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={() => setEditDialogOpen(false)}>
+                            Save Changes
+                          </Button>
+                        </div>
                       </div>
-
-                      <div className="flex justify-end gap-2 mt-6">
-                        <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={() => setEditDialogOpen(false)}>
-                          Save Changes
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </PageTransition>
+                    </DialogContent>
+                  </Dialog>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </PageTransition>
+        </div>
+        {renderProviderConfigDialog()}
       </div>
-      {renderProviderConfigDialog()}
-    </div>
-  );
-}
+    );
+  }
