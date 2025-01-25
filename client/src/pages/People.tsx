@@ -205,6 +205,18 @@ export default function People() {
     return matchesSearch && matchesRole && matchesDepartment && matchesStatus && matchesLocation;
   });
 
+  // Helper function to get available statuses based on role
+  const getAvailableStatuses = (role: string) => {
+    if (role === 'All') {
+      return [...new Set([
+        ...statusOptions.Student,
+        ...statusOptions.Staff,
+        ...statusOptions.Teacher
+      ])];
+    }
+    return statusOptions[role as keyof typeof statusOptions] || [];
+  };
+
   const GridView = () => (
     <motion.div 
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -227,21 +239,19 @@ export default function People() {
               }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Status badge moved to top right */}
-              <div className="absolute top-2 right-2">
-                <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                  {member.status}
-                </Badge>
-              </div>
-
-              <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={member.avatar} alt={member.name} />
                   <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
 
-                <div>
-                  <h3 className="font-semibold">{member.name}</h3>
+                <div className="flex-grow">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">{member.name}</h3>
+                    <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                      {member.status}
+                    </Badge>
+                  </div>
                   <p className="text-sm text-muted-foreground">{member.role}</p>
                   <p className="text-sm text-muted-foreground">{member.department}</p>
                   <p className="text-sm text-muted-foreground">{member.location}</p>
@@ -420,11 +430,9 @@ export default function People() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem key="all-statuses" value="all">All Statuses</SelectItem>
-                            {(selectedRole === 'All' ? ['Active', 'Inactive'] : statusOptions[selectedRole as keyof typeof statusOptions] || [])
-                              .map(status => (
-                                <SelectItem key={status} value={status}>{status}</SelectItem>
-                              ))
-                            }
+                            {getAvailableStatuses(selectedRole).map(status => (
+                              <SelectItem key={status} value={status}>{status}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
