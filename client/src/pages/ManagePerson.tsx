@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -103,14 +103,10 @@ export default function ManagePerson() {
     },
   });
 
-  useEffect(() => {
-    return () => {
-      if (window.ResizeObserver) {
-        const resizeObserver = new ResizeObserver(() => {});
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
+  // Safely navigate back to people directory
+  const handleCancel = () => {
+    navigate("/people");
+  };
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -130,6 +126,7 @@ export default function ManagePerson() {
     }
   };
 
+  // If trying to edit a non-existent person, redirect to people list
   if (isEdit && !personData) {
     navigate("/people");
     return null;
@@ -147,7 +144,7 @@ export default function ManagePerson() {
                 <Button
                   variant="ghost"
                   className="gap-1 p-0 hover:bg-transparent"
-                  onClick={() => navigate("/people")}
+                  onClick={handleCancel}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   People Directory
@@ -547,7 +544,7 @@ export default function ManagePerson() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => navigate("/people")}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </Button>
