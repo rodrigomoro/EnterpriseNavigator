@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 
 // UI Components
 import {
@@ -132,12 +132,14 @@ export default function ManagePerson() {
           <div className="flex justify-between items-center mb-6">
             <div>
               <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                <Link href="/people">
-                  <a className="flex items-center gap-1 hover:text-foreground">
-                    <ArrowLeft className="h-4 w-4" />
-                    People Directory
-                  </a>
-                </Link>
+                <Button
+                  variant="ghost"
+                  className="p-0 hover:bg-transparent flex items-center gap-1"
+                  onClick={() => navigate("/people")}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>People Directory</span>
+                </Button>
               </div>
               <h1 className="text-2xl font-bold">
                 {isEdit ? `Edit ${personData?.name}` : "Add New Person"}
@@ -525,11 +527,13 @@ export default function ManagePerson() {
               </Tabs>
 
               <div className="flex justify-end gap-4">
-                <Link href="/people">
-                  <Button variant="secondary" type="button">
-                    Cancel
-                  </Button>
-                </Link>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => navigate("/people")}
+                >
+                  Cancel
+                </Button>
                 <Button type="submit">
                   {isEdit ? "Save Changes" : "Create Person"}
                 </Button>
