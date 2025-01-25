@@ -1,3 +1,4 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -8,15 +9,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import PageTransition from "@/components/PageTransition";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
-import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
+import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle, RefreshCw, Key } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 
 // Mock data for settings
 const mockNotificationChannels = [
@@ -191,10 +192,31 @@ const mockRoles = [
   }
 ];
 
+// Add new type for field mapping
+type FieldMapping = {
+  field: string;
+  source: string;
+  description: string;
+  enabled: boolean;
+};
+
+const defaultFieldMappings: FieldMapping[] = [
+  { field: "name", source: "microsoft", description: "Full Name", enabled: true },
+  { field: "email", source: "google", description: "Email Address", enabled: true },
+  { field: "department", source: "microsoft", description: "Department", enabled: true },
+  { field: "jobTitle", source: "microsoft", description: "Job Title", enabled: true },
+  { field: "manager", source: "microsoft", description: "Reports To", enabled: true },
+  { field: "location", source: "microsoft", description: "Office Location", enabled: true },
+  { field: "phone", source: "internal", description: "Phone Number", enabled: false },
+  { field: "startDate", source: "internal", description: "Start Date", enabled: false },
+];
+
 export default function Settings() {
   const [selectedRole, setSelectedRole] = useState<(typeof mockRoles)[0] | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+  const [configureProvider, setConfigureProvider] = useState<string | null>(null);
+  const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>(defaultFieldMappings);
 
   const handleEditRole = (role: typeof mockRoles[0]) => {
     setSelectedRole(role);
@@ -207,6 +229,133 @@ export default function Settings() {
       checked
         ? [...prev, permissionId]
         : prev.filter(id => id !== permissionId)
+    );
+  };
+
+  const handleSaveProviderConfig = (provider: string, data: any) => {
+    // In a real app, this would save to backend
+    console.log(`Saving ${provider} config:`, data);
+    setConfigureProvider(null);
+  };
+
+  const handleToggleFieldMapping = (field: string, enabled: boolean) => {
+    setFieldMappings(prev =>
+      prev.map(mapping =>
+        mapping.field === field ? { ...mapping, enabled } : mapping
+      )
+    );
+  };
+
+  const renderProviderConfigDialog = () => {
+    if (!configureProvider) return null;
+
+    let title = "";
+    let fields = [];
+
+    switch (configureProvider) {
+      case "microsoft":
+        title = "Microsoft Entra ID Configuration";
+        fields = [
+          { name: "tenantId", label: "Tenant ID", type: "text" },
+          { name: "clientId", label: "Client ID", type: "text" },
+          { name: "clientSecret", label: "Client Secret", type: "password" },
+        ];
+        break;
+      case "google":
+        title = "Google Cloud Identity Configuration";
+        fields = [
+          { name: "projectId", label: "Project ID", type: "text" },
+          { name: "serviceAccount", label: "Service Account JSON", type: "textarea" },
+        ];
+        break;
+      case "aws":
+        title = "AWS Cognito Configuration";
+        fields = [
+          { name: "region", label: "Region", type: "text" },
+          { name: "userPoolId", label: "User Pool ID", type: "text" },
+          { name: "accessKeyId", label: "Access Key ID", type: "text" },
+          { name: "secretAccessKey", label: "Secret Access Key", type: "password" },
+        ];
+        break;
+    }
+
+    return (
+      <Dialog open={!!configureProvider} onOpenChange={() => setConfigureProvider(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>
+              Configure authentication and permissions for identity provider integration
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {fields.map(field => (
+              <div key={field.name} className="space-y-2">
+                <Label>{field.label}</Label>
+                {field.type === "textarea" ? (
+                  <textarea
+                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder={`Enter ${field.label.toLowerCase()}`}
+                  />
+                ) : (
+                  <Input
+                    type={field.type}
+                    placeholder={`Enter ${field.label.toLowerCase()}`}
+                  />
+                )}
+              </div>
+            ))}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Field Mappings</CardTitle>
+                <CardDescription>
+                  Select which fields to sync with this provider
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {fieldMappings
+                    .filter(mapping => mapping.source === configureProvider)
+                    .map(mapping => (
+                      <div key={mapping.field} className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>{mapping.description}</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Field: {mapping.field}
+                          </p>
+                        </div>
+                        <Switch
+                          checked={mapping.enabled}
+                          onCheckedChange={(checked) => handleToggleFieldMapping(mapping.field, checked)}
+                        />
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => setConfigureProvider(null)}
+              >
+                Cancel
+              </Button>
+              <div className="space-x-2">
+                <Button variant="outline">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Test Connection
+                </Button>
+                <Button onClick={() => handleSaveProviderConfig(configureProvider, {})}>
+                  Save Configuration
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -381,59 +530,119 @@ export default function Settings() {
               </TabsContent>
 
               <TabsContent value="connectors">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>System Integrations</CardTitle>
-                    <CardDescription>
-                      Connect and sync with identity providers, CRM systems, and learning platforms
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-8">
-                    {/* Group connectors by category */}
-                    {["Identity", "CRM", "LMS"].map(category => (
-                      <div key={category} className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">{category === "LMS" ? "Learning Management Systems" : 
-                            category === "CRM" ? "Customer Relationship Management" : "Identity Providers"}</h3>
-                          <Badge variant="secondary" className="text-xs">
-                            {mockConnectors.filter(c => c.category === category).length} Available
-                          </Badge>
-                        </div>
-                        <div className="grid gap-4">
-                          {mockConnectors
-                            .filter(connector => connector.category === category)
-                            .map((connector) => (
-                              <div
-                                key={connector.id}
-                                className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/5 transition-colors"
-                              >
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="font-medium">{connector.name}</h3>
-                                    {connector.connected && (
-                                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                        Connected
-                                      </Badge>
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>System Integrations</CardTitle>
+                      <CardDescription>
+                        Connect and sync with identity providers, CRM systems, and learning platforms
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Alert className="mb-6">
+                        <Key className="h-4 w-4" />
+                        <AlertDescription>
+                          Configured providers will be used as sources of truth for specified fields.
+                          Changes to synced fields in the system will be overwritten during synchronization.
+                        </AlertDescription>
+                      </Alert>
+
+                      <div className="space-y-8">
+                        {/* Group connectors by category */}
+                        {["Identity", "CRM", "LMS"].map(category => (
+                          <div key={category} className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-lg font-semibold">
+                                {category === "LMS" ? "Learning Management Systems" : 
+                                 category === "CRM" ? "Customer Relationship Management" : 
+                                 "Identity Providers"}
+                              </h3>
+                              <Badge variant="secondary" className="text-xs">
+                                {mockConnectors.filter(c => c.category === category).length} Available
+                              </Badge>
+                            </div>
+                            <div className="grid gap-4">
+                              {mockConnectors
+                                .filter(connector => connector.category === category)
+                                .map((connector) => (
+                                  <div
+                                    key={connector.id}
+                                    className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/5 transition-colors"
+                                  >
+                                    <div className="space-y-1">
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="font-medium">{connector.name}</h3>
+                                        {connector.connected && (
+                                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                            Connected
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      <p className="text-sm text-muted-foreground">{connector.description}</p>
+                                      {connector.lastSync && (
+                                        <p className="text-xs text-muted-foreground">
+                                          Last synced: {new Date(connector.lastSync).toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                    {connector.category === "Identity" ? (
+                                      <Button
+                                        variant={connector.connected ? "outline" : "default"}
+                                        onClick={() => setConfigureProvider(connector.id)}
+                                      >
+                                        {connector.connected ? "Configure" : "Connect"}
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        variant={connector.connected ? "outline" : "default"}
+                                      >
+                                        {connector.connected ? "Configure" : "Connect"}
+                                      </Button>
                                     )}
                                   </div>
-                                  <p className="text-sm text-muted-foreground">{connector.description}</p>
-                                  {connector.lastSync && (
-                                    <p className="text-xs text-muted-foreground">
-                                      Last synced: {new Date(connector.lastSync).toLocaleString()}
-                                    </p>
-                                  )}
-                                </div>
-                                <Button variant={connector.connected ? "outline" : "default"}>
-                                  {connector.connected ? "Configure" : "Connect"}
-                                </Button>
-                              </div>
-                            ))}
-                        </div>
-                        {category !== "LMS" && <Separator className="my-6" />}
+                                ))}
+                            </div>
+                            {category !== "LMS" && <Separator className="my-6" />}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+
+                  {/* Field Mapping Overview */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Field Mapping Overview</CardTitle>
+                      <CardDescription>
+                        Current field synchronization settings across all providers
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {fieldMappings.map(mapping => (
+                          <div
+                            key={mapping.field}
+                            className="flex items-center justify-between p-4 border rounded-lg"
+                          >
+                            <div>
+                              <p className="font-medium">{mapping.description}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Source: {mapping.source === "internal" ? "Internal System" :
+                                        mapping.source === "microsoft" ? "Microsoft Entra ID" :
+                                        mapping.source === "google" ? "Google Cloud Identity" :
+                                        "AWS Cognito"}
+                              </p>
+                            </div>
+                            <Switch
+                              checked={mapping.enabled}
+                              onCheckedChange={(checked) => handleToggleFieldMapping(mapping.field, checked)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
               <TabsContent value="security">
@@ -608,12 +817,12 @@ export default function Settings() {
                     </div>
                   </DialogContent>
                 </Dialog>
-
               </TabsContent>
             </Tabs>
           </div>
         </PageTransition>
       </div>
+      {renderProviderConfigDialog()}
     </div>
   );
 }
