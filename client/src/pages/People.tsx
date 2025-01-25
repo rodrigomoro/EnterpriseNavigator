@@ -103,6 +103,17 @@ const departments = [
 
 const roles = ['All', 'Student', 'Teacher', 'Staff', 'Director'];
 
+// Add locations to the filters
+const locationOptions = [
+  'Madrid Campus',
+  'Barcelona Campus',
+  'Spain Remote',
+  'Argentina Remote',
+  'Mexico Remote',
+  'Colombia Remote',
+  'Chile Remote'
+];
+
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
@@ -110,6 +121,7 @@ export default function People() {
   const [selectedRole, setSelectedRole] = useState('All');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
@@ -143,7 +155,7 @@ export default function People() {
     navigate(`/people/${id}/edit`);
   };
 
-  const getStatusBadgeVariant = (role: string, status: string) => {
+  const getStatusBadgeVariant = (role: string, status: string): "default" | "secondary" | "destructive" | "outline" => {
     if (role === 'Student') {
       switch (status) {
         case 'Enrolled':
@@ -152,10 +164,11 @@ export default function People() {
           return 'default';
         case 'Graduated':
         case 'Alumni':
-          return 'success';
+          return 'outline';
         case 'Withdrawn':
         case 'Dismissed':
         case 'Dropped Out':
+        case 'Suspended':
           return 'destructive';
         default:
           return 'secondary';
@@ -163,15 +176,18 @@ export default function People() {
     } else {
       switch (status) {
         case 'Active':
+        case 'Contractual':
           return 'default';
         case 'Inactive':
         case 'On Leave':
-          return 'warning';
+        case 'Retired':
+          return 'secondary';
         case 'Terminated':
         case 'Suspended':
+        case 'Resigned':
           return 'destructive';
         default:
-          return 'secondary';
+          return 'outline';
       }
     }
   };
@@ -184,8 +200,9 @@ export default function People() {
     const matchesRole = selectedRole === 'All' || member.role === selectedRole;
     const matchesDepartment = selectedDepartment === 'all' || member.department === selectedDepartment;
     const matchesStatus = selectedStatus === 'all' || member.status === selectedStatus;
+    const matchesLocation = selectedLocation === 'all' || member.location === selectedLocation;
 
-    return matchesSearch && matchesRole && matchesDepartment && matchesStatus;
+    return matchesSearch && matchesRole && matchesDepartment && matchesStatus && matchesLocation;
   });
 
   const GridView = () => (
@@ -210,21 +227,24 @@ export default function People() {
               }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="flex items-center gap-4">
+              {/* Status badge moved to top right */}
+              <div className="absolute top-2 right-2">
+                <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                  {member.status}
+                </Badge>
+              </div>
+
+              <div className="flex items-center gap-4 mt-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={member.avatar} alt={member.name} />
                   <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
 
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{member.name}</h3>
-                    <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                      {member.status}
-                    </Badge>
-                  </div>
+                  <h3 className="font-semibold">{member.name}</h3>
                   <p className="text-sm text-muted-foreground">{member.role}</p>
                   <p className="text-sm text-muted-foreground">{member.department}</p>
+                  <p className="text-sm text-muted-foreground">{member.location}</p>
                 </div>
               </div>
             </motion.div>
@@ -263,6 +283,7 @@ export default function People() {
           <TableHead>Name</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Department</TableHead>
+          <TableHead>Location</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -285,6 +306,7 @@ export default function People() {
             </TableCell>
             <TableCell>{member.role}</TableCell>
             <TableCell>{member.department}</TableCell>
+            <TableCell>{member.location}</TableCell>
             <TableCell>
               <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                 {member.status}
@@ -403,6 +425,23 @@ export default function People() {
                                 <SelectItem key={status} value={status}>{status}</SelectItem>
                               ))
                             }
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Location</h4>
+                        <Select
+                          value={selectedLocation}
+                          onValueChange={setSelectedLocation}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select location" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem key="all-locations" value="all">All Locations</SelectItem>
+                            {locationOptions.map(location => (
+                              <SelectItem key={location} value={location}>{location}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>

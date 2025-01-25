@@ -1,27 +1,6 @@
-export const mockEvents = [
-  {
-    id: '1',
-    title: 'Team Meeting',
-    date: '2025-01-08',
-    time: '10:00 AM',
-    priority: 'primary'
-  },
-  {
-    id: '2',
-    title: 'Project Review',
-    date: '2025-01-08',
-    time: '2:00 PM',
-    priority: 'destructive'
-  },
-  {
-    id: '3',
-    title: 'Client Call',
-    date: '2025-01-09',
-    time: '11:30 AM',
-    priority: 'orange'
-  }
-];
+import { z } from "zod";
 
+// Update the TeamMember interface to include location
 export interface TeamMember {
   id: string;
   name: string;
@@ -34,10 +13,77 @@ export interface TeamMember {
   bio: string;
   projects: string[];
   reportsTo?: string;
-  status: string; // Adding status field
+  status: string;
+  location: string;
 }
 
-export const mockTeamMembers: TeamMember[] = [
+// Add location options
+export const locations = [
+  'Madrid Campus',
+  'Barcelona Campus',
+  'Spain Remote',
+  'Argentina Remote',
+  'Mexico Remote',
+  'Colombia Remote',
+  'Chile Remote'
+];
+
+// Add departments
+export const departments = [
+  'Executive',
+  'Technology',
+  'Mathematics',
+  'Science',
+  'Computer Science',
+  'Finance',
+  'Human Resources'
+];
+
+// Status options based on role
+export const statusOptions = {
+  Student: [
+    'Enrolled',
+    'Graduated',
+    'Withdrawn',
+    'Dismissed',
+    'Deferred',
+    'Alumni',
+    'Suspended',
+    'Prospective',
+    'Pending Enrollment',
+    'Audit',
+    'Exchange',
+    'Interning',
+    'Dropped Out'
+  ],
+  Staff: [
+    'Active',
+    'Inactive',
+    'Terminated',
+    'On Probation',
+    'Retired',
+    'Contractual',
+    'Resigned',
+    'On Leave',
+    'Suspended',
+    'Pending Approval'
+  ],
+  Teacher: [
+    'Active',
+    'Inactive',
+    'Retired',
+    'Adjunct',
+    'Visiting',
+    'Probationary',
+    'On Leave',
+    'Suspended',
+    'Resigned',
+    'Contractual'
+  ]
+};
+
+// Initial team members array with staff and faculty
+const initialTeamMembers: TeamMember[] = [
   {
     id: '1',
     name: 'Emily Johnson',
@@ -49,7 +95,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0101',
     bio: 'Founded the company in 2020. Previously led education technology initiatives at major enterprises.',
     projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '2',
@@ -63,7 +110,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Over 15 years of experience in financial management and strategic planning.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '3',
@@ -77,7 +125,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Tech leader with a focus on educational software and scalable systems.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1',
-    status: 'On Leave'
+    status: 'On Leave',
+    location: 'Barcelona Campus'
   },
   {
     id: '4',
@@ -91,7 +140,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Specialized in organizational development and talent management.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '1',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '12',
@@ -105,7 +155,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Experienced science educator with a focus on practical applications.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '13',
@@ -119,7 +170,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Mathematics specialist with expertise in advanced calculus.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '3',
-    status: 'Inactive'
+    status: 'Inactive',
+    location: 'Barcelona Campus'
   },
   {
     id: '14',
@@ -133,7 +185,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Senior Financial Analyst with expertise in educational budgeting.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '15',
@@ -147,7 +200,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'HR Specialist focusing on talent acquisition and development.',
     projects: [],
     reportsTo: '4',
-    status: 'On Leave'
+    status: 'On Leave',
+    location: 'Madrid Campus'
   },
   {
     id: '16',
@@ -161,7 +215,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'IT Support Specialist managing educational technology infrastructure.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '17',
@@ -175,7 +230,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Executive Assistant to the CEO.',
     projects: [],
     reportsTo: '1',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '18',
@@ -189,7 +245,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Accounts Payable Specialist.',
     projects: [],
     reportsTo: '2',
-    status: 'Terminated'
+    status: 'Terminated',
+    location: 'Madrid Campus'
   },
   {
     id: '19',
@@ -203,7 +260,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Benefits Coordinator managing employee wellness programs.',
     projects: [],
     reportsTo: '4',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '20',
@@ -217,7 +275,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Systems Administrator maintaining educational platforms.',
     projects: [],
     reportsTo: '3',
-    status: 'Probationary'
+    status: 'Probationary',
+    location: 'Barcelona Campus'
   },
   {
     id: '21',
@@ -231,7 +290,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Financial Operations Analyst.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '22',
@@ -245,7 +305,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Training and Development Coordinator.',
     projects: [],
     reportsTo: '4',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '23',
@@ -259,7 +320,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Administrative Coordinator for executive office.',
     projects: [],
     reportsTo: '1',
-    status: 'Resigned'
+    status: 'Resigned',
+    location: 'Madrid Campus'
   },
   {
     id: '24',
@@ -273,7 +335,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Network Security Specialist.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '25',
@@ -287,7 +350,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Financial Risk Analyst.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '26',
@@ -301,7 +365,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Employee Relations Specialist.',
     projects: [],
     reportsTo: '4',
-    status: 'On Probation'
+    status: 'On Probation',
+    location: 'Madrid Campus'
   },
   {
     id: '27',
@@ -315,7 +380,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Software Development Lead.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '28',
@@ -329,7 +395,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Budget Planning Specialist.',
     projects: [],
     reportsTo: '2',
-    status: 'Contractual'
+    status: 'Contractual',
+    location: 'Madrid Campus'
   },
   {
     id: '29',
@@ -343,7 +410,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Strategic Planning Coordinator.',
     projects: [],
     reportsTo: '1',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '30',
@@ -357,7 +425,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Recruitment Specialist.',
     projects: [],
     reportsTo: '4',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '31',
@@ -371,7 +440,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Cloud Infrastructure Engineer.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '32',
@@ -385,7 +455,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Compliance Officer.',
     projects: [],
     reportsTo: '2',
-    status: 'On Leave'
+    status: 'On Leave',
+    location: 'Madrid Campus'
   },
   {
     id: '33',
@@ -399,7 +470,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Training Program Developer.',
     projects: [],
     reportsTo: '4',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '34',
@@ -413,7 +485,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Quality Assurance Lead.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '35',
@@ -427,7 +500,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Investment Analyst.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '36',
@@ -441,7 +515,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Corporate Communications Manager.',
     projects: [],
     reportsTo: '1',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '37',
@@ -455,7 +530,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Employee Engagement Specialist.',
     projects: [],
     reportsTo: '4',
-    status: 'On Leave'
+    status: 'On Leave',
+    location: 'Madrid Campus'
   },
   {
     id: '38',
@@ -469,7 +545,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Data Center Operations Manager.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '39',
@@ -483,7 +560,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Treasury Analyst.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '40',
@@ -497,7 +575,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Diversity and Inclusion Coordinator.',
     projects: [],
     reportsTo: '4',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '41',
@@ -511,7 +590,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Information Security Analyst.',
     projects: [],
     reportsTo: '3',
-    status: 'Active'
+    status: 'Active',
+    location: 'Barcelona Campus'
   },
   {
     id: '42',
@@ -525,7 +605,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Accounting Operations Manager.',
     projects: [],
     reportsTo: '2',
-    status: 'Active'
+    status: 'Active',
+    location: 'Madrid Campus'
   },
   {
     id: '43',
@@ -539,7 +620,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Business Development Coordinator.',
     projects: [],
     reportsTo: '1',
-    status: 'Probationary'
+    status: 'Probationary',
+    location: 'Madrid Campus'
   },
   {
     id: 'student-1',
@@ -553,7 +635,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Computer Science student with interests in AI and machine learning.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14',
-    status: 'Enrolled'
+    status: 'Enrolled',
+    location: 'Madrid Campus'
   },
   {
     id: 'student-2',
@@ -567,7 +650,8 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Mathematics enthusiast focusing on data analysis.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '13',
-    status: 'Graduated'
+    status: 'Graduated',
+    location: 'Barcelona Campus'
   },
   {
     id: 'student-3',
@@ -581,8 +665,69 @@ export const mockTeamMembers: TeamMember[] = [
     bio: 'Aspiring software developer with a passion for web technologies.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: '14',
-    status: 'Withdrawn'
+    status: 'Withdrawn',
+    location: 'Madrid Campus'
   }
+];
+
+// Function to generate additional students
+function generateStudents(startId: number, count: number): TeamMember[] {
+  const studentDepartments = ['Computer Science', 'Mathematics', 'Science'];
+  const statuses = statusOptions.Student;
+  const names = [
+    'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Isabella', 'Sophia', 'Mia', 'Charlotte', 'Amelia',
+    'Harper', 'Evelyn', 'Abigail', 'Emily', 'Elizabeth', 'Sofia', 'Avery', 'Ella', 'Scarlett',
+    'Grace', 'Victoria', 'Riley', 'Aria', 'Lily', 'Aurora', 'Zoey', 'Willow', 'Luna', 'Savannah',
+    'Maya', 'Audrey', 'Brooklyn', 'Bella', 'Claire', 'Skylar', 'Lucy', 'Paisley', 'Everly',
+    'Anna', 'Caroline', 'Genesis', 'Aaliyah', 'Kennedy', 'Kinsley', 'Allison', 'Gabriella', 'Alice',
+    'Madelyn', 'Cora', 'Ruby', 'Eva', 'Serenity', 'Autumn', 'Adeline', 'Hailey', 'Gianna',
+    'James', 'William', 'Oliver', 'Benjamin', 'Elijah', 'Lucas', 'Mason', 'Logan', 'Alexander', 'Ethan',
+    'Jacob', 'Michael', 'Daniel', 'Henry', 'Jackson', 'Sebastian', 'Jack', 'Aiden', 'Owen',
+    'Samuel', 'Matthew', 'Joseph', 'Levi', 'Mateo', 'David', 'John', 'Wyatt', 'Carter', 'Julian',
+    'Luke', 'Grayson', 'Isaac', 'Jayden', 'Theodore', 'Gabriel', 'Anthony', 'Dylan', 'Leo',
+    'Lincoln', 'Jaxon', 'Asher', 'Christopher', 'Josiah', 'Andrew', 'Thomas', 'Joshua', 'Ezra',
+    'Hudson', 'Charles', 'Caleb', 'Isaiah', 'Ryan', 'Nathan', 'Adrian', 'Christian', 'Maverick'
+  ];
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+    'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+    'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
+    'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+    'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
+  ];
+
+  return Array.from({ length: count }, (_, i) => {
+    const firstName = names[Math.floor(Math.random() * names.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const department = studentDepartments[Math.floor(Math.random() * studentDepartments.length)];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+
+    return {
+      id: `student-${startId + i}`,
+      name: `${firstName} ${lastName}`,
+      role: 'Student',
+      department,
+      isDirector: false,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
+      phone: `+1 (555) ${String(1000 + i).padStart(4, '0')}`,
+      bio: `${department} student with focus on academic excellence.`,
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)'],
+      reportsTo: '14',
+      status,
+      location
+    };
+  });
+}
+
+// Generate additional students
+const additionalStudents = generateStudents(43, 200);
+
+// Export the combined team members
+export const mockTeamMembers: TeamMember[] = [
+  ...initialTeamMembers,
+  ...additionalStudents
 ];
 
 export interface Student {
