@@ -15,18 +15,22 @@ import { Progress } from "@/components/ui/progress";
 const mockStudentData = {
   enrollmentStatus: "Active",
   academicStanding: "Good Standing",
-  gpa: 3.8,
+  leadSource: "Website Form",
+  conversionDate: "2023-05-15",
+  gpa: 8.5,
   totalCredits: 45,
   enrolledPrograms: [
     {
       name: "Full Stack Development",
       progress: 75,
+      score: 8.2,
       startDate: "2023-09-01",
       expectedCompletion: "2024-08-31",
     },
     {
       name: "UI/UX Design Fundamentals",
       progress: 100,
+      score: 9.5,
       startDate: "2023-06-01",
       completionDate: "2023-12-15",
     }
@@ -36,25 +40,30 @@ const mockStudentData = {
       name: "UI/UX Design Certificate",
       issueDate: "2023-12-15",
       status: "Completed",
-      score: 95
+      score: 9.5
     },
     {
       name: "JavaScript Fundamentals",
       issueDate: "2023-10-30",
       status: "Completed",
-      score: 88
+      score: 8.8
     }
-  ],
-  currentCourses: [
+  ]
+};
+
+const mockTeacherData = {
+  programs: [
     {
-      name: "Advanced React Development",
-      progress: 65,
-      grade: "A"
+      name: "Full Stack Development",
+      role: "Lead Instructor",
+      students: 25,
+      startDate: "2023-09-01",
     },
     {
-      name: "Cloud Architecture",
-      progress: 45,
-      grade: "B+"
+      name: "Advanced JavaScript",
+      role: "Instructor",
+      students: 18,
+      startDate: "2023-11-15",
     }
   ]
 };
@@ -186,124 +195,146 @@ export default function PersonOverview() {
               </div>
 
               <div className="col-span-12 lg:col-span-8 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5" />
-                      <div>
-                        <CardTitle>Academic Status</CardTitle>
-                        <CardDescription>Current academic standing and progress</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Enrollment Status</p>
-                        <p className="font-medium">{mockStudentData.enrollmentStatus}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Academic Standing</p>
-                        <p className="font-medium">{mockStudentData.academicStanding}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">GPA</p>
-                        <p className="font-medium">{mockStudentData.gpa}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5" />
-                      <div>
-                        <CardTitle>Program Enrollment</CardTitle>
-                        <CardDescription>Current and completed programs</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {mockStudentData.enrolledPrograms.map((program, index) => (
-                        <div key={index} className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">{program.name}</h4>
-                            <Badge variant={program.progress === 100 ? "default" : "secondary"}>
-                              {program.progress === 100 ? "Completed" : "In Progress"}
-                            </Badge>
-                          </div>
-                          <Progress value={program.progress} className="h-2" />
-                          <div className="flex justify-between text-sm text-muted-foreground">
-                            <span>Started: {new Date(program.startDate).toLocaleDateString()}</span>
-                            <span>
-                              {program.completionDate 
-                                ? `Completed: ${new Date(program.completionDate).toLocaleDateString()}`
-                                : `Expected: ${new Date(program.expectedCompletion).toLocaleDateString()}`}
-                            </span>
+                {person.role === 'Student' && (
+                  <>
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="h-5 w-5" />
+                          <div>
+                            <CardTitle>Academic Status</CardTitle>
+                            <CardDescription>Current academic standing and lead information</CardDescription>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Award className="h-5 w-5" />
-                      <div>
-                        <CardTitle>Certifications</CardTitle>
-                        <CardDescription>Earned certificates and achievements</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {mockStudentData.certifications.map((cert, index) => (
-                        <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
-                          <div>
-                            <h4 className="font-medium">{cert.name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Lead Source</p>
+                            <p className="font-medium">{mockStudentData.leadSource}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Converted: {new Date(mockStudentData.conversionDate).toLocaleDateString()}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <Badge className="mb-1">{cert.status}</Badge>
-                            <p className="text-sm text-muted-foreground">Score: {cert.score}%</p>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Enrollment Status</p>
+                            <p className="font-medium">{mockStudentData.enrollmentStatus}</p>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Academic Standing</p>
+                            <p className="font-medium">{mockStudentData.academicStanding}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Average Score</p>
+                            <p className="font-medium">{mockStudentData.gpa}/10</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
 
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5" />
-                      <div>
-                        <CardTitle>Current Courses</CardTitle>
-                        <CardDescription>Active course enrollment and progress</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {mockStudentData.currentCourses.map((course, index) => (
-                        <div key={index} className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">{course.name}</h4>
-                            <Badge variant="outline">Grade: {course.grade}</Badge>
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-5 w-5" />
+                          <div>
+                            <CardTitle>Program Enrollment</CardTitle>
+                            <CardDescription>Current and completed programs</CardDescription>
                           </div>
-                          <Progress value={course.progress} className="h-2" />
-                          <p className="text-sm text-muted-foreground">{course.progress}% Complete</p>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          {mockStudentData.enrolledPrograms.map((program, index) => (
+                            <div key={index} className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <h4 className="font-medium">{program.name}</h4>
+                                <Badge variant={program.progress === 100 ? "default" : "secondary"}>
+                                  {program.progress === 100 ? "Completed" : "In Progress"}
+                                </Badge>
+                              </div>
+                              <Progress value={program.progress} className="h-2" />
+                              <div className="flex justify-between text-sm text-muted-foreground">
+                                <span>Started: {new Date(program.startDate).toLocaleDateString()}</span>
+                                <span>Score: {program.score}/10</span>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {program.completionDate 
+                                  ? `Completed: ${new Date(program.completionDate).toLocaleDateString()}`
+                                  : `Expected: ${new Date(program.expectedCompletion).toLocaleDateString()}`}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <Award className="h-5 w-5" />
+                          <div>
+                            <CardTitle>Certifications</CardTitle>
+                            <CardDescription>Earned certificates and achievements</CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {mockStudentData.certifications.map((cert, index) => (
+                            <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
+                              <div>
+                                <h4 className="font-medium">{cert.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <Badge className="mb-1">{cert.status}</Badge>
+                                <p className="text-sm text-muted-foreground">Score: {cert.score}/10</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+
+                {(person.role === 'Teacher' || person.role === 'Director') && (
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-5 w-5" />
+                        <div>
+                          <CardTitle>Current Programs</CardTitle>
+                          <CardDescription>Programs currently teaching or supervising</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {mockTeacherData.programs.map((program, index) => (
+                          <div key={index} className="flex justify-between items-center py-2 border-b last:border-0">
+                            <div>
+                              <h4 className="font-medium">{program.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Role: {program.role}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <Badge variant="secondary">{program.students} Students</Badge>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Since: {new Date(program.startDate).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </main>

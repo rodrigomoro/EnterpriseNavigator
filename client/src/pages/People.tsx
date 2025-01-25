@@ -11,6 +11,7 @@ import UserAvatar from '@/components/UserAvatar';
 import { Input } from '@/components/ui/input';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -101,7 +102,12 @@ export default function People() {
                 </Avatar>
 
                 <div>
-                  <h3 className="font-semibold">{member.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold">{member.name}</h3>
+                    <Badge variant={member.role === 'Student' ? 'default' : 'secondary'}>
+                      {member.role === 'Student' ? 'Active' : member.role}
+                    </Badge>
+                  </div>
                   <p className="text-sm text-muted-foreground">{member.role}</p>
                   <p className="text-sm text-muted-foreground">{member.department}</p>
                 </div>
@@ -142,6 +148,7 @@ export default function People() {
           <TableHead>Name</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Department</TableHead>
+          <TableHead>Status</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -163,6 +170,11 @@ export default function People() {
             </TableCell>
             <TableCell>{member.role}</TableCell>
             <TableCell>{member.department}</TableCell>
+            <TableCell>
+              <Badge variant={member.role === 'Student' ? 'default' : 'secondary'}>
+                {member.role === 'Student' ? 'Active' : member.role}
+              </Badge>
+            </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
                 <Button
