@@ -247,12 +247,12 @@ export default function People() {
 
                 <div className="flex-grow">
                   <h3 className="font-semibold">{member.name}</h3>
-                  <div className="my-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-muted-foreground">{member.role}</p>
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">{member.role}</p>
                   <p className="text-sm text-muted-foreground">{member.department}</p>
                   <p className="text-sm text-muted-foreground">{member.location}</p>
                 </div>
