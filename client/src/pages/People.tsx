@@ -309,13 +309,13 @@ export default function People() {
 
               <div className="absolute bottom-4 right-4">
                 <TooltipProvider>
-                  <Tooltip delayDuration={0}>
+                  <Tooltip delayDuration={500}> {/* Added delayDuration */}
                     <TooltipTrigger asChild>
                       <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                         {member.status}
                       </Badge>
                     </TooltipTrigger>
-                    <TooltipContent side="top" align="end" className="max-w-[300px]">
+                    <TooltipContent side="left" align="center" className="max-w-[300px]">
                       <p>{getStatusDescription(member.role, member.status)}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -383,13 +383,13 @@ export default function People() {
             <TableCell>{member.location}</TableCell>
             <TableCell>
               <TooltipProvider>
-                <Tooltip delayDuration={0}>
+                <Tooltip delayDuration={500}> {/* Added delayDuration */}
                   <TooltipTrigger asChild>
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent side="top" align="center" className="max-w-[300px]">
+                  <TooltipContent side="left" align="center" className="max-w-[300px]">
                     <p>{getStatusDescription(member.role, member.status)}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -505,11 +505,11 @@ export default function People() {
                             <SelectItem key="all-statuses" value="all">All Statuses</SelectItem>
                             {getAvailableStatuses(selectedRole).map(status => (
                               <TooltipProvider key={status}>
-                                <Tooltip delayDuration={0}>
+                                <Tooltip delayDuration={500}> {/* Added delayDuration */}
                                   <TooltipTrigger asChild>
                                     <SelectItem value={status}>{status}</SelectItem>
                                   </TooltipTrigger>
-                                  <TooltipContent side="right" align="start" className="max-w-[300px]">
+                                  <TooltipContent side="left" align="center" sideOffset={5} className="max-w-[300px]">
                                     <p>{getStatusDescription(selectedRole, status)}</p>
                                   </TooltipContent>
                                 </Tooltip>
