@@ -1,3 +1,4 @@
+// Interfaces
 interface Student {
   id: string;
   name: string;
@@ -7,25 +8,31 @@ interface Student {
     programming: number;
   };
   avatar: string;
-  enrollments: {
-    programId: string;
-    enrollmentDate: string;
-    status: 'active' | 'completed' | 'dropped';
-    progress: number;
-  }[];
-  certifications: {
-    id: string;
-    name: string;
-    issueDate: string;
-    expiryDate?: string;
-    credentialUrl: string;
-  }[];
-  previousEducation?: {
-    institution: string;
-    degree: string;
-    field: string;
-    graduationYear: string;
-  } | null;
+  enrollments: Enrollment[];
+  certifications: Certification[];
+  previousEducation?: Education | null;
+}
+
+interface Education {
+  institution: string;
+  degree: string;
+  field: string;
+  graduationYear: string;
+}
+
+interface Enrollment {
+  programId: string;
+  enrollmentDate: string;
+  status: 'active' | 'completed' | 'dropped';
+  progress: number;
+}
+
+interface Certification {
+  id: string;
+  name: string;
+  issueDate: string;
+  expiryDate?: string;
+  credentialUrl: string;
 }
 
 export interface TeamMember {
@@ -41,36 +48,12 @@ export interface TeamMember {
   projects: string[];
   reportsTo?: string;
   // Student specific fields
-  enrollments?: {
-    programId: string;
-    enrollmentDate: string;
-    status: 'active' | 'completed' | 'dropped';
-    progress: number;
-  }[];
-  certifications?: {
-    id: string;
-    name: string;
-    issueDate: string;
-    expiryDate?: string;
-    credentialUrl: string;
-  }[];
-  previousEducation?: {
-    institution: string;
-    degree: string;
-    field: string;
-    graduationYear: string;
-  } | null;
+  enrollments?: Enrollment[];
+  certifications?: Certification[];
+  previousEducation?: Education | null;
 }
 
-const calculateAverageScore = (students: Student[]): number => {
-  if (!students.length) return 0;
-  const totalScores = students.reduce((acc, student) => {
-    const studentAvg = (student.scores.mathematics + student.scores.science + student.scores.programming) / 3;
-    return acc + studentAvg;
-  }, 0);
-  return Math.round(totalScores / students.length);
-};
-
+// Mock data
 export const mockTeamMembers: TeamMember[] = [
   {
     id: 'student-1',
@@ -151,6 +134,7 @@ export const mockTeamMembers: TeamMember[] = [
   }
 ];
 
+// Convert team members who are students into the Student type
 export const mockStudents: Student[] = mockTeamMembers
   .filter(member => member.role === 'Student')
   .map(member => ({
@@ -178,7 +162,7 @@ export const mockProjects = [
     progress: 65,
     department: 'Computer Science',
     budget: 15000,
-    team: ['student-1', 'student-2', 'student-3']
+    team: ['student-1', 'student-2']
   },
   {
     id: '2',
@@ -190,7 +174,19 @@ export const mockProjects = [
     progress: 45,
     department: 'Mathematics',
     budget: 12000,
-    team: ['student-4', 'student-5']
+    team: ['student-2']
+  },
+  {
+    id: '4',
+    name: 'Web Development',
+    description: 'Modern web development technologies and practices.',
+    startDate: '2024-04-01',
+    endDate: '2024-07-01',
+    status: 'active',
+    progress: 30,
+    department: 'Computer Science',
+    budget: 20000,
+    team: ['student-1']
   }
 ];
 

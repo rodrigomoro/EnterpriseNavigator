@@ -1,6 +1,6 @@
 import { ArrowLeft, Edit, RefreshCw, Globe, Database } from "lucide-react";
 import { Link, useRoute } from 'wouter';
-import { mockTeamMembers } from '@/data/mockData';
+import { mockTeamMembers, mockStudents } from '@/data/mockData';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { mockStudents } from '@/data/mockData';
+import { mockProjects } from '@/data/mockData';
 import {
   Table,
   TableBody,
@@ -19,24 +19,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import {mockProjects} from '@/data/mockData'
-
 
 export default function PersonOverview() {
   const [, params] = useRoute('/people/:id');
   const person = mockTeamMembers.find(m => m.id === params?.id);
-  const studentData = mockStudents.find(s => s.id === params?.id);
+  const studentData = person?.role === 'Student' ? mockStudents.find(s => s.id === params?.id) : null;
 
   if (!person) {
     return <div>Person not found</div>;
   }
-
-  // Add safe default values for student data
-  const safeStudentData = studentData ? {
-    ...studentData,
-    enrollments: studentData.enrollments || [],
-    certifications: studentData.certifications || []
-  } : null;
 
   // Mock data for demo purposes
   const lastSync = new Date("2024-01-24T10:30:00");
@@ -45,7 +36,6 @@ export default function PersonOverview() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
@@ -75,7 +65,6 @@ export default function PersonOverview() {
               <UserAvatar />
             </div>
 
-            {/* Identity Provider Status */}
             <div className="mb-6">
               <Card>
                 <CardContent className="pt-6">
@@ -108,7 +97,6 @@ export default function PersonOverview() {
             </div>
 
             <div className="grid grid-cols-12 gap-6">
-              {/* Personal Information */}
               <div className="col-span-12 lg:col-span-4">
                 <Card>
                   <CardHeader>
@@ -116,7 +104,6 @@ export default function PersonOverview() {
                     <CardDescription>Basic details and contact information</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* Profile Picture */}
                     <div className="flex flex-col items-center text-center">
                       <Avatar className="h-24 w-24">
                         <AvatarImage src={person.avatar} alt={person.name} />
@@ -124,7 +111,6 @@ export default function PersonOverview() {
                       </Avatar>
                     </div>
 
-                    {/* Identity Information */}
                     <div className="space-y-4">
                       <DataField
                         label="Full Name"
@@ -143,27 +129,20 @@ export default function PersonOverview() {
                       />
                       <DataField
                         label="Email"
-                        value="example@email.com"
+                        value={person.email}
                         source="Google Cloud Identity"
                       />
                       <DataField
                         label="Phone"
-                        value="+1 234 567 890"
+                        value={person.phone}
                         source="internal"
-                      />
-                      <DataField
-                        label="Location"
-                        value="San Francisco, CA"
-                        source="Microsoft Entra ID"
                       />
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Work Information */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
-                {/* Organization Details */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Organization Details</CardTitle>
@@ -172,28 +151,22 @@ export default function PersonOverview() {
                   <CardContent className="space-y-4">
                     <DataField
                       label="Reports To"
-                      value="Jane Smith"
+                      value={person.reportsTo || 'N/A'}
                       source="Microsoft Entra ID"
                     />
                     <DataField
                       label="Team"
-                      value="Engineering"
+                      value={person.department}
                       source="Microsoft Entra ID"
                     />
                     <DataField
-                      label="Office"
-                      value="HQ - Floor 3"
-                      source="internal"
-                    />
-                    <DataField
-                      label="Start Date"
-                      value="January 15, 2024"
+                      label="Bio"
+                      value={person.bio}
                       source="internal"
                     />
                   </CardContent>
                 </Card>
 
-                {/* System Access */}
                 <Card>
                   <CardHeader>
                     <CardTitle>System Access</CardTitle>
@@ -207,7 +180,7 @@ export default function PersonOverview() {
                     />
                     <DataField
                       label="Role"
-                      value="Administrator"
+                      value={person.role}
                       source="internal"
                     />
                     <DataField
@@ -217,25 +190,9 @@ export default function PersonOverview() {
                     />
                   </CardContent>
                 </Card>
-
-                {/* Internal Notes */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Internal Notes</CardTitle>
-                    <CardDescription>Additional information for internal use</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <DataField
-                      label="Notes"
-                      value="Team lead for the new cloud migration project. Excellent communication skills and project management experience."
-                      source="internal"
-                    />
-                  </CardContent>
-                </Card>
               </div>
 
-              {/* Add Academic Information section for students */}
-              {person.role === "Student" && safeStudentData && (
+              {studentData && (
                 <div className="col-span-12 space-y-6">
                   <Card>
                     <CardHeader>
@@ -245,37 +202,35 @@ export default function PersonOverview() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {/* Previous Education */}
-                      {safeStudentData.previousEducation && (
+                      {studentData.previousEducation && (
                         <div className="space-y-2">
                           <h3 className="font-semibold">Previous Education</h3>
                           <div className="grid grid-cols-2 gap-4">
                             <DataField
                               label="Institution"
-                              value={safeStudentData.previousEducation.institution}
+                              value={studentData.previousEducation.institution}
                               source="internal"
                             />
                             <DataField
                               label="Degree"
-                              value={safeStudentData.previousEducation.degree}
+                              value={studentData.previousEducation.degree}
                               source="internal"
                             />
                             <DataField
                               label="Field of Study"
-                              value={safeStudentData.previousEducation.field}
+                              value={studentData.previousEducation.field}
                               source="internal"
                             />
                             <DataField
                               label="Graduation Year"
-                              value={safeStudentData.previousEducation.graduationYear}
+                              value={studentData.previousEducation.graduationYear}
                               source="internal"
                             />
                           </div>
                         </div>
                       )}
 
-                      {/* Current Enrollments */}
-                      {safeStudentData.enrollments.length > 0 && (
+                      {studentData.enrollments && studentData.enrollments.length > 0 && (
                         <div className="space-y-2">
                           <h3 className="font-semibold">Current Enrollments</h3>
                           <Table>
@@ -288,7 +243,7 @@ export default function PersonOverview() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {safeStudentData.enrollments.map(enrollment => {
+                              {studentData.enrollments.map(enrollment => {
                                 const program = mockProjects.find(p => p.id === enrollment.programId);
                                 return (
                                   <TableRow key={enrollment.programId}>
@@ -327,63 +282,63 @@ export default function PersonOverview() {
                         </div>
                       )}
 
-                      {/* Academic Performance */}
-                      <div className="space-y-2">
-                        <h3 className="font-semibold">Academic Performance</h3>
-                        <div className="grid grid-cols-3 gap-4">
-                          <Card>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-sm font-medium">
-                                Mathematics
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="text-2xl font-bold">
-                                {safeStudentData.scores.mathematics}%
-                              </div>
-                              <Progress
-                                value={safeStudentData.scores.mathematics}
-                                className="mt-2"
-                              />
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-sm font-medium">
-                                Science
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="text-2xl font-bold">
-                                {safeStudentData.scores.science}%
-                              </div>
-                              <Progress
-                                value={safeStudentData.scores.science}
-                                className="mt-2"
-                              />
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-sm font-medium">
-                                Programming
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="text-2xl font-bold">
-                                {safeStudentData.scores.programming}%
-                              </div>
-                              <Progress
-                                value={safeStudentData.scores.programming}
-                                className="mt-2"
-                              />
-                            </CardContent>
-                          </Card>
+                      {studentData.scores && (
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Academic Performance</h3>
+                          <div className="grid grid-cols-3 gap-4">
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                  Mathematics
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold">
+                                  {studentData.scores.mathematics}%
+                                </div>
+                                <Progress
+                                  value={studentData.scores.mathematics}
+                                  className="mt-2"
+                                />
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                  Science
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold">
+                                  {studentData.scores.science}%
+                                </div>
+                                <Progress
+                                  value={studentData.scores.science}
+                                  className="mt-2"
+                                />
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                  Programming
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold">
+                                  {studentData.scores.programming}%
+                                </div>
+                                <Progress
+                                  value={studentData.scores.programming}
+                                  className="mt-2"
+                                />
+                              </CardContent>
+                            </Card>
+                          </div>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Certifications */}
-                      {safeStudentData.certifications.length > 0 && (
+                      {studentData.certifications && studentData.certifications.length > 0 && (
                         <div className="space-y-2">
                           <h3 className="font-semibold">Certifications</h3>
                           <Table>
@@ -396,7 +351,7 @@ export default function PersonOverview() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {safeStudentData.certifications.map(cert => (
+                              {studentData.certifications.map(cert => (
                                 <TableRow key={cert.id}>
                                   <TableCell className="font-medium">
                                     {cert.name}
