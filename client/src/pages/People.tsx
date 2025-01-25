@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { mockTeamMembers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'wouter';
-import { Plus, Search, Pencil, Trash2, LayoutGrid, List } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, LayoutGrid, List, Filter } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
@@ -20,6 +20,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const container = {
   hidden: { opacity: 0 },
@@ -36,10 +48,68 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
+// Status options based on role
+const statusOptions = {
+  Student: [
+    'Enrolled',
+    'Graduated',
+    'Withdrawn',
+    'Dismissed',
+    'Deferred',
+    'Alumni',
+    'Suspended',
+    'Prospective',
+    'Pending Enrollment',
+    'Audit',
+    'Exchange',
+    'Interning',
+    'Dropped Out'
+  ],
+  Staff: [
+    'Active',
+    'Inactive',
+    'Terminated',
+    'On Probation',
+    'Retired',
+    'Contractual',
+    'Resigned',
+    'On Leave',
+    'Suspended',
+    'Pending Approval'
+  ],
+  Teacher: [
+    'Active',
+    'Inactive',
+    'Retired',
+    'Adjunct',
+    'Visiting',
+    'Probationary',
+    'On Leave',
+    'Suspended',
+    'Resigned',
+    'Contractual'
+  ]
+};
+
+const departments = [
+  'Executive',
+  'Technology',
+  'Mathematics',
+  'Science',
+  'Computer Science',
+  'Finance',
+  'Human Resources'
+];
+
+const roles = ['All', 'Student', 'Teacher', 'Staff', 'Director'];
+
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedRole, setSelectedRole] = useState('All');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
@@ -106,6 +176,18 @@ export default function People() {
     }
   };
 
+  const filteredMembers = mockTeamMembers.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         member.department.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesRole = selectedRole === 'All' || member.role === selectedRole;
+    const matchesDepartment = !selectedDepartment || member.department === selectedDepartment;
+    const matchesStatus = !selectedStatus || member.status === selectedStatus;
+
+    return matchesSearch && matchesRole && matchesDepartment && matchesStatus;
+  });
+
   const GridView = () => (
     <motion.div 
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -113,7 +195,7 @@ export default function People() {
       initial="hidden"
       animate="show"
     >
-      {mockTeamMembers.map((member) => (
+      {filteredMembers.map((member) => (
         <motion.div 
           key={member.id} 
           variants={item}
@@ -137,8 +219,8 @@ export default function People() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{member.name}</h3>
-                    <Badge variant={getStatusBadgeVariant(member.role, member.status || 'Active')}>
-                      {member.status || 'Active'}
+                    <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                      {member.status}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{member.role}</p>
@@ -186,7 +268,7 @@ export default function People() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {mockTeamMembers.map((member) => (
+        {filteredMembers.map((member) => (
           <TableRow 
             key={member.id}
             className="cursor-pointer hover:bg-muted/50"
@@ -204,8 +286,8 @@ export default function People() {
             <TableCell>{member.role}</TableCell>
             <TableCell>{member.department}</TableCell>
             <TableCell>
-              <Badge variant={getStatusBadgeVariant(member.role, member.status || 'Active')}>
-                {member.status || 'Active'}
+              <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                {member.status}
               </Badge>
             </TableCell>
             <TableCell className="text-right">
@@ -260,7 +342,74 @@ export default function People() {
                 </div>
               </div>
 
-              <div className="min-w-60 flex justify-end items-center gap-4">
+              <div className="min-w-[400px] flex justify-end items-center gap-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Role</h4>
+                        <Select
+                          value={selectedRole}
+                          onValueChange={setSelectedRole}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {roles.map(role => (
+                              <SelectItem key={role} value={role}>{role}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Department</h4>
+                        <Select
+                          value={selectedDepartment}
+                          onValueChange={setSelectedDepartment}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select department" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">All Departments</SelectItem>
+                            {departments.map(dept => (
+                              <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Status</h4>
+                        <Select
+                          value={selectedStatus}
+                          onValueChange={setSelectedStatus}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">All Statuses</SelectItem>
+                            {(selectedRole === 'All' ? ['Active', 'Inactive'] : statusOptions[selectedRole as keyof typeof statusOptions] || [])
+                              .map(status => (
+                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                              ))
+                            }
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
                 <div className="flex items-center border rounded-lg">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}

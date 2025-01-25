@@ -34,13 +34,14 @@ export interface TeamMember {
   bio: string;
   projects: string[];
   reportsTo?: string;
+  status: string; // Adding status field
 }
 
 export const mockTeamMembers: TeamMember[] = [
   {
     id: '1',
     name: 'Emily Johnson',
-    role: 'Founder & CEO',
+    role: 'Director',
     department: 'Executive',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
@@ -48,11 +49,12 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0101',
     bio: 'Founded the company in 2020. Previously led education technology initiatives at major enterprises.',
     projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    status: 'Active'
   },
   {
     id: '2',
     name: 'Andrea Leeland',
-    role: 'CFO',
+    role: 'Staff',
     department: 'Finance',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
@@ -60,12 +62,13 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0102',
     bio: 'Over 15 years of experience in financial management and strategic planning.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1'
+    reportsTo: '1',
+    status: 'Active'
   },
   {
     id: '3',
     name: 'Sarah Williams',
-    role: 'CTO',
+    role: 'Teacher',
     department: 'Technology',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
@@ -73,12 +76,13 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0103',
     bio: 'Tech leader with a focus on educational software and scalable systems.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1'
+    reportsTo: '1',
+    status: 'On Leave'
   },
   {
     id: '4',
     name: 'Jessica Martinez',
-    role: 'HR Director',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
@@ -86,98 +90,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0104',
     bio: 'Specialized in organizational development and talent management.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1'
-  },
-  {
-    id: '5',
-    name: 'Ethan Wilson',
-    role: 'VP of Sales',
-    department: 'Sales',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
-    email: 'ethan.wilson@company.com',
-    phone: '+1 (555) 0105',
-    bio: 'Driving sales strategy and team development across regions.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1'
-  },
-  {
-    id: '6',
-    name: 'Mikkel Johanson',
-    role: 'Account Manager',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mikkel',
-    email: 'mikkel.johanson@company.com',
-    phone: '+1 (555) 0106',
-    bio: 'Managing key client relationships and account growth.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '5'
-  },
-  {
-    id: '7',
-    name: 'Frank Miles',
-    role: 'Sales Manager',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank',
-    email: 'frank.miles@company.com',
-    phone: '+1 (555) 0107',
-    bio: 'Leading the regional sales team and strategy implementation.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '5'
-  },
-  {
-    id: '8',
-    name: 'Dan Smith',
-    role: 'Account Director',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dan',
-    email: 'dan.smith@company.com',
-    phone: '+1 (555) 0108',
-    bio: 'Overseeing strategic accounts and partnership development.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '5'
-  },
-  {
-    id: '9',
-    name: 'James McFin',
-    role: 'Sales Analyst',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-    email: 'james.mcfin@company.com',
-    phone: '+1 (555) 0109',
-    bio: 'Analyzing sales data and providing strategic insights.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '7'
-  },
-  {
-    id: '10',
-    name: 'Adele Pole',
-    role: 'SDR',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adele',
-    email: 'adele.pole@company.com',
-    phone: '+1 (555) 0110',
-    bio: 'Developing new business opportunities and lead generation.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '7'
-  },
-  {
-    id: '11',
-    name: 'Beth Moore',
-    role: 'Inside Sales Rep',
-    department: 'Sales',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beth',
-    email: 'beth.moore@company.com',
-    phone: '+1 (555) 0111',
-    bio: 'Managing inside sales operations and customer relationships.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '7'
+    reportsTo: '1',
+    status: 'Active'
   },
   {
     id: '12',
@@ -190,7 +104,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0112',
     bio: 'Experienced science educator with a focus on practical applications.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '3'
+    reportsTo: '3',
+    status: 'Active'
   },
   {
     id: '13',
@@ -203,33 +118,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0113',
     bio: 'Mathematics specialist with expertise in advanced calculus.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '3'
-  },
-  {
-    id: '14',
-    name: 'David Kim',
-    role: 'Director',
-    department: 'Computer Science',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-    email: 'david.kim@company.com',
-    phone: '+1 (555) 0114',
-    bio: 'Leading computer science initiatives and curriculum development.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1'
-  },
-  {
-    id: '15',
-    name: 'Sophie Anderson',
-    role: 'Teacher',
-    department: 'Computer Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
-    email: 'sophie.anderson@company.com',
-    phone: '+1 (555) 0115',
-    bio: 'Web development and software engineering instructor.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14'
+    reportsTo: '3',
+    status: 'Inactive'
   },
   {
     id: 'student-1',
@@ -242,7 +132,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0201',
     bio: 'Computer Science student with interests in AI and machine learning.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14'
+    reportsTo: '14',
+    status: 'Enrolled'
   },
   {
     id: 'student-2',
@@ -255,7 +146,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0202',
     bio: 'Mathematics enthusiast focusing on data analysis.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '13'
+    reportsTo: '13',
+    status: 'Graduated'
   },
   {
     id: 'student-3',
@@ -268,72 +160,8 @@ export const mockTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0203',
     bio: 'Aspiring software developer with a passion for web technologies.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14'
-  },
-  {
-    id: 'student-4',
-    name: 'Sarah Davis',
-    role: 'Student',
-    department: 'Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    email: 'sarah.davis@company.com',
-    phone: '+1 (555) 0204',
-    bio: 'Research-oriented student focusing on data science applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '12'
-  },
-  {
-    id: 'student-5',
-    name: 'Alex Martinez',
-    role: 'Student',
-    department: 'Computer Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-    email: 'alex.martinez@company.com',
-    phone: '+1 (555) 0205',
-    bio: 'Full-stack developer in training with focus on cloud technologies.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '15'
-  },
-  {
-    id: 'student-6',
-    name: 'Lisa Wang',
-    role: 'Student',
-    department: 'Mathematics',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
-    email: 'lisa.wang@company.com',
-    phone: '+1 (555) 0206',
-    bio: 'Mathematics student specializing in statistical analysis.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '13'
-  },
-  {
-    id: 'student-7',
-    name: 'Daniel Lee',
-    role: 'Student',
-    department: 'Computer Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel',
-    email: 'daniel.lee@company.com',
-    phone: '+1 (555) 0207',
-    bio: 'Passionate about cybersecurity and network infrastructure.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14'
-  },
-  {
-    id: 'student-8',
-    name: 'Rachel Chen',
-    role: 'Student',
-    department: 'Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel',
-    email: 'rachel.chen@company.com',
-    phone: '+1 (555) 0208',
-    bio: 'Research assistant focusing on data analytics applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '12'
+    reportsTo: '14',
+    status: 'Withdrawn'
   }
 ];
 
