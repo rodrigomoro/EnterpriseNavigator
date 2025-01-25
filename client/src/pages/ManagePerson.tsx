@@ -20,6 +20,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Globe, AlertCircle, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 import {
   Select,
   SelectContent,
@@ -29,16 +30,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { useCallback, useEffect } from "react";
 import PeoplePicker from "@/components/ui/PeoplePicker";
-import { useEffect } from "react";
 
 const formSchema = z.object({
   // Identity Provider Fields
@@ -103,10 +96,23 @@ export default function ManagePerson() {
     },
   });
 
-  // Safely navigate back to people directory
-  const handleCancel = () => {
+  // Memoized navigation handler
+  const handleNavigate = useCallback(() => {
+    // Reset form state before navigation
+    form.reset();
+    // Clear any related queries
+    queryClient.removeQueries({ queryKey: ["/api/people"] });
+    // Navigate
     navigate("/people");
-  };
+  }, [form, navigate]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      form.reset();
+      queryClient.removeQueries({ queryKey: ["/api/people"] });
+    };
+  }, [form]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -115,7 +121,7 @@ export default function ManagePerson() {
         title: isEdit ? "Person Updated" : "Person Created",
         description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
       });
-      navigate("/people");
+      handleNavigate();
     } catch (error) {
       console.error("Form submission error:", error);
       toast({
@@ -128,14 +134,13 @@ export default function ManagePerson() {
 
   // If trying to edit a non-existent person, redirect to people list
   if (isEdit && !personData) {
-    navigate("/people");
+    handleNavigate();
     return null;
   }
 
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-
       <div className="flex-1">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -144,7 +149,7 @@ export default function ManagePerson() {
                 <Button
                   variant="ghost"
                   className="gap-1 p-0 hover:bg-transparent"
-                  onClick={handleCancel}
+                  onClick={handleNavigate}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   People Directory
@@ -154,7 +159,6 @@ export default function ManagePerson() {
                 {isEdit ? `Edit ${personData?.name}` : "Add New Person"}
               </h1>
             </div>
-
             <UserAvatar />
           </div>
 
@@ -544,7 +548,7 @@ export default function ManagePerson() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={handleCancel}
+                  onClick={handleNavigate}
                 >
                   Cancel
                 </Button>
