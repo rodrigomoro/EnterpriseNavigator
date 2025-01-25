@@ -99,6 +99,21 @@ const initialTeamMembers: TeamMember[] = [
     location: 'Madrid Campus'
   },
   {
+    id: 'cao-1',
+    name: 'David Anderson',
+    role: 'Chief Academic Officer',
+    department: 'Executive',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+    email: 'david.anderson@company.com',
+    phone: '+1 (555) 0100',
+    bio: 'Chief Academic Officer with over 20 years of experience in educational leadership.',
+    projects: [],
+    reportsTo: '1',
+    status: 'Active',
+    location: 'Madrid Campus'
+  },
+  {
     id: '2',
     name: 'Andrea Leeland',
     role: 'Staff',
@@ -124,7 +139,7 @@ const initialTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0103',
     bio: 'Tech leader with a focus on educational software and scalable systems.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1',
+    reportsTo: 'cao-1',
     status: 'On Leave',
     location: 'Barcelona Campus'
   },
@@ -154,7 +169,7 @@ const initialTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0112',
     bio: 'Experienced science educator with a focus on practical applications.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '3',
+    reportsTo: 'cao-1',
     status: 'Active',
     location: 'Barcelona Campus'
   },
@@ -169,7 +184,7 @@ const initialTeamMembers: TeamMember[] = [
     phone: '+1 (555) 0113',
     bio: 'Mathematics specialist with expertise in advanced calculus.',
     projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '3',
+    reportsTo: 'cao-1',
     status: 'Inactive',
     location: 'Barcelona Campus'
   },

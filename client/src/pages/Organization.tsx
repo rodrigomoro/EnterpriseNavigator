@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,37 +6,98 @@ import { mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
-import { Search } from "lucide-react";
+import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
+// Only include relevant roles
+const INCLUDED_ROLES = ['Chief Academic Officer', 'Director', 'Teacher', 'Staff'];
+
 // Get unique departments for filter buttons
-const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
+const departments = Array.from(new Set(
+  mockTeamMembers
+    .filter(member => INCLUDED_ROLES.includes(member.role))
+    .map(member => member.department)
+));
 
 // Simulate logged in user (in a real app, this would come from auth context)
-const LOGGED_IN_USER_ID = '7'; // Frank Miles
+const LOGGED_IN_USER_ID = 'cao-1';
 
 export default function Organization() {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['1', 'cao-1']));
 
-  // Filter members based on department and search query
-  const filteredMembers = mockTeamMembers.filter(member => {
-    const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  // Filter members based on department, search query, and included roles
+  const filteredMembers = useMemo(() => {
+    return mockTeamMembers.filter(member => {
+      const matchesRole = INCLUDED_ROLES.includes(member.role);
+      const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
+      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          member.role.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesDepartment && matchesSearch;
-  });
+      return matchesRole && matchesDepartment && matchesSearch;
+    });
+  }, [selectedDepartment, searchQuery]);
 
   // Group members by their reporting structure
-  const membersByManager = mockTeamMembers.reduce((acc, member) => {
-    if (member.reportsTo) {
-      if (!acc[member.reportsTo]) {
-        acc[member.reportsTo] = [];
+  const membersByManager = useMemo(() => {
+    return filteredMembers.reduce((acc, member) => {
+      if (member.reportsTo) {
+        if (!acc[member.reportsTo]) {
+          acc[member.reportsTo] = [];
+        }
+        acc[member.reportsTo].push(member);
       }
-      acc[member.reportsTo].push(member);
-    }
-    return acc;
-  }, {} as Record<string, typeof mockTeamMembers>);
+      return acc;
+    }, {} as Record<string, typeof mockTeamMembers>);
+  }, [filteredMembers]);
+
+  const toggleExpand = (id: string) => {
+    setExpandedNodes(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const renderOrgNode = (employee: typeof mockTeamMembers[0], level: number = 0) => {
+    const hasChildren = membersByManager[employee.id]?.length > 0;
+    const isExpanded = expandedNodes.has(employee.id);
+
+    return (
+      <div key={employee.id} className="relative" style={{ marginLeft: `${level * 40}px` }}>
+        <div className="flex items-center gap-2 mb-4">
+          {hasChildren && (
+            <button
+              onClick={() => toggleExpand(employee.id)}
+              className="p-1 hover:bg-accent rounded-sm"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+          )}
+          <EmployeeCard
+            employee={employee}
+            isCurrentUser={employee.id === LOGGED_IN_USER_ID}
+          />
+        </div>
+        {hasChildren && isExpanded && (
+          <div className="border-l-2 border-border pl-4">
+            {membersByManager[employee.id].map(child => renderOrgNode(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Find the top-level manager (CEO)
+  const ceo = filteredMembers.find(m => !m.reportsTo);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -72,7 +133,7 @@ export default function Organization() {
                     variant={selectedDepartment === "All" ? "default" : "secondary"}
                     onClick={() => setSelectedDepartment("All")}
                   >
-                    All People
+                    All Departments
                   </Button>
                   {departments.map((dept) => (
                     <Button
@@ -87,70 +148,7 @@ export default function Organization() {
               </CardHeader>
               <CardContent>
                 <div className="min-h-[600px] pt-8">
-                  <div className="flex flex-col items-center">
-                    <div className="grid gap-8">
-                      {/* CEO Level */}
-                      <div className="flex justify-center">
-                        <EmployeeCard 
-                          employee={mockTeamMembers[0]} 
-                          isCurrentUser={mockTeamMembers[0].id === LOGGED_IN_USER_ID}
-                        />
-                      </div>
-
-                      {/* C-Level Executives */}
-                      <div className="relative">
-                        <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
-                        <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
-                        <div className="flex justify-center gap-8">
-                          {membersByManager['1']?.map(director => (
-                            <div key={director.id} className="relative">
-                              <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                              <EmployeeCard 
-                                employee={director}
-                                isCurrentUser={director.id === LOGGED_IN_USER_ID}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Department Teams */}
-                      <div className="relative">
-                        <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
-                        <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
-                        <div className="flex justify-center gap-16">
-                          {membersByManager['5']?.map(manager => (
-                            <div key={manager.id} className="relative">
-                              <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                              <EmployeeCard 
-                                employee={manager}
-                                isCurrentUser={manager.id === LOGGED_IN_USER_ID}
-                              />
-
-                              {/* Sub-team members */}
-                              {membersByManager[manager.id] && (
-                                <div className="mt-8 relative">
-                                  <div className="absolute left-1/2 top-[-30px] h-[30px] w-[2px] bg-border" />
-                                  <div className="absolute left-0 right-0 top-[-2px] h-[2px] bg-border" />
-                                  <div className="flex justify-center gap-4">
-                                    {membersByManager[manager.id].map(member => (
-                                      <div key={member.id} className="relative">
-                                        <div className="absolute top-[-30px] left-1/2 h-[30px] w-[2px] bg-border" />
-                                        <EmployeeCard 
-                                          employee={member}
-                                          isCurrentUser={member.id === LOGGED_IN_USER_ID}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  {ceo && renderOrgNode(ceo)}
                 </div>
               </CardContent>
             </Card>
@@ -169,7 +167,7 @@ interface EmployeeCardProps {
 function EmployeeCard({ employee, isCurrentUser }: EmployeeCardProps) {
   return (
     <Link href={`/people/${employee.id}`}>
-      <a className={`block bg-card hover:bg-accent transition-colors w-[200px] rounded-lg border shadow-sm
+      <a className={`block bg-card hover:bg-accent transition-colors w-[280px] rounded-lg border shadow-sm
         ${isCurrentUser ? 'ring-2 ring-primary' : ''}`}>
         <div className="p-4">
           <div className="flex items-center gap-3">
@@ -181,6 +179,7 @@ function EmployeeCard({ employee, isCurrentUser }: EmployeeCardProps) {
             <div className="space-y-1">
               <h3 className="font-medium leading-none">{employee.name}</h3>
               <p className="text-sm text-muted-foreground">{employee.role}</p>
+              <p className="text-xs text-muted-foreground">{employee.department}</p>
             </div>
           </div>
         </div>
