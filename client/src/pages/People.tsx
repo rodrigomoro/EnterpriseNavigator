@@ -1,9 +1,8 @@
-import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
-import Sidebar from '@/components/Sidebar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { mockTeamMembers } from '@/data/mockData';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Link, useLocation } from 'wouter';
 import { Plus, Search, Pencil, Trash2, LayoutGrid, List } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,6 +72,39 @@ export default function People() {
     navigate(`/people/${id}/edit`);
   };
 
+  const getStatusBadgeVariant = (role: string, status: string) => {
+    if (role === 'Student') {
+      switch (status) {
+        case 'Enrolled':
+        case 'Exchange':
+        case 'Interning':
+          return 'default';
+        case 'Graduated':
+        case 'Alumni':
+          return 'success';
+        case 'Withdrawn':
+        case 'Dismissed':
+        case 'Dropped Out':
+          return 'destructive';
+        default:
+          return 'secondary';
+      }
+    } else {
+      switch (status) {
+        case 'Active':
+          return 'default';
+        case 'Inactive':
+        case 'On Leave':
+          return 'warning';
+        case 'Terminated':
+        case 'Suspended':
+          return 'destructive';
+        default:
+          return 'secondary';
+      }
+    }
+  };
+
   const GridView = () => (
     <motion.div 
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -104,8 +136,8 @@ export default function People() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{member.name}</h3>
-                    <Badge variant={member.role === 'Student' ? 'default' : 'secondary'}>
-                      {member.role === 'Student' ? 'Active' : member.role}
+                    <Badge variant={getStatusBadgeVariant(member.role, member.status || 'Active')}>
+                      {member.status || 'Active'}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{member.role}</p>
@@ -171,8 +203,8 @@ export default function People() {
             <TableCell>{member.role}</TableCell>
             <TableCell>{member.department}</TableCell>
             <TableCell>
-              <Badge variant={member.role === 'Student' ? 'default' : 'secondary'}>
-                {member.role === 'Student' ? 'Active' : member.role}
+              <Badge variant={getStatusBadgeVariant(member.role, member.status || 'Active')}>
+                {member.status || 'Active'}
               </Badge>
             </TableCell>
             <TableCell className="text-right">
@@ -210,7 +242,7 @@ export default function People() {
         <PageTransition>
           <header>
             <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
-              <div className="min-w-60">
+              <div>
                 <h1 className="text-2xl font-bold">People Directory</h1>
                 <p className="text-muted-foreground">View and manage all team members</p>
               </div>
