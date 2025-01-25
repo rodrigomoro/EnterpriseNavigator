@@ -10,7 +10,22 @@ import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
 // Only include relevant roles for the org chart
-const INCLUDED_ROLES = ['Director', 'Chief Academic Officer', 'Teacher'];
+const INCLUDED_ROLES = [
+  'CEO & Founder',
+  'Chief Academic Officer',
+  'Chief Financial Officer',
+  'Chief Technology Officer',
+  'CFO',
+  'CTO',
+  'Marketing Director',
+  'Sales Director',
+  'Admission Director',
+  'Program Director',
+  'Teacher',
+  'Finance Staff',
+  'Tech Staff',
+  'HR Staff'
+];
 
 // Get unique departments for filter buttons
 const departments = Array.from(new Set(
@@ -30,10 +45,19 @@ export default function Organization() {
   // Filter members based on department, search query, and included roles
   const filteredMembers = useMemo(() => {
     return mockTeamMembers.filter(member => {
-      const matchesRole = INCLUDED_ROLES.includes(member.role) || member.id === '1'; // Include CEO
+      const matchesRole = INCLUDED_ROLES.some(included => 
+        // This will match "Program Director: Science Program"
+        // since it starts with "Program Director"
+        member.role.toLowerCase().startsWith(included.toLowerCase())
+      ) || member.id === '1';
+
+      // Department + search remain the same
       const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
-      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         member.role.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = (
+        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.role.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
       return matchesRole && matchesDepartment && matchesSearch;
     });
   }, [selectedDepartment, searchQuery]);

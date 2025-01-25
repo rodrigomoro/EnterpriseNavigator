@@ -83,558 +83,632 @@ export const statusOptions = {
 };
 
 // Initial team members array with staff and faculty
-const initialTeamMembers: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Emily Johnson',
-    role: 'Director',
-    department: 'Executive',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-    email: 'emily.johnson@company.com',
-    phone: '+1 (555) 0101',
-    bio: 'Founded the company in 2020. Previously led education technology initiatives at major enterprises.',
-    projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: 'cao-1',
-    name: 'David Anderson',
-    role: 'Chief Academic Officer',
-    department: 'Executive',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-    email: 'david.anderson@company.com',
-    phone: '+1 (555) 0100',
-    bio: 'Chief Academic Officer with over 20 years of experience in educational leadership.',
-    projects: [],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '2',
-    name: 'Andrea Leeland',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
-    email: 'andrea.leeland@company.com',
-    phone: '+1 (555) 0102',
-    bio: 'Over 15 years of experience in financial management and strategic planning.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '3',
-    name: 'Sarah Williams',
-    role: 'Teacher',
-    department: 'Technology',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    email: 'sarah.williams@company.com',
-    phone: '+1 (555) 0103',
-    bio: 'Tech leader with a focus on educational software and scalable systems.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: 'cao-1',
-    status: 'On Leave',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '4',
-    name: 'Jessica Martinez',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
-    email: 'jessica.martinez@company.com',
-    phone: '+1 (555) 0104',
-    bio: 'Specialized in organizational development and talent management.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '12',
-    name: 'Richard Chen',
-    role: 'Teacher',
-    department: 'Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Richard',
-    email: 'richard.chen@company.com',
-    phone: '+1 (555) 0112',
-    bio: 'Experienced science educator with a focus on practical applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: 'cao-1',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '13',
-    name: 'Maria Garcia',
-    role: 'Teacher',
-    department: 'Mathematics',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
-    email: 'maria.garcia@company.com',
-    phone: '+1 (555) 0113',
-    bio: 'Mathematics specialist with expertise in advanced calculus.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: 'cao-1',
-    status: 'Inactive',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '14',
-    name: 'Robert Chen',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert',
-    email: 'robert.chen@company.com',
-    phone: '+1 (555) 0114',
-    bio: 'Senior Financial Analyst with expertise in educational budgeting.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '15',
-    name: 'Patricia Wong',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia',
-    email: 'patricia.wong@company.com',
-    phone: '+1 (555) 0115',
-    bio: 'HR Specialist focusing on talent acquisition and development.',
-    projects: [],
-    reportsTo: '4',
-    status: 'On Leave',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '16',
-    name: 'Marcus Johnson',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
-    email: 'marcus.johnson@company.com',
-    phone: '+1 (555) 0116',
-    bio: 'IT Support Specialist managing educational technology infrastructure.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '17',
-    name: 'Linda Martinez',
-    role: 'Staff',
-    department: 'Executive',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Linda',
-    email: 'linda.martinez@company.com',
-    phone: '+1 (555) 0117',
-    bio: 'Executive Assistant to the CEO.',
-    projects: [],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '18',
-    name: 'David Wilson',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-    email: 'david.wilson@company.com',
-    phone: '+1 (555) 0118',
-    bio: 'Accounts Payable Specialist.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Terminated',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '19',
-    name: 'Sarah Lee',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SarahL',
-    email: 'sarah.lee@company.com',
-    phone: '+1 (555) 0119',
-    bio: 'Benefits Coordinator managing employee wellness programs.',
-    projects: [],
-    reportsTo: '4',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '20',
-    name: 'James Taylor',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-    email: 'james.taylor@company.com',
-    phone: '+1 (555) 0120',
-    bio: 'Systems Administrator maintaining educational platforms.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Probationary',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '21',
-    name: 'Emma Davis',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
-    email: 'emma.davis@company.com',
-    phone: '+1 (555) 0121',
-    bio: 'Financial Operations Analyst.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '22',
-    name: 'Michael Brown',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-    email: 'michael.brown@company.com',
-    phone: '+1 (555) 0122',
-    bio: 'Training and Development Coordinator.',
-    projects: [],
-    reportsTo: '4',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '23',
-    name: 'Jennifer White',
-    role: 'Staff',
-    department: 'Executive',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
-    email: 'jennifer.white@company.com',
-    phone: '+1 (555) 0123',
-    bio: 'Administrative Coordinator for executive office.',
-    projects: [],
-    reportsTo: '1',
-    status: 'Resigned',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '24',
-    name: 'Carlos Rodriguez',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
-    email: 'carlos.rodriguez@company.com',
-    phone: '+1 (555) 0124',
-    bio: 'Network Security Specialist.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '25',
-    name: 'Sophia Zhang',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
-    email: 'sophia.zhang@company.com',
-    phone: '+1 (555) 0125',
-    bio: 'Financial Risk Analyst.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '26',
-    name: 'William Park',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=William',
-    email: 'william.park@company.com',
-    phone: '+1 (555) 0126',
-    bio: 'Employee Relations Specialist.',
-    projects: [],
-    reportsTo: '4',
-    status: 'On Probation',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '27',
-    name: 'Isabella Garcia',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
-    email: 'isabella.garcia@company.com',
-    phone: '+1 (555) 0127',
-    bio: 'Software Development Lead.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '28',
-    name: 'Nathan Wright',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan',
-    email: 'nathan.wright@company.com',
-    phone: '+1 (555) 0128',
-    bio: 'Budget Planning Specialist.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Contractual',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '29',
-    name: 'Oliver Chen',
-    role: 'Staff',
-    department: 'Executive',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
-    email: 'oliver.chen@company.com',
-    phone: '+1 (555) 0129',
-    bio: 'Strategic Planning Coordinator.',
-    projects: [],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '30',
-    name: 'Ava Thompson',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ava',
-    email: 'ava.thompson@company.com',
-    phone: '+1 (555) 0130',
-    bio: 'Recruitment Specialist.',
-    projects: [],
-    reportsTo: '4',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '31',
-    name: 'Lucas Kim',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
-    email: 'lucas.kim@company.com',
-    phone: '+1 (555) 0131',
-    bio: 'Cloud Infrastructure Engineer.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '32',
-    name: 'Mia Patel',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia',
-    email: 'mia.patel@company.com',
-    phone: '+1 (555) 0132',
-    bio: 'Compliance Officer.',
-    projects: [],
-    reportsTo: '2',
-    status: 'On Leave',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '33',
-    name: 'Ethan Cooper',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
-    email: 'ethan.cooper@company.com',
-    phone: '+1 (555) 0133',
-    bio: 'Training Program Developer.',
-    projects: [],
-    reportsTo: '4',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '34',
-    name: 'Charlotte Lee',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte',
-    email: 'charlotte.lee@company.com',
-    phone: '+1 (555) 0134',
-    bio: 'Quality Assurance Lead.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '35',
-    name: 'Benjamin Wilson',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Benjamin',
-    email: 'benjamin.wilson@company.com',
-    phone: '+1 (555) 0135',
-    bio: 'Investment Analyst.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '36',
-    name: 'Victoria Martinez',
-    role: 'Staff',
-    department: 'Executive',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Victoria',
-    email: 'victoria.martinez@company.com',
-    phone: '+1 (555) 0136',
-    bio: 'Corporate Communications Manager.',
-    projects: [],
-    reportsTo: '1',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '37',
-    name: 'Henry Taylor',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Henry',
-    email: 'henry.taylor@company.com',
-    phone: '+1 (555) 0137',
-    bio: 'Employee Engagement Specialist.',
-    projects: [],
-    reportsTo: '4',
-    status: 'On Leave',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '38',
-    name: 'Scarlett Wong',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Scarlett',
-    email: 'scarlett.wong@company.com',
-    phone: '+1 (555) 0138',
-    bio: 'Data Center Operations Manager.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '39',
-    name: 'Sebastian Ross',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sebastian',
-    email: 'sebastian.ross@company.com',
-    phone: '+1 (555) 0139',
-    bio: 'Treasury Analyst.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '40',
-    name: 'Zoe Anderson',
-    role: 'Staff',
-    department: 'Human Resources',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe',
-    email: 'zoe.anderson@company.com',
-    phone: '+1 (555) 0140',
-    bio: 'Diversity and Inclusion Coordinator.',
-    projects: [],
-    reportsTo: '4',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
-  {
-    id: '41',
-    name: 'Christopher Lee',
-    role: 'Staff',
-    department: 'Technology',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Christopher',
-    email: 'christopher.lee@company.com',
-    phone: '+1 (555) 0141',
-    bio: 'Information Security Analyst.',
-    projects: [],
-    reportsTo: '3',
-    status: 'Active',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: '42',
-    name: 'Madison Clark',
-    role: 'Staff',
-    department: 'Finance',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Madison',
-    email: 'madison.clark@company.com',
-    phone: '+1 (555) 0142',
-    bio: 'Accounting Operations Manager.',
-    projects: [],
-    reportsTo: '2',
-    status: 'Active',
-    location: 'Madrid Campus'
-  },
+  const initialTeamMembers: TeamMember[] = [
+    // 1) CEO & Founder
+    {
+      id: '1',
+      name: 'Emily Johnson',
+      role: 'CEO & Founder',
+      department: 'Executive',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+      email: 'emily.johnson@company.com',
+      phone: '+1 (555) 0101',
+      bio: 'Founded the institution in 2020. Previously led education technology initiatives at major enterprises.',
+      projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      status: 'Active',
+      location: 'Madrid Campus'
+      // No reportsTo since she is the CEO
+    },
+
+    // 2) CAO (Chief Academic Officer)
+    {
+      id: 'cao-1',
+      name: 'David Anderson',
+      role: 'Chief Academic Officer',
+      department: 'Academic',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+      email: 'david.anderson@company.com',
+      phone: '+1 (555) 0100',
+      bio: 'Chief Academic Officer with over 20 years of experience in educational leadership.',
+      projects: [],
+      reportsTo: '1', // Reports to the CEO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 3) CFO
+    {
+      id: '2',
+      name: 'Andrea Leeland',
+      role: 'CFO',
+      department: 'Finance',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
+      email: 'andrea.leeland@company.com',
+      phone: '+1 (555) 0102',
+      bio: 'Over 15 years of experience in financial management and strategic planning.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '1', // Reports to the CEO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 4) CTO
+    {
+      id: '3',
+      name: 'Sarah Williams',
+      role: 'CTO',
+      department: 'Technology',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+      email: 'sarah.williams@company.com',
+      phone: '+1 (555) 0103',
+      bio: 'Tech leader with a focus on educational software and scalable systems.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '1', // Typically reports directly to CEO
+      status: 'On Leave',
+      location: 'Barcelona Campus'
+    },
+
+    // 5) Admission Director
+    {
+      id: '4',
+      name: 'Jessica Martinez',
+      role: 'Admission Director',
+      department: 'Admissions',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
+      email: 'jessica.martinez@company.com',
+      phone: '+1 (555) 0104',
+      bio: 'Specialized in organizational development, now overseeing the admissions process.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '1', // Admission often reports to CEO or Head of School
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 6) Program Director: Science Program (Under CAO)
+    {
+      id: '12',
+      name: 'Richard Chen',
+      role: 'Program Director: Science Program',
+      department: 'Academic',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Richard',
+      email: 'richard.chen@company.com',
+      phone: '+1 (555) 0112',
+      bio: 'Experienced science educator with a focus on practical applications.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: 'cao-1', // Reports to the Chief Academic Officer
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 7) Teacher (Now under the Science Program Director)
+    {
+      id: '13',
+      name: 'Maria Garcia',
+      role: 'Teacher',
+      department: 'Academic',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+      email: 'maria.garcia@company.com',
+      phone: '+1 (555) 0113',
+      bio: 'Mathematics specialist with expertise in advanced calculus.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '12', // Reports to Richard Chen (Program Director)
+      status: 'Inactive',
+      location: 'Barcelona Campus'
+    },
+
+    // 8) Finance Staff (reports to CFO)
+    {
+      id: '14',
+      name: 'Robert Chen',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert',
+      email: 'robert.chen@company.com',
+      phone: '+1 (555) 0114',
+      bio: 'Senior Financial Analyst with expertise in educational budgeting.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 9) HR Staff (originally reported to 4, now Admission Director; kept for consistency)
+    {
+      id: '15',
+      name: 'Patricia Wong',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia',
+      email: 'patricia.wong@company.com',
+      phone: '+1 (555) 0115',
+      bio: 'HR Specialist focusing on talent acquisition and development.',
+      projects: [],
+      reportsTo: '4', 
+      status: 'On Leave',
+      location: 'Madrid Campus'
+    },
+
+    // 10) Tech Staff (reports to CTO)
+    {
+      id: '16',
+      name: 'Marcus Johnson',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
+      email: 'marcus.johnson@company.com',
+      phone: '+1 (555) 0116',
+      bio: 'IT Support Specialist managing educational technology infrastructure.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 11) Executive Staff
+    {
+      id: '17',
+      name: 'Linda Martinez',
+      role: 'Executive Staff',
+      department: 'Executive',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Linda',
+      email: 'linda.martinez@company.com',
+      phone: '+1 (555) 0117',
+      bio: 'Executive Assistant to the CEO.',
+      projects: [],
+      reportsTo: '1', // CEO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 12) Finance Staff
+    {
+      id: '18',
+      name: 'David Wilson',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+      email: 'david.wilson@company.com',
+      phone: '+1 (555) 0118',
+      bio: 'Accounts Payable Specialist.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Terminated',
+      location: 'Madrid Campus'
+    },
+
+    // 13) HR Staff
+    {
+      id: '19',
+      name: 'Sarah Lee',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SarahL',
+      email: 'sarah.lee@company.com',
+      phone: '+1 (555) 0119',
+      bio: 'Benefits Coordinator managing employee wellness programs.',
+      projects: [],
+      reportsTo: '4', 
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 14) Tech Staff
+    {
+      id: '20',
+      name: 'James Taylor',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
+      email: 'james.taylor@company.com',
+      phone: '+1 (555) 0120',
+      bio: 'Systems Administrator maintaining educational platforms.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Probationary',
+      location: 'Barcelona Campus'
+    },
+
+    // 15) Finance Staff
+    {
+      id: '21',
+      name: 'Emma Davis',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
+      email: 'emma.davis@company.com',
+      phone: '+1 (555) 0121',
+      bio: 'Financial Operations Analyst.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 16) HR Staff
+    {
+      id: '22',
+      name: 'Michael Brown',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+      email: 'michael.brown@company.com',
+      phone: '+1 (555) 0122',
+      bio: 'Training and Development Coordinator.',
+      projects: [],
+      reportsTo: '4',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 17) Executive Staff
+    {
+      id: '23',
+      name: 'Jennifer White',
+      role: 'Executive Staff',
+      department: 'Executive',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
+      email: 'jennifer.white@company.com',
+      phone: '+1 (555) 0123',
+      bio: 'Administrative Coordinator for executive office.',
+      projects: [],
+      reportsTo: '1', // CEO
+      status: 'Resigned',
+      location: 'Madrid Campus'
+    },
+
+    // 18) Tech Staff
+    {
+      id: '24',
+      name: 'Carlos Rodriguez',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
+      email: 'carlos.rodriguez@company.com',
+      phone: '+1 (555) 0124',
+      bio: 'Network Security Specialist.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 19) Finance Staff
+    {
+      id: '25',
+      name: 'Sophia Zhang',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
+      email: 'sophia.zhang@company.com',
+      phone: '+1 (555) 0125',
+      bio: 'Financial Risk Analyst.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 20) HR Staff
+    {
+      id: '26',
+      name: 'William Park',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=William',
+      email: 'william.park@company.com',
+      phone: '+1 (555) 0126',
+      bio: 'Employee Relations Specialist.',
+      projects: [],
+      reportsTo: '4',
+      status: 'On Probation',
+      location: 'Madrid Campus'
+    },
+
+    // 21) Tech Staff
+    {
+      id: '27',
+      name: 'Isabella Garcia',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
+      email: 'isabella.garcia@company.com',
+      phone: '+1 (555) 0127',
+      bio: 'Software Development Lead.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 22) Finance Staff
+    {
+      id: '28',
+      name: 'Nathan Wright',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan',
+      email: 'nathan.wright@company.com',
+      phone: '+1 (555) 0128',
+      bio: 'Budget Planning Specialist.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Contractual',
+      location: 'Madrid Campus'
+    },
+
+    // 23) Executive Staff
+    {
+      id: '29',
+      name: 'Oliver Chen',
+      role: 'Executive Staff',
+      department: 'Executive',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+      email: 'oliver.chen@company.com',
+      phone: '+1 (555) 0129',
+      bio: 'Strategic Planning Coordinator.',
+      projects: [],
+      reportsTo: '1',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 24) HR Staff
+    {
+      id: '30',
+      name: 'Ava Thompson',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ava',
+      email: 'ava.thompson@company.com',
+      phone: '+1 (555) 0130',
+      bio: 'Recruitment Specialist.',
+      projects: [],
+      reportsTo: '4',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 25) Tech Staff
+    {
+      id: '31',
+      name: 'Lucas Kim',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
+      email: 'lucas.kim@company.com',
+      phone: '+1 (555) 0131',
+      bio: 'Cloud Infrastructure Engineer.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 26) Finance Staff
+    {
+      id: '32',
+      name: 'Mia Patel',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia',
+      email: 'mia.patel@company.com',
+      phone: '+1 (555) 0132',
+      bio: 'Compliance Officer.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'On Leave',
+      location: 'Madrid Campus'
+    },
+
+    // 27) HR Staff
+    {
+      id: '33',
+      name: 'Ethan Cooper',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
+      email: 'ethan.cooper@company.com',
+      phone: '+1 (555) 0133',
+      bio: 'Training Program Developer.',
+      projects: [],
+      reportsTo: '4',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 28) Tech Staff
+    {
+      id: '34',
+      name: 'Charlotte Lee',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte',
+      email: 'charlotte.lee@company.com',
+      phone: '+1 (555) 0134',
+      bio: 'Quality Assurance Lead.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 29) Finance Staff
+    {
+      id: '35',
+      name: 'Benjamin Wilson',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Benjamin',
+      email: 'benjamin.wilson@company.com',
+      phone: '+1 (555) 0135',
+      bio: 'Investment Analyst.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 30) Marketing Director
+    {
+      id: '36',
+      name: 'Victoria Martinez',
+      role: 'Marketing Director',
+      department: 'Marketing',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Victoria',
+      email: 'victoria.martinez@company.com',
+      phone: '+1 (555) 0136',
+      bio: 'Oversees all marketing and communications initiatives.',
+      projects: [],
+      reportsTo: '1', // CEO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 31) HR Staff
+    {
+      id: '37',
+      name: 'Henry Taylor',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Henry',
+      email: 'henry.taylor@company.com',
+      phone: '+1 (555) 0137',
+      bio: 'Employee Engagement Specialist.',
+      projects: [],
+      reportsTo: '4',
+      status: 'On Leave',
+      location: 'Madrid Campus'
+    },
+
+    // 32) Tech Staff
+    {
+      id: '38',
+      name: 'Scarlett Wong',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Scarlett',
+      email: 'scarlett.wong@company.com',
+      phone: '+1 (555) 0138',
+      bio: 'Data Center Operations Manager.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 33) Finance Staff
+    {
+      id: '39',
+      name: 'Sebastian Ross',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sebastian',
+      email: 'sebastian.ross@company.com',
+      phone: '+1 (555) 0139',
+      bio: 'Treasury Analyst.',
+      projects: [],
+      reportsTo: '2', // CFO
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 34) HR Staff
+    {
+      id: '40',
+      name: 'Zoe Anderson',
+      role: 'HR Staff',
+      department: 'Human Resources',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe',
+      email: 'zoe.anderson@company.com',
+      phone: '+1 (555) 0140',
+      bio: 'Diversity and Inclusion Coordinator.',
+      projects: [],
+      reportsTo: '4',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+    // 35) Tech Staff
+    {
+      id: '41',
+      name: 'Christopher Lee',
+      role: 'Tech Staff',
+      department: 'Technology',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Christopher',
+      email: 'christopher.lee@company.com',
+      phone: '+1 (555) 0141',
+      bio: 'Information Security Analyst.',
+      projects: [],
+      reportsTo: '3', // CTO
+      status: 'Active',
+      location: 'Barcelona Campus'
+    },
+
+    // 36) Finance Staff
+    {
+      id: '42',
+      name: 'Madison Clark',
+      role: 'Finance Staff',
+      department: 'Finance',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Madison',
+      email: 'madison.clark@company.com',
+      phone: '+1 (555) 0142',
+      bio: 'Accounting Operations Manager.',
+      projects: [],
+      reportsTo: '2',
+      status: 'Active',
+      location: 'Madrid Campus'
+    },
+
+  // 37) Sales Director
   {
     id: '43',
     name: 'Gabriel Santos',
-    role: 'Staff',
-    department: 'Executive',
-    isDirector: false,
+    role: 'Sales Director',
+    department: 'Sales',
+    isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel',
     email: 'gabriel.santos@company.com',
     phone: '+1 (555) 0143',
-    bio: 'Business Development Coordinator.',
+    bio: 'Oversees business development and sales strategies.',
     projects: [],
-    reportsTo: '1',
+    reportsTo: '1', // CEO
     status: 'Probationary',
     location: 'Madrid Campus'
   },
@@ -682,7 +756,22 @@ const initialTeamMembers: TeamMember[] = [
     reportsTo: '14',
     status: 'Withdrawn',
     location: 'Madrid Campus'
-  }
+  },
+    {
+      id: 'teacher-1',
+      name: 'Sarah Thompson',
+      role: 'Teacher',
+      department: 'Academic',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+      email: 'sarah.thompson@company.com',
+      phone: '+1 (555) 0204',
+      bio: 'Mathematics teacher with a passion for teaching and problem-solving.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '12',
+      status: 'Active',
+      location: 'Barcelona Campus'
+    }
 ];
 
 // Function to generate additional students
