@@ -309,13 +309,13 @@ export default function People() {
 
               <div className="absolute bottom-4 right-4">
                 <TooltipProvider>
-                  <Tooltip>
+                  <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                       <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                         {member.status}
                       </Badge>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent side="top" align="end" className="max-w-[300px]">
                       <p>{getStatusDescription(member.role, member.status)}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -383,13 +383,13 @@ export default function People() {
             <TableCell>{member.location}</TableCell>
             <TableCell>
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
                       {member.status}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="top" align="center" className="max-w-[300px]">
                     <p>{getStatusDescription(member.role, member.status)}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -504,7 +504,16 @@ export default function People() {
                           <SelectContent>
                             <SelectItem key="all-statuses" value="all">All Statuses</SelectItem>
                             {getAvailableStatuses(selectedRole).map(status => (
-                              <SelectItem key={status} value={status}>{status}</SelectItem>
+                              <TooltipProvider key={status}>
+                                <Tooltip delayDuration={0}>
+                                  <TooltipTrigger asChild>
+                                    <SelectItem value={status}>{status}</SelectItem>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="right" align="start" className="max-w-[300px]">
+                                    <p>{getStatusDescription(selectedRole, status)}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             ))}
                           </SelectContent>
                         </Select>
