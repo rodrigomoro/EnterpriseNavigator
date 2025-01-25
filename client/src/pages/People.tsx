@@ -11,6 +11,12 @@ import { Input } from '@/components/ui/input';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Sidebar from '@/components/Sidebar';
 import {
   Table,
@@ -113,6 +119,54 @@ const locationOptions = [
   'Colombia Remote',
   'Chile Remote'
 ];
+
+// Add status descriptions
+const statusDescriptions: Record<string, Record<string, string>> = {
+  Staff: {
+    'Active': 'Currently employed and active in their role',
+    'Inactive': 'Temporarily not working but still associated with the institution',
+    'Terminated': 'Employment has ended permanently',
+    'On Probation': 'Newly hired staff under evaluation',
+    'Retired': 'Former staff who have retired but may still be part of the system',
+    'Contractual': 'Working on a fixed-term contract',
+    'Resigned': 'Staff who resigned but may still have outstanding formalities',
+    'On Leave': 'On approved leave (medical, maternity, personal, etc.)',
+    'Suspended': 'Temporarily barred from duties for disciplinary reasons',
+    'Pending Approval': 'New staff awaiting HR or administrative approval'
+  },
+  Teacher: {
+    'Active': 'Actively teaching and engaged in academic duties',
+    'Inactive': 'Temporarily not teaching',
+    'Retired': 'Former teacher who has retired',
+    'Adjunct': 'External faculty teaching part-time or for specific courses',
+    'Visiting': 'Guest or visiting faculty from another institution',
+    'Probationary': 'New teacher under evaluation',
+    'On Leave': 'On approved leave (personal, research, or study leave)',
+    'Suspended': 'Temporarily barred from teaching for disciplinary reasons',
+    'Resigned': 'Teacher who has resigned but still in the system',
+    'Contractual': 'Temporary or fixed-term teaching staff'
+  },
+  Student: {
+    'Enrolled': 'Actively attending classes and participating in programs',
+    'Graduated': 'Successfully completed the academic program',
+    'Withdrawn': 'Dropped out or withdrew from the program voluntarily',
+    'Dismissed': 'Removed from the institution due to disciplinary or academic issues',
+    'Deferred': 'Temporarily paused enrollment',
+    'Alumni': 'Former student who has graduated and is now part of the alumni network',
+    'Suspended': 'Temporarily barred from academic activities',
+    'Prospective': 'Applied to the institution and awaiting confirmation',
+    'Pending Enrollment': 'Admitted but not yet enrolled in classes',
+    'Audit': 'Attending classes but not formally enrolled for credit',
+    'Exchange': 'Participating in a student exchange program',
+    'Interning': 'On internship as part of their program requirements',
+    'Dropped Out': 'Left the institution without completing the program'
+  }
+};
+
+// Function to get status description
+const getStatusDescription = (role: string, status: string): string => {
+  return statusDescriptions[role]?.[status] || status;
+};
 
 export default function People() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -254,9 +308,18 @@ export default function People() {
               </div>
 
               <div className="absolute bottom-4 right-4">
-                <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                  {member.status}
-                </Badge>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                        {member.status}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{getStatusDescription(member.role, member.status)}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </motion.div>
 
@@ -319,9 +382,18 @@ export default function People() {
             <TableCell>{member.department}</TableCell>
             <TableCell>{member.location}</TableCell>
             <TableCell>
-              <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                {member.status}
-              </Badge>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
+                      {member.status}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{getStatusDescription(member.role, member.status)}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">

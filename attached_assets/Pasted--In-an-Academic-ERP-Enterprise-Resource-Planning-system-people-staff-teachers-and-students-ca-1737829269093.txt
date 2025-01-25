@@ -1,0 +1,39 @@
+
+In an Academic ERP (Enterprise Resource Planning) system, people (staff, teachers, and students) can have various statuses depending on their role, activity, or lifecycle within the institution. Here are possible statuses for each group:
+
+Staff (Administrative/Support Staff)
+Active - Currently employed and active in their role.
+Inactive - Temporarily not working but still associated with the institution (e.g., on leave, sabbatical).
+Terminated - Employment has ended permanently.
+On Probation - Newly hired staff under evaluation.
+Retired - Former staff who have retired but may still be part of the system for records or alumni purposes.
+Contractual - Working on a fixed-term contract.
+Resigned - Staff who resigned but may still have outstanding formalities.
+On Leave - On approved leave (medical, maternity, personal, etc.).
+Suspended - Temporarily barred from duties for disciplinary reasons.
+Pending Approval - New staff awaiting HR or administrative approval.
+Teachers
+Active - Actively teaching and engaged in academic duties.
+Inactive - Temporarily not teaching (e.g., sabbatical, research leave).
+Retired - Former teacher who has retired.
+Adjunct - External faculty teaching part-time or for specific courses.
+Visiting - Guest or visiting faculty from another institution.
+Probationary - New teacher under evaluation.
+On Leave - On approved leave (e.g., personal, research, or study leave).
+Suspended - Temporarily barred from teaching for disciplinary reasons.
+Resigned - Teacher who has resigned but still in the system for recordkeeping.
+Contractual - Temporary or fixed-term teaching staff.
+Students
+Enrolled - Actively attending classes and participating in programs.
+Graduated - Successfully completed the academic program.
+Withdrawn - Dropped out or withdrew from the program voluntarily.
+Dismissed - Removed from the institution due to disciplinary or academic issues.
+Deferred - Temporarily paused enrollment (e.g., gap year, deferment request).
+Alumni - Former student who has graduated and is now part of the alumni network.
+Suspended - Temporarily barred from academic activities due to disciplinary reasons.
+Prospective - Applied to the institution and awaiting confirmation or approval.
+Pending Enrollment - Admitted but not yet enrolled in classes.
+Audit - Attending classes but not formally enrolled for credit.
+Exchange - Participating in a student exchange program.
+Interning - On internship as part of their program requirements.
+Dropped Out - Left the institution without completing the program.
