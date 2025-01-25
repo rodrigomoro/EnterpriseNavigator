@@ -16,8 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import { FormSection } from "@/components/ui/FormSection";
-import Sidebar from "@/components/Sidebar";
-import UserAvatar from "@/components/UserAvatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Globe, AlertCircle, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -28,12 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -137,7 +129,6 @@ const statusOptions = {
 };
 
 const formSchema = z.object({
-  // Basic Information
   name: z.string().min(1, "Name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   department: z.string().min(1, "Department is required"),
@@ -145,20 +136,14 @@ const formSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
   role: z.string().min(1, "Role is required"),
   status: z.string().min(1, "Status is required"),
-
-  // Additional Information
   birthDate: z.string().optional(),
   linkedinUrl: z.string().optional(),
   location: z.string().min(1, "Location is required"),
   officeLocation: z.string().optional(),
   bio: z.string().optional(),
   notes: z.string().optional(),
-
-  // Relations
   reportsTo: z.string().optional(),
   programIds: z.array(z.string()).optional(),
-
-  // Start Date
   startDate: z.string().optional(),
 });
 
@@ -169,6 +154,7 @@ export default function ManagePerson() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isEdit = params.id !== undefined;
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   // Find person data if in edit mode
   const personData = isEdit
@@ -195,25 +181,25 @@ export default function ManagePerson() {
       startDate: personData?.startDate ?? "",
       birthDate: personData?.birthDate ?? "",
       linkedinUrl: personData?.linkedinUrl ?? "",
-      status: personData?.status ?? "Active",
+      status: personData?.status ?? "",
       role: personData?.role ?? "",
     },
   });
 
   // Get the current role to determine status options
   const currentRole = form.watch('role');
+  const currentStatus = form.watch('status');
   const roleCategory = currentRole === 'Student' ? 'Student' :
     (currentRole === 'Teacher' || currentRole === 'Director') ? 'Teacher' : 'Staff';
   const availableStatuses = statusOptions[roleCategory as keyof typeof statusOptions] || [];
 
   useEffect(() => {
-    return () => {
-      if (window.ResizeObserver) {
-        const resizeObserver = new ResizeObserver(() => {});
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
+    // Reset status when role changes
+    if (currentRole) {
+      form.setValue('status', '');
+      setSelectedStatus('');
+    }
+  }, [currentRole, form]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -240,8 +226,6 @@ export default function ManagePerson() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
-
       <div className="flex-1">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -260,8 +244,6 @@ export default function ManagePerson() {
                 {isEdit ? `Edit ${personData?.name}` : "Add New Person"}
               </h1>
             </div>
-
-            <UserAvatar />
           </div>
 
           <Form {...form}>
@@ -281,34 +263,6 @@ export default function ManagePerson() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="jobTitle"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Job Title</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <FormField
                       control={form.control}
                       name="role"
@@ -344,7 +298,10 @@ export default function ManagePerson() {
                           <FormLabel>Status</FormLabel>
                           <Select
                             value={field.value}
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              setSelectedStatus(value);
+                            }}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -353,27 +310,16 @@ export default function ManagePerson() {
                             </FormControl>
                             <SelectContent>
                               {availableStatuses.map(status => (
-                                <TooltipProvider key={status}>
-                                  <Tooltip delayDuration={200}>
-                                    <TooltipTrigger asChild>
-                                      <SelectItem value={status}>{status}</SelectItem>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                      side="right"
-                                      align="center"
-                                      sideOffset={5}
-                                      className="max-w-[200px]"
-                                    >
-                                      <p>{getStatusDescription(roleCategory, status)}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <SelectItem key={status} value={status}>
+                                  {status}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormDescription>
-                            Select the current status for this person based on their role.
-                            Hover over options to see detailed descriptions.
+                          <FormDescription className="mt-1">
+                            {currentStatus
+                              ? getStatusDescription(roleCategory, currentStatus)
+                              : "Select the current status for this person based on their role."}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -407,9 +353,35 @@ export default function ManagePerson() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="jobTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Job Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </CardContent>
                 </Card>
-
                 {/* Contact Information */}
                 <Card>
                   <CardHeader>
