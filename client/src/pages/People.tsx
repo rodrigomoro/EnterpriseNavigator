@@ -108,8 +108,8 @@ export default function People() {
   const [deletingPersonId, setDeletingPersonId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedRole, setSelectedRole] = useState('All');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
