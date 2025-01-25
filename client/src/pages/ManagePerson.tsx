@@ -42,7 +42,6 @@ import { useCallback, useEffect } from "react";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 
 const formSchema = z.object({
-  // Identity Provider Fields
   name: z.string().min(1, "Name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   department: z.string().min(1, "Department is required"),
@@ -50,16 +49,12 @@ const formSchema = z.object({
   location: z.string().min(1, "Location is required"),
   reportsTo: z.string().optional(),
   officeLocation: z.string().optional(),
-
-  // Internal Fields
   role: z.string().min(1, "Role is required"),
   phone: z.string().min(1, "Phone number is required"),
   startDate: z.string().optional(),
   bio: z.string(),
   notes: z.string().optional(),
   programIds: z.array(z.string()).optional(),
-
-  // Sync Settings
   syncEnabled: z.boolean().default(true),
   microsoftSync: z.boolean().default(true),
   googleSync: z.boolean().default(true),
@@ -74,7 +69,6 @@ export default function ManagePerson() {
   const { toast } = useToast();
   const isEdit = params.id !== undefined;
 
-  // Find person data if in edit mode
   const personData = isEdit
     ? mockTeamMembers.find((m) => m.id === params?.id)
     : null;
@@ -104,24 +98,6 @@ export default function ManagePerson() {
     },
   });
 
-  // Memoized navigation handler
-  const handleNavigate = useCallback(() => {
-    // Reset form state before navigation
-    form.reset();
-    // Clear any related queries
-    queryClient.removeQueries({ queryKey: ["/api/people"] });
-    // Navigate
-    navigate("/people");
-  }, [form, navigate]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      form.reset();
-      queryClient.removeQueries({ queryKey: ["/api/people"] });
-    };
-  }, [form]);
-
   const onSubmit = async (data: FormValues) => {
     try {
       console.log("Form submitted:", data);
@@ -129,7 +105,7 @@ export default function ManagePerson() {
         title: isEdit ? "Person Updated" : "Person Created",
         description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
       });
-      handleNavigate();
+      navigate("/people");
     } catch (error) {
       console.error("Form submission error:", error);
       toast({
@@ -140,9 +116,8 @@ export default function ManagePerson() {
     }
   };
 
-  // If trying to edit a non-existent person, redirect to people list
   if (isEdit && !personData) {
-    handleNavigate();
+    navigate("/people");
     return null;
   }
 
@@ -157,7 +132,7 @@ export default function ManagePerson() {
                 <Button
                   variant="ghost"
                   className="gap-1 p-0 hover:bg-transparent"
-                  onClick={handleNavigate}
+                  onClick={() => navigate("/people")}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   People Directory
@@ -180,7 +155,6 @@ export default function ManagePerson() {
 
                 <TabsContent value="details">
                   <div className="grid grid-cols-3 gap-6">
-                    {/* Identity Provider Information */}
                     <Card>
                       <CardHeader>
                         <div className="flex items-center gap-2">
@@ -282,7 +256,6 @@ export default function ManagePerson() {
                       </CardContent>
                     </Card>
 
-                    {/* Internal Information */}
                     <Card>
                       <CardHeader>
                         <div className="flex items-center gap-2">
@@ -358,7 +331,6 @@ export default function ManagePerson() {
                       </CardContent>
                     </Card>
 
-                    {/* System Access & Programs */}
                     <Card>
                       <CardHeader>
                         <CardTitle>System Access</CardTitle>
@@ -556,7 +528,7 @@ export default function ManagePerson() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={handleNavigate}
+                  onClick={() => navigate("/people")}
                 >
                   Cancel
                 </Button>
