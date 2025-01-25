@@ -16,6 +16,7 @@ import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, Ale
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
 // Mock data for settings
 const mockNotificationChannels = [
@@ -26,25 +27,81 @@ const mockNotificationChannels = [
 ];
 
 const mockConnectors = [
+  // Identity Management
   {
     id: "microsoft",
     name: "Microsoft Entra ID",
     description: "Sync users and groups with Microsoft Entra ID",
     connected: true,
     lastSync: "2024-01-24T10:30:00",
+    category: "Identity",
   },
   {
     id: "google",
     name: "Google Cloud Identity",
     description: "Manage users through Google Workspace",
     connected: false,
+    category: "Identity",
   },
   {
     id: "aws",
     name: "AWS Cognito",
     description: "Integrate with AWS Cognito user pools",
     connected: false,
+    category: "Identity",
   },
+  // CRM Systems
+  {
+    id: "hubspot",
+    name: "HubSpot",
+    description: "Connect with HubSpot CRM for student and lead management",
+    connected: false,
+    category: "CRM",
+  },
+  {
+    id: "salesforce",
+    name: "Salesforce",
+    description: "Integrate with Salesforce for comprehensive CRM capabilities",
+    connected: false,
+    category: "CRM",
+  },
+  {
+    id: "dynamics",
+    name: "Microsoft Dynamics 365",
+    description: "Connect with Microsoft's CRM solution for education",
+    connected: false,
+    category: "CRM",
+  },
+  // Learning Management Systems
+  {
+    id: "google-classroom",
+    name: "Google Classroom",
+    description: "Integrate with Google Classroom for course management",
+    connected: true,
+    lastSync: "2024-01-24T09:15:00",
+    category: "LMS",
+  },
+  {
+    id: "aws-academy",
+    name: "AWS Academy",
+    description: "Connect with AWS Academy for cloud learning resources",
+    connected: false,
+    category: "LMS",
+  },
+  {
+    id: "moodle",
+    name: "Moodle",
+    description: "Integrate with Moodle LMS for course content",
+    connected: false,
+    category: "LMS",
+  },
+  {
+    id: "canvas",
+    name: "Canvas LMS",
+    description: "Connect with Canvas for comprehensive learning management",
+    connected: false,
+    category: "LMS",
+  }
 ];
 
 const mockPermissions = [
@@ -326,36 +383,53 @@ export default function Settings() {
               <TabsContent value="connectors">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Identity Management</CardTitle>
+                    <CardTitle>System Integrations</CardTitle>
                     <CardDescription>
-                      Connect and sync with external identity providers
+                      Connect and sync with identity providers, CRM systems, and learning platforms
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    {mockConnectors.map((connector) => (
-                      <div
-                        key={connector.id}
-                        className="flex items-start justify-between p-4 border rounded-lg"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{connector.name}</h3>
-                            {connector.connected && (
-                              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                Connected
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">{connector.description}</p>
-                          {connector.lastSync && (
-                            <p className="text-xs text-muted-foreground">
-                              Last synced: {new Date(connector.lastSync).toLocaleString()}
-                            </p>
-                          )}
+                  <CardContent className="space-y-8">
+                    {/* Group connectors by category */}
+                    {["Identity", "CRM", "LMS"].map(category => (
+                      <div key={category} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">{category === "LMS" ? "Learning Management Systems" : 
+                            category === "CRM" ? "Customer Relationship Management" : "Identity Providers"}</h3>
+                          <Badge variant="secondary" className="text-xs">
+                            {mockConnectors.filter(c => c.category === category).length} Available
+                          </Badge>
                         </div>
-                        <Button variant={connector.connected ? "outline" : "default"}>
-                          {connector.connected ? "Configure" : "Connect"}
-                        </Button>
+                        <div className="grid gap-4">
+                          {mockConnectors
+                            .filter(connector => connector.category === category)
+                            .map((connector) => (
+                              <div
+                                key={connector.id}
+                                className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/5 transition-colors"
+                              >
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="font-medium">{connector.name}</h3>
+                                    {connector.connected && (
+                                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                        Connected
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">{connector.description}</p>
+                                  {connector.lastSync && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Last synced: {new Date(connector.lastSync).toLocaleString()}
+                                    </p>
+                                  )}
+                                </div>
+                                <Button variant={connector.connected ? "outline" : "default"}>
+                                  {connector.connected ? "Configure" : "Connect"}
+                                </Button>
+                              </div>
+                            ))}
+                        </div>
+                        {category !== "LMS" && <Separator className="my-6" />}
                       </div>
                     ))}
                   </CardContent>
