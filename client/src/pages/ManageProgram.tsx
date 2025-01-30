@@ -23,11 +23,21 @@ import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// Define module schema
+const moduleSchema = z.object({
+  name: z.string().min(1, "Module name is required"),
+  description: z.string(),
+  credits: z.number().min(1, "Credits must be at least 1"),
+  costPerCredit: z.number().min(0, "Cost per credit must be non-negative"),
+  teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
+});
+
 // Define group schema
 const groupSchema = z.object({
   name: z.string().min(1, "Group name is required"),
   capacity: z.number().min(1, "Capacity must be at least 1"),
   teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
+  moduleIds: z.array(z.string()).min(1, "At least one module is required"),
   costPerStudent: z.number().min(0, "Cost per student must be non-negative"),
 });
 
@@ -46,12 +56,14 @@ const formSchema = z.object({
   description: z.string(),
   progress: z.number().min(0).max(100),
   directorIds: z.array(z.string()).min(1, "At least one director is required"),
+  modules: z.array(moduleSchema).min(1, "At least one module is required"),
   intakes: z.array(intakeSchema).min(1, "At least one intake is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 type IntakeFormValues = z.infer<typeof intakeSchema>;
 type GroupFormValues = z.infer<typeof groupSchema>;
+type ModuleFormValues = z.infer<typeof moduleSchema>;
 
 export default function ManageProgram() {
   const params = useParams();
@@ -59,7 +71,6 @@ export default function ManageProgram() {
   const { toast } = useToast();
   const isEdit = params.id !== undefined;
 
-  // Find program data if in edit mode
   const programData = isEdit
     ? mockProjects.find((p) => p.id === params?.id)
     : null;
@@ -78,6 +89,13 @@ export default function ManageProgram() {
       description: programData?.description ?? "",
       progress: programData?.progress ?? 0,
       directorIds: programData ? [programData.director.id] : [],
+      modules: programData?.modules ?? [{
+        name: "",
+        description: "",
+        credits: 1,
+        costPerCredit: 0,
+        teacherIds: []
+      }],
       intakes: programData?.intakes ?? [{
         name: "Default Intake",
         startDate: "",
@@ -96,6 +114,25 @@ export default function ManageProgram() {
       description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
     });
     navigate("/programs");
+  };
+
+  const addModule = () => {
+    const currentModules = form.getValues("modules") || [];
+    form.setValue("modules", [
+      ...currentModules,
+      {
+        name: "",
+        description: "",
+        credits: 1,
+        costPerCredit: 0,
+        teacherIds: []
+      }
+    ]);
+  };
+
+  const removeModule = (index: number) => {
+    const currentModules = form.getValues("modules");
+    form.setValue("modules", currentModules.filter((_, i) => i !== index));
   };
 
   const addIntake = () => {
@@ -121,6 +158,7 @@ export default function ManageProgram() {
         name: `Group ${currentGroups.length + 1}`,
         capacity: 30,
         teacherIds: [],
+        moduleIds: [],
         costPerStudent: 0,
       }
     ]);
@@ -256,6 +294,146 @@ export default function ManageProgram() {
                           )}
                         />
                       </div>
+                    </div>
+                  </FormSection>
+                </CardContent>
+              </Card>
+
+              {/* Modules Management - Full Width */}
+              <Card>
+                <CardContent className="p-6">
+                  <FormSection title="Program Modules">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium">Manage Modules</h3>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addModule}
+                          className="gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add Module
+                        </Button>
+                      </div>
+
+                      <ScrollArea className="h-[400px] pr-4">
+                        <div className="space-y-6">
+                          {form.watch("modules")?.map((module, moduleIndex) => (
+                            <Card key={moduleIndex}>
+                              <CardContent className="p-6 relative">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute top-2 right-2"
+                                  onClick={() => removeModule(moduleIndex)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+
+                                <div className="space-y-4">
+                                  <FormField
+                                    control={form.control}
+                                    name={`modules.${moduleIndex}.name`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Module Name</FormLabel>
+                                        <FormControl>
+                                          <Input {...field} className="bg-white" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name={`modules.${moduleIndex}.description`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                          <textarea
+                                            className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[80px]"
+                                            placeholder="Enter module description"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <div className="grid md:grid-cols-2 gap-4">
+                                    <FormField
+                                      control={form.control}
+                                      name={`modules.${moduleIndex}.credits`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Credits</FormLabel>
+                                          <FormControl>
+                                            <Input
+                                              type="number"
+                                              {...field}
+                                              onChange={(e) =>
+                                                field.onChange(parseInt(e.target.value))
+                                              }
+                                              className="bg-white"
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+
+                                    <FormField
+                                      control={form.control}
+                                      name={`modules.${moduleIndex}.costPerCredit`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Cost per Credit</FormLabel>
+                                          <FormControl>
+                                            <Input
+                                              type="number"
+                                              {...field}
+                                              onChange={(e) =>
+                                                field.onChange(parseFloat(e.target.value))
+                                              }
+                                              className="bg-white"
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  <FormField
+                                    control={form.control}
+                                    name={`modules.${moduleIndex}.teacherIds`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Module Teachers</FormLabel>
+                                        <FormControl>
+                                          <PeoplePicker
+                                            people={teachers}
+                                            selectedIds={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="Select module teachers"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     </div>
                   </FormSection>
                 </CardContent>
@@ -496,6 +674,35 @@ export default function ManageProgram() {
                                                         onChange={field.onChange}
                                                         placeholder="Select group teachers"
                                                       />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <FormField
+                                                control={form.control}
+                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleIds`}
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel>Group Modules</FormLabel>
+                                                    <FormControl>
+                                                      <select
+                                                        multiple
+                                                        {...field}
+                                                        className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                                        value={field.value}
+                                                        onChange={(e) => {
+                                                          const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+                                                          field.onChange(selectedOptions);
+                                                        }}
+                                                      >
+                                                        {form.watch('modules')?.map((module, idx) => (
+                                                          <option key={idx} value={idx}>
+                                                            {module.name} ({module.credits} credits - ${module.costPerCredit}/credit)
+                                                          </option>
+                                                        ))}
+                                                      </select>
                                                     </FormControl>
                                                     <FormMessage />
                                                   </FormItem>
