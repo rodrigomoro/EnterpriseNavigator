@@ -83,7 +83,7 @@ export const statusOptions = {
 };
 
 // Initial team members array with staff and faculty
-  const initialTeamMembers: TeamMember[] = [
+const initialTeamMembers: TeamMember[] = [
     // 1) CEO & Founder
     {
       id: '1',
@@ -232,7 +232,7 @@ export const statusOptions = {
       phone: '+1 (555) 0115',
       bio: 'HR Specialist focusing on talent acquisition and development.',
       projects: [],
-      reportsTo: '4', 
+      reportsTo: '4',
       status: 'On Leave',
       location: 'Madrid Campus'
     },
@@ -300,7 +300,7 @@ export const statusOptions = {
       phone: '+1 (555) 0119',
       bio: 'Benefits Coordinator managing employee wellness programs.',
       projects: [],
-      reportsTo: '4', 
+      reportsTo: '4',
       status: 'Active',
       location: 'Madrid Campus'
     },
@@ -696,67 +696,67 @@ export const statusOptions = {
       location: 'Madrid Campus'
     },
 
-  // 37) Sales Director
-  {
-    id: '43',
-    name: 'Gabriel Santos',
-    role: 'Sales Director',
-    department: 'Sales',
-    isDirector: true,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel',
-    email: 'gabriel.santos@company.com',
-    phone: '+1 (555) 0143',
-    bio: 'Oversees business development and sales strategies.',
-    projects: [],
-    reportsTo: '1', // CEO
-    status: 'Probationary',
-    location: 'Madrid Campus'
-  },
-  {
-    id: 'student-1',
-    name: 'John Smith',
-    role: 'Student',
-    department: 'Computer Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-    email: 'john.smith@company.com',
-    phone: '+1 (555) 0201',
-    bio: 'Computer Science student with interests in AI and machine learning.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14',
-    status: 'Enrolled',
-    location: 'Madrid Campus'
-  },
-  {
-    id: 'student-2',
-    name: 'Emily Brown',
-    role: 'Student',
-    department: 'Mathematics',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-    email: 'emily.brown@company.com',
-    phone: '+1 (555) 0202',
-    bio: 'Mathematics enthusiast focusing on data analysis.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '13',
-    status: 'Graduated',
-    location: 'Barcelona Campus'
-  },
-  {
-    id: 'student-3',
-    name: 'Michael Johnson',
-    role: 'Student',
-    department: 'Computer Science',
-    isDirector: false,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-    email: 'michael.johnson@company.com',
-    phone: '+1 (555) 0203',
-    bio: 'Aspiring software developer with a passion for web technologies.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-    reportsTo: '14',
-    status: 'Withdrawn',
-    location: 'Madrid Campus'
-  },
+    // 37) Sales Director
+    {
+      id: '43',
+      name: 'Gabriel Santos',
+      role: 'Sales Director',
+      department: 'Sales',
+      isDirector: true,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel',
+      email: 'gabriel.santos@company.com',
+      phone: '+1 (555) 0143',
+      bio: 'Oversees business development and sales strategies.',
+      projects: [],
+      reportsTo: '1', // CEO
+      status: 'Probationary',
+      location: 'Madrid Campus'
+    },
+    {
+      id: 'student-1',
+      name: 'John Smith',
+      role: 'Student',
+      department: 'Computer Science',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+      email: 'john.smith@company.com',
+      phone: '+1 (555) 0201',
+      bio: 'Computer Science student with interests in AI and machine learning.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '14',
+      status: 'Enrolled',
+      location: 'Madrid Campus'
+    },
+    {
+      id: 'student-2',
+      name: 'Emily Brown',
+      role: 'Student',
+      department: 'Mathematics',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+      email: 'emily.brown@company.com',
+      phone: '+1 (555) 0202',
+      bio: 'Mathematics enthusiast focusing on data analysis.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '13',
+      status: 'Graduated',
+      location: 'Barcelona Campus'
+    },
+    {
+      id: 'student-3',
+      name: 'Michael Johnson',
+      role: 'Student',
+      department: 'Computer Science',
+      isDirector: false,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+      email: 'michael.johnson@company.com',
+      phone: '+1 (555) 0203',
+      bio: 'Aspiring software developer with a passion for web technologies.',
+      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+      reportsTo: '14',
+      status: 'Withdrawn',
+      location: 'Madrid Campus'
+    },
     {
       id: 'teacher-1',
       name: 'Sarah Thompson',
@@ -815,8 +815,9 @@ function generateStudents(startId: number, count: number): TeamMember[] {
       isDirector: false,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
+```javascript
       phone: `+1 (555) ${String(1000 + i).padStart(4, '0')}`,
-      bio: `${department} student with focus on academic excellence.`,
+      bio: `${department} student with focus on academic excellence`,
       projects: ['Computer Entrepreneurship Bachelor (2409CEB1)'],
       reportsTo: '14',
       status,
@@ -824,6 +825,152 @@ function generateStudents(startId: number, count: number): TeamMember[] {
     };
   });
 }
+
+// Make sure interfaces are properly defined first
+export interface Credit {
+  id: string;
+  value: number;
+  currency: string;
+}
+
+export interface Module {
+  id: string;
+  name: string;
+  description: string;
+  credits: number;
+  creditValue: Credit;
+  teachers: TeamMember[];
+  totalHours: number;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  modules: Module[];
+  teachers: TeamMember[];
+  students: TeamMember[];
+  maxCapacity: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Intake {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  groups: Group[];
+  status: 'upcoming' | 'ongoing' | 'completed';
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  description?: string;
+  progress: number;
+  intakes: Intake[];
+  director: TeamMember;
+  studentCount: number;
+  students: TeamMember[];
+  avgScore: number;
+}
+
+// Create mock data instances
+export const mockModules: Module[] = [
+  {
+    id: 'mod-1',
+    name: 'Introduction to Programming',
+    description: 'Foundation course in programming concepts',
+    credits: 6,
+    creditValue: {
+      id: 'credit-1',
+      value: 100,
+      currency: 'EUR'
+    },
+    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    totalHours: 48
+  },
+  {
+    id: 'mod-2',
+    name: 'Web Development Fundamentals',
+    description: 'Basic web development technologies',
+    credits: 4,
+    creditValue: {
+      id: 'credit-2',
+      value: 100,
+      currency: 'EUR'
+    },
+    teachers: [mockTeamMembers[2]],
+    totalHours: 32
+  }
+];
+
+export const mockGroups: Group[] = [
+  {
+    id: 'group-1',
+    name: 'Morning Group A',
+    modules: [mockModules[0], mockModules[1]],
+    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 20),
+    maxCapacity: 25,
+    startDate: '2025-02-01',
+    endDate: '2025-06-30'
+  },
+  {
+    id: 'group-2',
+    name: 'Evening Group B',
+    modules: [mockModules[0]],
+    teachers: [mockTeamMembers[2]],
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(20, 35),
+    maxCapacity: 25,
+    startDate: '2025-02-01',
+    endDate: '2025-06-30'
+  }
+];
+
+export const mockIntakes: Intake[] = [
+  {
+    id: 'intake-1',
+    name: 'Spring 2025',
+    startDate: '2025-02-01',
+    endDate: '2025-06-30',
+    groups: [mockGroups[0], mockGroups[1]],
+    status: 'upcoming'
+  },
+  {
+    id: 'intake-2',
+    name: 'Fall 2025',
+    startDate: '2025-09-01',
+    endDate: '2026-01-31',
+    groups: [],
+    status: 'upcoming'
+  }
+];
+
+export const mockProjects: Program[] = [
+  {
+    id: '1',
+    name: 'Computer Entrepreneurship Bachelor',
+    description: 'Comprehensive program combining computer science and business skills',
+    progress: 85,
+    intakes: [mockIntakes[0], mockIntakes[1]],
+    director: mockTeamMembers[0],
+    studentCount: 45,
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 45),
+    avgScore: 88
+  },
+  {
+    id: '2',
+    name: 'Bootcamp en Diseño UX/UI',
+    description: 'Intensive UX/UI design program',
+    progress: 60,
+    intakes: [mockIntakes[0]],
+    director: mockTeamMembers[1],
+    studentCount: 30,
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(45, 75),
+    avgScore: 92
+  }
+];
 
 // Generate additional students
 const additionalStudents = generateStudents(43, 200);
@@ -1016,66 +1163,147 @@ const calculateAverageScore = (students: Student[]) => {
   return Math.round(totalScores / students.length);
 };
 
-export const mockProjects = [
+export interface Credit {
+  id: string;
+  value: number;  // Monetary value per credit
+  currency: string;
+}
+
+export interface Module {
+  id: string;
+  name: string;
+  description: string;
+  credits: number;  // Number of credits this module is worth
+  creditValue: Credit;
+  teachers: TeamMember[];
+  totalHours: number;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  modules: Module[];
+  teachers: TeamMember[];
+  students: TeamMember[];
+  maxCapacity: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Intake {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  groups: Group[];
+  status: 'upcoming' | 'ongoing' | 'completed';
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  description?: string;
+  progress: number;
+  intakes: Intake[];
+  director: TeamMember;
+  studentCount: number;
+  students: TeamMember[];
+  avgScore: number;
+}
+
+export const mockModules: Module[] = [
+  {
+    id: 'mod-1',
+    name: 'Introduction to Programming',
+    description: 'Foundation course in programming concepts',
+    credits: 6,
+    creditValue: {
+      id: 'credit-1',
+      value: 100,
+      currency: 'EUR'
+    },
+    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    totalHours: 48
+  },
+  {
+    id: 'mod-2',
+    name: 'Web Development Fundamentals',
+    description: 'Basic web development technologies',
+    credits: 4,
+    creditValue: {
+      id: 'credit-2',
+      value: 100,
+      currency: 'EUR'
+    },
+    teachers: [mockTeamMembers[2]],
+    totalHours: 32
+  }
+];
+
+export const mockGroups: Group[] = [
+  {
+    id: 'group-1',
+    name: 'Morning Group A',
+    modules: [mockModules[0], mockModules[1]],
+    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 20),
+    maxCapacity: 25,
+    startDate: '2025-02-01',
+    endDate: '2025-06-30'
+  },
+  {
+    id: 'group-2',
+    name: 'Evening Group B',
+    modules: [mockModules[0]],
+    teachers: [mockTeamMembers[2]],
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(20, 35),
+    maxCapacity: 25,
+    startDate: '2025-02-01',
+    endDate: '2025-06-30'
+  }
+];
+
+export const mockIntakes: Intake[] = [
+  {
+    id: 'intake-1',
+    name: 'Spring 2025',
+    startDate: '2025-02-01',
+    endDate: '2025-06-30',
+    groups: [mockGroups[0], mockGroups[1]],
+    status: 'upcoming'
+  },
+  {
+    id: 'intake-2',
+    name: 'Fall 2025',
+    startDate: '2025-09-01',
+    endDate: '2026-01-31',
+    groups: [],
+    status: 'upcoming'
+  }
+];
+
+export const mockProjects: Program[] = [
   {
     id: '1',
-    name: 'Computer Entreprenurship Bachelor (2409CEB1)',
-    progress: 65,
-    team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
+    name: 'Computer Entrepreneurship Bachelor',
+    description: 'Comprehensive program combining computer science and business skills',
+    progress: 85,
+    intakes: [mockIntakes[0], mockIntakes[1]],
     director: mockTeamMembers[0],
     studentCount: 45,
-    students: mockStudents.slice(0, 6),
-    avgScore: calculateAverageScore(mockStudents.slice(0, 6))
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 45),
+    avgScore: 88
   },
   {
     id: '2',
-    name: 'Computer Entreprenurship Bachelor (2309CEB2)',
-    progress: 40,
-    team: mockTeamMembers.filter(m => ['14', '15'].includes(m.id)),
-    director: mockTeamMembers[13],
-    studentCount: 32,
-    students: mockStudents.slice(6, 11),
-    avgScore: calculateAverageScore(mockStudents.slice(6, 11))
-  },
-  {
-    id: '3',
-    name: 'Computer Entreprenurship Bachelor (2209CEB3)',
-    progress: 85,
-    team: mockTeamMembers.filter(m => ['3', '4'].includes(m.id)),
-    director: mockTeamMembers[2],
-    studentCount: 28,
-    students: mockStudents.slice(11, 16),
-    avgScore: calculateAverageScore(mockStudents.slice(11, 16))
-  },
-  {
-    id: '4',
-    name: 'Bootcamp en Diseño UX/UI (2410BUXS)',
-    progress: 20,
-    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
-    studentCount: 52,
-    students: mockStudents.slice(16),
-    avgScore: calculateAverageScore(mockStudents.slice(16))
-  },
-  {
-    id: '5',
-    name: 'Bootcamp en Cloud Computing & DevOps (2410BCCS)',
-    progress: 50,
-    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
-    studentCount: 48,
-    students: mockStudents.slice(16),
-    avgScore: calculateAverageScore(mockStudents.slice(16))
-  },
-  {
-    id: '6',
-    name: 'Bootcamp en Cloud Computing & DevOps (2503BCCS)',
-    progress: 75,
-    team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
-    studentCount: 36,
-    students: mockStudents.slice(16),
-    avgScore: calculateAverageScore(mockStudents.slice(16))
+    name: 'Bootcamp en Diseño UX/UI',
+    description: 'Intensive UX/UI design program',
+    progress: 60,
+    intakes: [mockIntakes[0]],
+    director: mockTeamMembers[1],
+    studentCount: 30,
+    students: mockTeamMembers.filter(m => m.role === 'Student').slice(45, 75),
+    avgScore: 92
   }
 ];
 
@@ -1600,7 +1828,7 @@ export const competencyLevels: CompetencyLevel[] = [
     id: 'level-3',
     name: 'Competent',
     value: 3,
-    color: 'bg-yellow-200 hover:bg-yellow-300'
+    color: 'bg-yellow-200hover:bg-yellow-300'
   },
   {
     id: 'level-4',
