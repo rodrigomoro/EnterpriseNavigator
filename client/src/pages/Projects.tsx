@@ -5,7 +5,7 @@ import { mockProjects } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Pencil, Trash2, ChevronDown, ChevronRight, Users, Calendar, BookOpen } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, ChevronDown, ChevronRight, Users, Calendar, BookOpen, DollarSign, BookOpenCheck } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
@@ -20,6 +20,11 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const container = {
   hidden: { opacity: 0 },
@@ -60,6 +65,14 @@ export default function Projects() {
         ? prev.filter(id => id !== programId)
         : [...prev, programId]
     );
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0
+    }).format(amount);
   };
 
   return (
@@ -146,7 +159,7 @@ export default function Projects() {
                             </div>
                           </div>
 
-                          <Accordion type="single" collapsible>
+                          <Accordion type="single" collapsible className="w-full">
                             {program.intakes.map((intake) => (
                               <AccordionItem value={intake.id} key={intake.id}>
                                 <AccordionTrigger className="hover:no-underline">
@@ -165,32 +178,102 @@ export default function Projects() {
                                         {new Date(intake.startDate).toLocaleDateString()} - {new Date(intake.endDate).toLocaleDateString()}
                                       </span>
                                     </div>
+                                    <Badge variant="outline" className="ml-auto">
+                                      <Users className="h-3 w-3 mr-1" />
+                                      {intake.totalStudents} Students
+                                    </Badge>
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
                                   <div className="space-y-4 pl-4">
                                     {intake.groups.map((group) => (
                                       <Card key={group.id} className="p-4">
-                                        <div className="flex items-center justify-between mb-2">
-                                          <h4 className="font-medium">{group.name}</h4>
-                                          <div className="flex items-center gap-2">
-                                            <Users className="h-4 w-4 text-muted-foreground" />
-                                            <span className="text-sm">{group.students.length}/{group.maxCapacity} Students</span>
-                                          </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                          {group.modules.map((module) => (
-                                            <div key={module.id} className="flex items-center justify-between text-sm">
-                                              <div className="flex items-center gap-2">
-                                                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                                <span>{module.name}</span>
-                                              </div>
-                                              <div className="flex items-center gap-4">
-                                                <span className="text-muted-foreground">{module.credits} Credits</span>
-                                                <span className="font-medium">{module.creditValue.value} {module.creditValue.currency}/credit</span>
+                                        <div className="space-y-4">
+                                          <div className="flex items-center justify-between">
+                                            <div>
+                                              <h4 className="font-medium">{group.name}</h4>
+                                              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                                <Users className="h-4 w-4" />
+                                                <span>{group.students.length}/{group.maxCapacity} Students</span>
                                               </div>
                                             </div>
-                                          ))}
+                                            <div className="flex items-center gap-4">
+                                              <HoverCard>
+                                                <HoverCardTrigger>
+                                                  <div className="flex items-center gap-2 text-green-600">
+                                                    <DollarSign className="h-4 w-4" />
+                                                    <span className="font-medium">
+                                                      {formatCurrency(group.totalRevenue - group.totalCost, 'EUR')}
+                                                    </span>
+                                                  </div>
+                                                </HoverCardTrigger>
+                                                <HoverCardContent>
+                                                  <div className="space-y-2">
+                                                    <p className="text-sm font-medium">Financial Overview</p>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                      <div>
+                                                        <p className="text-sm text-muted-foreground">Revenue</p>
+                                                        <p className="text-sm font-medium text-green-600">
+                                                          {formatCurrency(group.totalRevenue, 'EUR')}
+                                                        </p>
+                                                      </div>
+                                                      <div>
+                                                        <p className="text-sm text-muted-foreground">Costs</p>
+                                                        <p className="text-sm font-medium text-red-600">
+                                                          {formatCurrency(group.totalCost, 'EUR')}
+                                                        </p>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </HoverCardContent>
+                                              </HoverCard>
+                                            </div>
+                                          </div>
+
+                                          <div className="space-y-2">
+                                            {group.modules.map((module) => (
+                                              <div key={module.id} className="flex items-center justify-between text-sm p-2 rounded-lg hover:bg-muted/50">
+                                                <div className="flex items-center gap-2 flex-1">
+                                                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                                  <div>
+                                                    <span className="font-medium">{module.name}</span>
+                                                    <div className="text-xs text-muted-foreground mt-0.5">
+                                                      {module.totalHours}h · {module.credits} Credits
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                  <HoverCard>
+                                                    <HoverCardTrigger>
+                                                      <div className="flex items-center gap-1">
+                                                        <BookOpenCheck className="h-4 w-4 text-muted-foreground" />
+                                                        <span>{module.teachers.length} Teachers</span>
+                                                      </div>
+                                                    </HoverCardTrigger>
+                                                    <HoverCardContent>
+                                                      <div className="space-y-2">
+                                                        <p className="text-sm font-medium">Module Teachers</p>
+                                                        <div className="space-y-2">
+                                                          {module.teachers.map((teacher) => (
+                                                            <div key={teacher.id} className="flex items-center gap-2">
+                                                              <Avatar className="h-6 w-6">
+                                                                <AvatarImage src={teacher.avatar} />
+                                                                <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
+                                                              </Avatar>
+                                                              <span className="text-sm">{teacher.name}</span>
+                                                            </div>
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    </HoverCardContent>
+                                                  </HoverCard>
+                                                  <div className="font-medium">
+                                                    {formatCurrency(module.creditValue.value, module.creditValue.currency)}/credit
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
                                         </div>
                                       </Card>
                                     ))}

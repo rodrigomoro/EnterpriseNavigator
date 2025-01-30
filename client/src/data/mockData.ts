@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Update the TeamMember interface to include location
+// Base interfaces
 export interface TeamMember {
   id: string;
   name: string;
@@ -17,816 +17,6 @@ export interface TeamMember {
   location: string;
 }
 
-// Add location options
-export const locations = [
-  'Madrid Campus',
-  'Barcelona Campus',
-  'Spain Remote',
-  'Argentina Remote',
-  'Mexico Remote',
-  'Colombia Remote',
-  'Chile Remote'
-];
-
-// Add departments
-export const departments = [
-  'Executive',
-  'Technology',
-  'Mathematics',
-  'Science',
-  'Computer Science',
-  'Finance',
-  'Human Resources'
-];
-
-// Status options based on role
-export const statusOptions = {
-  Student: [
-    'Enrolled',
-    'Graduated',
-    'Withdrawn',
-    'Dismissed',
-    'Deferred',
-    'Alumni',
-    'Suspended',
-    'Prospective',
-    'Pending Enrollment',
-    'Audit',
-    'Exchange',
-    'Interning',
-    'Dropped Out'
-  ],
-  Staff: [
-    'Active',
-    'Inactive',
-    'Terminated',
-    'On Probation',
-    'Retired',
-    'Contractual',
-    'Resigned',
-    'On Leave',
-    'Suspended',
-    'Pending Approval'
-  ],
-  Teacher: [
-    'Active',
-    'Inactive',
-    'Retired',
-    'Adjunct',
-    'Visiting',
-    'Probationary',
-    'On Leave',
-    'Suspended',
-    'Resigned',
-    'Contractual'
-  ]
-};
-
-// Initial team members array with staff and faculty
-const initialTeamMembers: TeamMember[] = [
-    // 1) CEO & Founder
-    {
-      id: '1',
-      name: 'Emily Johnson',
-      role: 'CEO & Founder',
-      department: 'Executive',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-      email: 'emily.johnson@company.com',
-      phone: '+1 (555) 0101',
-      bio: 'Founded the institution in 2020. Previously led education technology initiatives at major enterprises.',
-      projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      status: 'Active',
-      location: 'Madrid Campus'
-      // No reportsTo since she is the CEO
-    },
-
-    // 2) CAO (Chief Academic Officer)
-    {
-      id: 'cao-1',
-      name: 'David Anderson',
-      role: 'Chief Academic Officer',
-      department: 'Academic',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-      email: 'david.anderson@company.com',
-      phone: '+1 (555) 0100',
-      bio: 'Chief Academic Officer with over 20 years of experience in educational leadership.',
-      projects: [],
-      reportsTo: '1', // Reports to the CEO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 3) CFO
-    {
-      id: '2',
-      name: 'Andrea Leeland',
-      role: 'CFO',
-      department: 'Finance',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
-      email: 'andrea.leeland@company.com',
-      phone: '+1 (555) 0102',
-      bio: 'Over 15 years of experience in financial management and strategic planning.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '1', // Reports to the CEO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 4) CTO
-    {
-      id: '3',
-      name: 'Sarah Williams',
-      role: 'CTO',
-      department: 'Technology',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      email: 'sarah.williams@company.com',
-      phone: '+1 (555) 0103',
-      bio: 'Tech leader with a focus on educational software and scalable systems.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '1', // Typically reports directly to CEO
-      status: 'On Leave',
-      location: 'Barcelona Campus'
-    },
-
-    // 5) Admission Director
-    {
-      id: '4',
-      name: 'Jessica Martinez',
-      role: 'Admission Director',
-      department: 'Admissions',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
-      email: 'jessica.martinez@company.com',
-      phone: '+1 (555) 0104',
-      bio: 'Specialized in organizational development, now overseeing the admissions process.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '1', // Admission often reports to CEO or Head of School
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 6) Program Director: Science Program (Under CAO)
-    {
-      id: '12',
-      name: 'Richard Chen',
-      role: 'Program Director: Science Program',
-      department: 'Academic',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Richard',
-      email: 'richard.chen@company.com',
-      phone: '+1 (555) 0112',
-      bio: 'Experienced science educator with a focus on practical applications.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: 'cao-1', // Reports to the Chief Academic Officer
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 7) Teacher (Now under the Science Program Director)
-    {
-      id: '13',
-      name: 'Maria Garcia',
-      role: 'Teacher',
-      department: 'Academic',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
-      email: 'maria.garcia@company.com',
-      phone: '+1 (555) 0113',
-      bio: 'Mathematics specialist with expertise in advanced calculus.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '12', // Reports to Richard Chen (Program Director)
-      status: 'Inactive',
-      location: 'Barcelona Campus'
-    },
-
-    // 8) Finance Staff (reports to CFO)
-    {
-      id: '14',
-      name: 'Robert Chen',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert',
-      email: 'robert.chen@company.com',
-      phone: '+1 (555) 0114',
-      bio: 'Senior Financial Analyst with expertise in educational budgeting.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 9) HR Staff (originally reported to 4, now Admission Director; kept for consistency)
-    {
-      id: '15',
-      name: 'Patricia Wong',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia',
-      email: 'patricia.wong@company.com',
-      phone: '+1 (555) 0115',
-      bio: 'HR Specialist focusing on talent acquisition and development.',
-      projects: [],
-      reportsTo: '4',
-      status: 'On Leave',
-      location: 'Madrid Campus'
-    },
-
-    // 10) Tech Staff (reports to CTO)
-    {
-      id: '16',
-      name: 'Marcus Johnson',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
-      email: 'marcus.johnson@company.com',
-      phone: '+1 (555) 0116',
-      bio: 'IT Support Specialist managing educational technology infrastructure.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 11) Executive Staff
-    {
-      id: '17',
-      name: 'Linda Martinez',
-      role: 'Executive Staff',
-      department: 'Executive',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Linda',
-      email: 'linda.martinez@company.com',
-      phone: '+1 (555) 0117',
-      bio: 'Executive Assistant to the CEO.',
-      projects: [],
-      reportsTo: '1', // CEO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 12) Finance Staff
-    {
-      id: '18',
-      name: 'David Wilson',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-      email: 'david.wilson@company.com',
-      phone: '+1 (555) 0118',
-      bio: 'Accounts Payable Specialist.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Terminated',
-      location: 'Madrid Campus'
-    },
-
-    // 13) HR Staff
-    {
-      id: '19',
-      name: 'Sarah Lee',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SarahL',
-      email: 'sarah.lee@company.com',
-      phone: '+1 (555) 0119',
-      bio: 'Benefits Coordinator managing employee wellness programs.',
-      projects: [],
-      reportsTo: '4',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 14) Tech Staff
-    {
-      id: '20',
-      name: 'James Taylor',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-      email: 'james.taylor@company.com',
-      phone: '+1 (555) 0120',
-      bio: 'Systems Administrator maintaining educational platforms.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Probationary',
-      location: 'Barcelona Campus'
-    },
-
-    // 15) Finance Staff
-    {
-      id: '21',
-      name: 'Emma Davis',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
-      email: 'emma.davis@company.com',
-      phone: '+1 (555) 0121',
-      bio: 'Financial Operations Analyst.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 16) HR Staff
-    {
-      id: '22',
-      name: 'Michael Brown',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-      email: 'michael.brown@company.com',
-      phone: '+1 (555) 0122',
-      bio: 'Training and Development Coordinator.',
-      projects: [],
-      reportsTo: '4',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 17) Executive Staff
-    {
-      id: '23',
-      name: 'Jennifer White',
-      role: 'Executive Staff',
-      department: 'Executive',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
-      email: 'jennifer.white@company.com',
-      phone: '+1 (555) 0123',
-      bio: 'Administrative Coordinator for executive office.',
-      projects: [],
-      reportsTo: '1', // CEO
-      status: 'Resigned',
-      location: 'Madrid Campus'
-    },
-
-    // 18) Tech Staff
-    {
-      id: '24',
-      name: 'Carlos Rodriguez',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
-      email: 'carlos.rodriguez@company.com',
-      phone: '+1 (555) 0124',
-      bio: 'Network Security Specialist.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 19) Finance Staff
-    {
-      id: '25',
-      name: 'Sophia Zhang',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
-      email: 'sophia.zhang@company.com',
-      phone: '+1 (555) 0125',
-      bio: 'Financial Risk Analyst.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 20) HR Staff
-    {
-      id: '26',
-      name: 'William Park',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=William',
-      email: 'william.park@company.com',
-      phone: '+1 (555) 0126',
-      bio: 'Employee Relations Specialist.',
-      projects: [],
-      reportsTo: '4',
-      status: 'On Probation',
-      location: 'Madrid Campus'
-    },
-
-    // 21) Tech Staff
-    {
-      id: '27',
-      name: 'Isabella Garcia',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
-      email: 'isabella.garcia@company.com',
-      phone: '+1 (555) 0127',
-      bio: 'Software Development Lead.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 22) Finance Staff
-    {
-      id: '28',
-      name: 'Nathan Wright',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan',
-      email: 'nathan.wright@company.com',
-      phone: '+1 (555) 0128',
-      bio: 'Budget Planning Specialist.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Contractual',
-      location: 'Madrid Campus'
-    },
-
-    // 23) Executive Staff
-    {
-      id: '29',
-      name: 'Oliver Chen',
-      role: 'Executive Staff',
-      department: 'Executive',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
-      email: 'oliver.chen@company.com',
-      phone: '+1 (555) 0129',
-      bio: 'Strategic Planning Coordinator.',
-      projects: [],
-      reportsTo: '1',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 24) HR Staff
-    {
-      id: '30',
-      name: 'Ava Thompson',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ava',
-      email: 'ava.thompson@company.com',
-      phone: '+1 (555) 0130',
-      bio: 'Recruitment Specialist.',
-      projects: [],
-      reportsTo: '4',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 25) Tech Staff
-    {
-      id: '31',
-      name: 'Lucas Kim',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
-      email: 'lucas.kim@company.com',
-      phone: '+1 (555) 0131',
-      bio: 'Cloud Infrastructure Engineer.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 26) Finance Staff
-    {
-      id: '32',
-      name: 'Mia Patel',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia',
-      email: 'mia.patel@company.com',
-      phone: '+1 (555) 0132',
-      bio: 'Compliance Officer.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'On Leave',
-      location: 'Madrid Campus'
-    },
-
-    // 27) HR Staff
-    {
-      id: '33',
-      name: 'Ethan Cooper',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
-      email: 'ethan.cooper@company.com',
-      phone: '+1 (555) 0133',
-      bio: 'Training Program Developer.',
-      projects: [],
-      reportsTo: '4',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 28) Tech Staff
-    {
-      id: '34',
-      name: 'Charlotte Lee',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte',
-      email: 'charlotte.lee@company.com',
-      phone: '+1 (555) 0134',
-      bio: 'Quality Assurance Lead.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 29) Finance Staff
-    {
-      id: '35',
-      name: 'Benjamin Wilson',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Benjamin',
-      email: 'benjamin.wilson@company.com',
-      phone: '+1 (555) 0135',
-      bio: 'Investment Analyst.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 30) Marketing Director
-    {
-      id: '36',
-      name: 'Victoria Martinez',
-      role: 'Marketing Director',
-      department: 'Marketing',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Victoria',
-      email: 'victoria.martinez@company.com',
-      phone: '+1 (555) 0136',
-      bio: 'Oversees all marketing and communications initiatives.',
-      projects: [],
-      reportsTo: '1', // CEO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 31) HR Staff
-    {
-      id: '37',
-      name: 'Henry Taylor',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Henry',
-      email: 'henry.taylor@company.com',
-      phone: '+1 (555) 0137',
-      bio: 'Employee Engagement Specialist.',
-      projects: [],
-      reportsTo: '4',
-      status: 'On Leave',
-      location: 'Madrid Campus'
-    },
-
-    // 32) Tech Staff
-    {
-      id: '38',
-      name: 'Scarlett Wong',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Scarlett',
-      email: 'scarlett.wong@company.com',
-      phone: '+1 (555) 0138',
-      bio: 'Data Center Operations Manager.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 33) Finance Staff
-    {
-      id: '39',
-      name: 'Sebastian Ross',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sebastian',
-      email: 'sebastian.ross@company.com',
-      phone: '+1 (555) 0139',
-      bio: 'Treasury Analyst.',
-      projects: [],
-      reportsTo: '2', // CFO
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 34) HR Staff
-    {
-      id: '40',
-      name: 'Zoe Anderson',
-      role: 'HR Staff',
-      department: 'Human Resources',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe',
-      email: 'zoe.anderson@company.com',
-      phone: '+1 (555) 0140',
-      bio: 'Diversity and Inclusion Coordinator.',
-      projects: [],
-      reportsTo: '4',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 35) Tech Staff
-    {
-      id: '41',
-      name: 'Christopher Lee',
-      role: 'Tech Staff',
-      department: 'Technology',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Christopher',
-      email: 'christopher.lee@company.com',
-      phone: '+1 (555) 0141',
-      bio: 'Information Security Analyst.',
-      projects: [],
-      reportsTo: '3', // CTO
-      status: 'Active',
-      location: 'Barcelona Campus'
-    },
-
-    // 36) Finance Staff
-    {
-      id: '42',
-      name: 'Madison Clark',
-      role: 'Finance Staff',
-      department: 'Finance',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Madison',
-      email: 'madison.clark@company.com',
-      phone: '+1 (555) 0142',
-      bio: 'Accounting Operations Manager.',
-      projects: [],
-      reportsTo: '2',
-      status: 'Active',
-      location: 'Madrid Campus'
-    },
-
-    // 37) Sales Director
-    {
-      id: '43',
-      name: 'Gabriel Santos',
-      role: 'Sales Director',
-      department: 'Sales',
-      isDirector: true,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel',
-      email: 'gabriel.santos@company.com',
-      phone: '+1 (555) 0143',
-      bio: 'Oversees business development and sales strategies.',
-      projects: [],
-      reportsTo: '1', // CEO
-      status: 'Probationary',
-      location: 'Madrid Campus'
-    },
-    {
-      id: 'student-1',
-      name: 'John Smith',
-      role: 'Student',
-      department: 'Computer Science',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-      email: 'john.smith@company.com',
-      phone: '+1 (555) 0201',
-      bio: 'Computer Science student with interests in AI and machine learning.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '14',
-      status: 'Enrolled',
-      location: 'Madrid Campus'
-    },
-    {
-      id: 'student-2',
-      name: 'Emily Brown',
-      role: 'Student',
-      department: 'Mathematics',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-      email: 'emily.brown@company.com',
-      phone: '+1 (555) 0202',
-      bio: 'Mathematics enthusiast focusing on data analysis.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '13',
-      status: 'Graduated',
-      location: 'Barcelona Campus'
-    },
-    {
-      id: 'student-3',
-      name: 'Michael Johnson',
-      role: 'Student',
-      department: 'Computer Science',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-      email: 'michael.johnson@company.com',
-      phone: '+1 (555) 0203',
-      bio: 'Aspiring software developer with a passion for web technologies.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '14',
-      status: 'Withdrawn',
-      location: 'Madrid Campus'
-    },
-    {
-      id: 'teacher-1',
-      name: 'Sarah Thompson',
-      role: 'Teacher',
-      department: 'Academic',
-      isDirector: false,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      email: 'sarah.thompson@company.com',
-      phone: '+1 (555) 0204',
-      bio: 'Mathematics teacher with a passion for teaching and problem-solving.',
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
-      reportsTo: '12',
-      status: 'Active',
-      location: 'Barcelona Campus'
-    }
-];
-
-// Function to generate additional students
-function generateStudents(startId: number, count: number): TeamMember[] {
-  const studentDepartments = ['Computer Science', 'Mathematics', 'Science'];
-  const statuses = statusOptions.Student;
-  const names = [
-    'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Isabella', 'Sophia', 'Mia', 'Charlotte', 'Amelia',
-    'Harper', 'Evelyn', 'Abigail', 'Emily', 'Elizabeth', 'Sofia', 'Avery', 'Ella', 'Scarlett',
-    'Grace', 'Victoria', 'Riley', 'Aria', 'Lily', 'Aurora', 'Zoey', 'Willow', 'Luna', 'Savannah',
-    'Maya', 'Audrey', 'Brooklyn', 'Bella', 'Claire', 'Skylar', 'Lucy', 'Paisley', 'Everly',
-    'Anna', 'Caroline', 'Genesis', 'Aaliyah', 'Kennedy', 'Kinsley', 'Allison', 'Gabriella', 'Alice',
-    'Madelyn', 'Cora', 'Ruby', 'Eva', 'Serenity', 'Autumn', 'Adeline', 'Hailey', 'Gianna',
-    'James', 'William', 'Oliver', 'Benjamin', 'Elijah', 'Lucas', 'Mason', 'Logan', 'Alexander', 'Ethan',
-    'Jacob', 'Michael', 'Daniel', 'Henry', 'Jackson', 'Sebastian', 'Jack', 'Aiden', 'Owen',
-    'Samuel', 'Matthew', 'Joseph', 'Levi', 'Mateo', 'David', 'John', 'Wyatt', 'Carter', 'Julian',
-    'Luke', 'Grayson', 'Isaac', 'Jayden', 'Theodore', 'Gabriel', 'Anthony', 'Dylan', 'Leo',
-    'Lincoln', 'Jaxon', 'Asher', 'Christopher', 'Josiah', 'Andrew', 'Thomas', 'Joshua', 'Ezra',
-    'Hudson', 'Charles', 'Caleb', 'Isaiah', 'Ryan', 'Nathan', 'Adrian', 'Christian', 'Maverick'
-  ];
-  const lastNames = [
-    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-    'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-    'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
-    'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
-    'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
-  ];
-
-  return Array.from({ length: count }, (_, i) => {
-    const firstName = names[Math.floor(Math.random() * names.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    const department = studentDepartments[Math.floor(Math.random() * studentDepartments.length)];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-
-    return {
-      id: `student-${startId + i}`,
-      name: `${firstName} ${lastName}`,
-      role: 'Student',
-      department,
-      isDirector: false,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
-      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
-```javascript
-      phone: `+1 (555) ${String(1000 + i).padStart(4, '0')}`,
-      bio: `${department} student with focus on academic excellence`,
-      projects: ['Computer Entrepreneurship Bachelor (2409CEB1)'],
-      reportsTo: '14',
-      status,
-      location
-    };
-  });
-}
-
-// Make sure interfaces are properly defined first
 export interface Credit {
   id: string;
   value: number;
@@ -852,6 +42,8 @@ export interface Group {
   maxCapacity: number;
   startDate: string;
   endDate: string;
+  totalCost: number;
+  totalRevenue: number;
 }
 
 export interface Intake {
@@ -861,6 +53,7 @@ export interface Intake {
   endDate: string;
   groups: Group[];
   status: 'upcoming' | 'ongoing' | 'completed';
+  totalStudents: number;
 }
 
 export interface Program {
@@ -875,7 +68,159 @@ export interface Program {
   avgScore: number;
 }
 
-// Create mock data instances
+// Constants
+export const locations = [
+  'Madrid Campus',
+  'Barcelona Campus',
+  'Spain Remote',
+  'Argentina Remote',
+  'Mexico Remote',
+  'Colombia Remote',
+  'Chile Remote'
+];
+
+export const departments = [
+  'Executive',
+  'Technology',
+  'Mathematics',
+  'Science',
+  'Computer Science',
+  'Finance',
+  'Human Resources',
+  'Academic',
+  'Admissions',
+  'Marketing',
+  'Sales'
+];
+
+export const statusOptions = {
+  Student: [
+    'Enrolled',
+    'Graduated',
+    'On Leave',
+    'Withdrawn',
+    'Academic Probation'
+  ],
+  Staff: [
+    'Active',
+    'On Leave',
+    'Terminated',
+    'Resigned',
+    'Probationary',
+    'Contractual'
+  ],
+  Location: [
+    'Active',
+    'Under Construction',
+    'Closed',
+    'Relocating'
+  ]
+};
+
+// Initial team members (teachers and staff)
+const initialTeamMembers: TeamMember[] = [
+  {
+    id: '1',
+    name: 'Emily Johnson',
+    role: 'Director',
+    department: 'Academic',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+    email: 'emily.johnson@company.com',
+    phone: '+1 (555) 0101',
+    bio: 'Program director with 10+ years of experience',
+    projects: [],
+    status: 'Active',
+    location: 'Madrid Campus'
+  },
+  {
+    id: '2',
+    name: 'David Anderson',
+    role: 'Director',
+    department: 'Academic',
+    isDirector: true,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+    email: 'david.anderson@company.com',
+    phone: '+1 (555) 0102',
+    bio: 'Specialized in curriculum development',
+    projects: [],
+    status: 'Active',
+    location: 'Barcelona Campus'
+  },
+  {
+    id: '3',
+    name: 'Maria Garcia',
+    role: 'Teacher',
+    department: 'Academic',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+    email: 'maria.garcia@company.com',
+    phone: '+1 (555) 0103',
+    bio: 'Expert in programming fundamentals',
+    projects: [],
+    reportsTo: '1',
+    status: 'Active',
+    location: 'Madrid Campus'
+  },
+  {
+    id: '4',
+    name: 'James Wilson',
+    role: 'Teacher',
+    department: 'Academic',
+    isDirector: false,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
+    email: 'james.wilson@company.com',
+    phone: '+1 (555) 0104',
+    bio: 'Web development specialist',
+    projects: [],
+    reportsTo: '1',
+    status: 'Active',
+    location: 'Barcelona Campus'
+  }
+];
+
+// Function to generate additional students
+function generateStudents(startId: number, count: number): TeamMember[] {
+  const studentDepartments = ['Computer Science', 'Mathematics', 'Science'];
+  const names = [
+    'John', 'Emma', 'Michael', 'Sophia', 'William', 'Olivia', 'James', 'Ava',
+    'Benjamin', 'Isabella', 'Lucas', 'Mia', 'Henry', 'Charlotte', 'Alexander', 'Amelia'
+  ];
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas'
+  ];
+
+  return Array.from({ length: count }, (_, i) => {
+    const firstName = names[Math.floor(Math.random() * names.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const department = studentDepartments[Math.floor(Math.random() * studentDepartments.length)];
+    const status = statusOptions.Student[Math.floor(Math.random() * statusOptions.Student.length)];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+
+    return {
+      id: `student-${startId + i}`,
+      name: `${firstName} ${lastName}`,
+      role: 'Student',
+      department,
+      isDirector: false,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
+      phone: `+1 (555) ${String(1000 + i).padStart(4, '0')}`,
+      bio: `${department} student with focus on academic excellence`,
+      projects: [],
+      reportsTo: '1',
+      status,
+      location
+    };
+  });
+}
+
+// Generate students and combine with initial team members
+const additionalStudents = generateStudents(5, 50);
+export const mockTeamMembers: TeamMember[] = [...initialTeamMembers, ...additionalStudents];
+
+// Create modules with assigned teachers
 export const mockModules: Module[] = [
   {
     id: 'mod-1',
@@ -887,7 +232,7 @@ export const mockModules: Module[] = [
       value: 100,
       currency: 'EUR'
     },
-    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(0, 2),
     totalHours: 48
   },
   {
@@ -900,42 +245,96 @@ export const mockModules: Module[] = [
       value: 100,
       currency: 'EUR'
     },
-    teachers: [mockTeamMembers[2]],
+    teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(1, 3),
     totalHours: 32
+  },
+  {
+    id: 'mod-3',
+    name: 'Data Structures and Algorithms',
+    description: 'Advanced programming concepts',
+    credits: 8,
+    creditValue: {
+      id: 'credit-3',
+      value: 120,
+      currency: 'EUR'
+    },
+    teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(0, 3),
+    totalHours: 64
   }
 ];
 
+// Calculate financial metrics for groups
+function calculateGroupFinancials(group: Omit<Group, 'totalCost' | 'totalRevenue'>) {
+  const teacherCostPerHour = 50; // EUR per hour
+  const totalHours = group.modules.reduce((acc, mod) => acc + mod.totalHours, 0);
+  const teacherCosts = teacherCostPerHour * totalHours * group.teachers.length;
+
+  const studentRevenue = group.students.reduce((acc, _) => {
+    const moduleCosts = group.modules.reduce((moduleAcc, mod) =>
+      moduleAcc + (mod.credits * mod.creditValue.value), 0);
+    return acc + moduleCosts;
+  }, 0);
+
+  return {
+    totalCost: teacherCosts,
+    totalRevenue: studentRevenue
+  };
+}
+
+// Create groups with assigned modules, teachers and students
 export const mockGroups: Group[] = [
   {
     id: 'group-1',
     name: 'Morning Group A',
     modules: [mockModules[0], mockModules[1]],
-    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
+    teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(0, 2),
     students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 20),
     maxCapacity: 25,
     startDate: '2025-02-01',
-    endDate: '2025-06-30'
+    endDate: '2025-06-30',
+    ...calculateGroupFinancials({
+      id: 'group-1',
+      name: 'Morning Group A',
+      modules: [mockModules[0], mockModules[1]],
+      teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(0, 2),
+      students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 20),
+      maxCapacity: 25,
+      startDate: '2025-02-01',
+      endDate: '2025-06-30'
+    })
   },
   {
     id: 'group-2',
     name: 'Evening Group B',
-    modules: [mockModules[0]],
-    teachers: [mockTeamMembers[2]],
+    modules: [mockModules[0], mockModules[2]],
+    teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(1, 3),
     students: mockTeamMembers.filter(m => m.role === 'Student').slice(20, 35),
     maxCapacity: 25,
     startDate: '2025-02-01',
-    endDate: '2025-06-30'
+    endDate: '2025-06-30',
+    ...calculateGroupFinancials({
+      id: 'group-2',
+      name: 'Evening Group B',
+      modules: [mockModules[0], mockModules[2]],
+      teachers: mockTeamMembers.filter(m => m.role === 'Teacher').slice(1, 3),
+      students: mockTeamMembers.filter(m => m.role === 'Student').slice(20, 35),
+      maxCapacity: 25,
+      startDate: '2025-02-01',
+      endDate: '2025-06-30'
+    })
   }
 ];
 
+// Create intakes with assigned groups
 export const mockIntakes: Intake[] = [
   {
     id: 'intake-1',
     name: 'Spring 2025',
     startDate: '2025-02-01',
     endDate: '2025-06-30',
-    groups: [mockGroups[0], mockGroups[1]],
-    status: 'upcoming'
+    groups: mockGroups,
+    status: 'upcoming',
+    totalStudents: mockGroups.reduce((acc, group) => acc + group.students.length, 0)
   },
   {
     id: 'intake-2',
@@ -943,19 +342,21 @@ export const mockIntakes: Intake[] = [
     startDate: '2025-09-01',
     endDate: '2026-01-31',
     groups: [],
-    status: 'upcoming'
+    status: 'upcoming',
+    totalStudents: 0
   }
 ];
 
+// Create programs with assigned intakes and students
 export const mockProjects: Program[] = [
   {
     id: '1',
     name: 'Computer Entrepreneurship Bachelor',
     description: 'Comprehensive program combining computer science and business skills',
     progress: 85,
-    intakes: [mockIntakes[0], mockIntakes[1]],
+    intakes: mockIntakes,
     director: mockTeamMembers[0],
-    studentCount: 45,
+    studentCount: mockIntakes.reduce((acc, intake) => acc + intake.totalStudents, 0),
     students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 45),
     avgScore: 88
   },
@@ -966,21 +367,17 @@ export const mockProjects: Program[] = [
     progress: 60,
     intakes: [mockIntakes[0]],
     director: mockTeamMembers[1],
-    studentCount: 30,
+    studentCount: mockIntakes[0].totalStudents,
     students: mockTeamMembers.filter(m => m.role === 'Student').slice(45, 75),
     avgScore: 92
   }
 ];
 
-// Generate additional students
-const additionalStudents = generateStudents(43, 200);
 
-// Export the combined team members
-export const mockTeamMembers: TeamMember[] = [
-  ...initialTeamMembers,
-  ...additionalStudents
-];
+// Removed duplicate and unnecessary code blocks
 
+
+//Student scores and other data
 export interface Student {
   id: string;
   name: string;
@@ -1163,153 +560,19 @@ const calculateAverageScore = (students: Student[]) => {
   return Math.round(totalScores / students.length);
 };
 
-export interface Credit {
+
+//Task Data
+export interface Task {
   id: string;
-  value: number;  // Monetary value per credit
-  currency: string;
+  title: string;
+  dueDate: string;
+  priority: 'high' | 'medium' | 'low';
+  completed: boolean;
 }
 
-export interface Module {
-  id: string;
-  name: string;
-  description: string;
-  credits: number;  // Number of credits this module is worth
-  creditValue: Credit;
-  teachers: TeamMember[];
-  totalHours: number;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  modules: Module[];
-  teachers: TeamMember[];
-  students: TeamMember[];
-  maxCapacity: number;
-  startDate: string;
-  endDate: string;
-}
-
-export interface Intake {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  groups: Group[];
-  status: 'upcoming' | 'ongoing' | 'completed';
-}
-
-export interface Program {
-  id: string;
-  name: string;
-  description?: string;
-  progress: number;
-  intakes: Intake[];
-  director: TeamMember;
-  studentCount: number;
-  students: TeamMember[];
-  avgScore: number;
-}
-
-export const mockModules: Module[] = [
-  {
-    id: 'mod-1',
-    name: 'Introduction to Programming',
-    description: 'Foundation course in programming concepts',
-    credits: 6,
-    creditValue: {
-      id: 'credit-1',
-      value: 100,
-      currency: 'EUR'
-    },
-    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
-    totalHours: 48
-  },
-  {
-    id: 'mod-2',
-    name: 'Web Development Fundamentals',
-    description: 'Basic web development technologies',
-    credits: 4,
-    creditValue: {
-      id: 'credit-2',
-      value: 100,
-      currency: 'EUR'
-    },
-    teachers: [mockTeamMembers[2]],
-    totalHours: 32
-  }
-];
-
-export const mockGroups: Group[] = [
-  {
-    id: 'group-1',
-    name: 'Morning Group A',
-    modules: [mockModules[0], mockModules[1]],
-    teachers: [mockTeamMembers[0], mockTeamMembers[1]],
-    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 20),
-    maxCapacity: 25,
-    startDate: '2025-02-01',
-    endDate: '2025-06-30'
-  },
-  {
-    id: 'group-2',
-    name: 'Evening Group B',
-    modules: [mockModules[0]],
-    teachers: [mockTeamMembers[2]],
-    students: mockTeamMembers.filter(m => m.role === 'Student').slice(20, 35),
-    maxCapacity: 25,
-    startDate: '2025-02-01',
-    endDate: '2025-06-30'
-  }
-];
-
-export const mockIntakes: Intake[] = [
-  {
-    id: 'intake-1',
-    name: 'Spring 2025',
-    startDate: '2025-02-01',
-    endDate: '2025-06-30',
-    groups: [mockGroups[0], mockGroups[1]],
-    status: 'upcoming'
-  },
-  {
-    id: 'intake-2',
-    name: 'Fall 2025',
-    startDate: '2025-09-01',
-    endDate: '2026-01-31',
-    groups: [],
-    status: 'upcoming'
-  }
-];
-
-export const mockProjects: Program[] = [
+export const mockTasks: Task[] = [
   {
     id: '1',
-    name: 'Computer Entrepreneurship Bachelor',
-    description: 'Comprehensive program combining computer science and business skills',
-    progress: 85,
-    intakes: [mockIntakes[0], mockIntakes[1]],
-    director: mockTeamMembers[0],
-    studentCount: 45,
-    students: mockTeamMembers.filter(m => m.role === 'Student').slice(0, 45),
-    avgScore: 88
-  },
-  {
-    id: '2',
-    name: 'Bootcamp en Diseño UX/UI',
-    description: 'Intensive UX/UI design program',
-    progress: 60,
-    intakes: [mockIntakes[0]],
-    director: mockTeamMembers[1],
-    studentCount: 30,
-    students: mockTeamMembers.filter(m => m.role === 'Student').slice(45, 75),
-    avgScore: 92
-  }
-];
-
-export const mockTasks = [
-  {
-    id:'1',
     title: 'Finish monthly reporting',
     dueDate: 'Today',
     priority: 'high',
@@ -1331,6 +594,7 @@ export const mockTasks = [
   }
 ];
 
+//Invoice Data
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -1704,7 +968,7 @@ export const mockInvoices: Invoice[] = [
     qrCode: 'https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-004',
     auditTrail: [
       {
-        timestamp: '2025-01-16T10:00:00Z',
+        timestamp: ''2025-01-16T10:00:00Z',
         action: 'created',
         actor: 'Dana R.',
         details: 'Invoice created'
@@ -1765,6 +1029,7 @@ export const mockInvoices: Invoice[] = [
   }
 ];
 
+//Skill and Competency Data
 export interface Skill {
   id: string;
   name: string;
@@ -1843,3 +1108,8 @@ export const competencyLevels: CompetencyLevel[] = [
     color: 'bg-emerald-200 hover:bg-emerald-300'
   }
 ];
+export const statusOptions2 = {
+    Student: ['Enrolled', 'Graduated', 'Withdrawn', 'Dismissed', 'Deferred', 'Alumni', 'Suspended', 'Prospective', 'Pending Enrollment', 'Audit', 'Exchange', 'Interning', 'Dropped Out'],
+    Staff: ['Active', 'Inactive', 'Terminated', 'On Probation', 'Retired', 'Contractual', 'Resigned', 'On Leave', 'Suspended', 'Pending Approval'],
+    Teacher: ['Active', 'Inactive', 'Retired', 'Adjunct', 'Visiting', 'Probationary', 'On Leave', 'Suspended', 'Resigned', 'Contractual']
+};
