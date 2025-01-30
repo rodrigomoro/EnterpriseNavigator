@@ -47,8 +47,6 @@ const formSchema = z.object({
   description: z.string(),
   progress: z.number().min(0).max(100),
   directorIds: z.array(z.string()).min(1, "At least one director is required"),
-  teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
-  studentIds: z.array(z.string()),
   intakes: z.array(intakeSchema).min(1, "At least one intake is required"),
 });
 
@@ -84,8 +82,6 @@ export default function ManageProgram() {
       description: programData?.description ?? "",
       progress: programData?.progress ?? 0,
       directorIds: programData ? [programData.director.id] : [],
-      teacherIds: programData ? programData.team.map((t) => t.id) : [],
-      studentIds: programData ? programData.students.map(s => s.id) : [],
       intakes: programData?.intakes ?? [{
         name: "Default Intake",
         startDate: "",
@@ -248,11 +244,7 @@ export default function ManageProgram() {
                           </FormItem>
                         )}
                       />
-                    </div>
-                  </FormSection>
 
-                  <FormSection title="Staff Assignment">
-                    <div className="space-y-4">
                       <FormField
                         control={form.control}
                         name="directorIds"
@@ -271,30 +263,11 @@ export default function ManageProgram() {
                           </FormItem>
                         )}
                       />
-
-                      <FormField
-                        control={form.control}
-                        name="teacherIds"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Program Teachers</FormLabel>
-                            <FormControl>
-                              <PeoplePicker
-                                people={teachers}
-                                selectedIds={field.value}
-                                onChange={field.onChange}
-                                placeholder="Select program teachers"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                   </FormSection>
                 </div>
 
-                {/* Column 2: Intakes & Students */}
+                {/* Column 2: Intakes Management */}
                 <div className="space-y-6">
                   <FormSection title="Program Intakes">
                     <div className="space-y-4">
@@ -535,25 +508,6 @@ export default function ManageProgram() {
                                       </FormItem>
                                     )}
                                   />
-
-                                  <FormField
-                                    control={form.control}
-                                    name={`intakes.${intakeIndex}.groups.${groupIndex}.studentIds`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Group Students</FormLabel>
-                                        <FormControl>
-                                          <PeoplePicker
-                                            people={students}
-                                            selectedIds={field.value}
-                                            onChange={field.onChange}
-                                            placeholder="Select group students"
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
                                 </div>
                               ))}
                             </div>
@@ -561,27 +515,6 @@ export default function ManageProgram() {
                         ))}
                       </ScrollArea>
                     </div>
-                  </FormSection>
-
-                  <FormSection title="Students">
-                    <FormField
-                      control={form.control}
-                      name="studentIds"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Program Students</FormLabel>
-                          <FormControl>
-                            <PeoplePicker
-                              people={students}
-                              selectedIds={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select program students"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </FormSection>
                 </div>
               </div>
