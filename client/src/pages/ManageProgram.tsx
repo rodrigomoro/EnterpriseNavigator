@@ -17,9 +17,18 @@ import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
+
+// Define intake schema
+const intakeSchema = z.object({
+  name: z.string().min(1, "Intake name is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  maxStudents: z.number().min(1, "Maximum number of students is required"),
+  status: z.enum(["Open", "Closed", "In Progress"]),
+});
 
 const formSchema = z.object({
   name: z.string().min(1, "Program name is required"),
@@ -28,9 +37,11 @@ const formSchema = z.object({
   directorIds: z.array(z.string()).min(1, "At least one director is required"),
   teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
   studentIds: z.array(z.string()),
+  intakes: z.array(intakeSchema).min(1, "At least one intake is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type IntakeFormValues = z.infer<typeof intakeSchema>;
 
 export default function ManageProgram() {
   const params = useParams();
@@ -62,11 +73,17 @@ export default function ManageProgram() {
       directorIds: programData ? [programData.director.id] : [],
       teacherIds: programData ? programData.team.map((t) => t.id) : [],
       studentIds: programData ? programData.students.map(s => s.id) : [],
+      intakes: programData?.intakes ?? [{
+        name: "Default Intake",
+        startDate: "",
+        endDate: "",
+        maxStudents: 30,
+        status: "Open"
+      }],
     },
   });
 
   const onSubmit = async (data: FormValues) => {
-    // In a real app, this would be an API call
     console.log("Form submitted:", data);
     toast({
       title: isEdit ? "Program Updated" : "Program Created",
@@ -80,6 +97,25 @@ export default function ManageProgram() {
     navigate("/programs");
     return null;
   }
+
+  const addIntake = () => {
+    const currentIntakes = form.getValues("intakes") || [];
+    form.setValue("intakes", [
+      ...currentIntakes,
+      {
+        name: `Intake ${currentIntakes.length + 1}`,
+        startDate: "",
+        endDate: "",
+        maxStudents: 30,
+        status: "Open"
+      }
+    ]);
+  };
+
+  const removeIntake = (index: number) => {
+    const currentIntakes = form.getValues("intakes");
+    form.setValue("intakes", currentIntakes.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -107,7 +143,7 @@ export default function ManageProgram() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 {/* Column 1: Basic Information */}
                 <div className="space-y-6">
                   <FormSection title="General Information">
@@ -177,11 +213,8 @@ export default function ManageProgram() {
                       />
                     </div>
                   </FormSection>
-                </div>
 
-                {/* Column 2: Directors & Teachers */}
-                <div className="space-y-6">
-                  <FormSection title="Directors & Teachers">
+                  <FormSection title="Staff Assignment">
                     <div className="space-y-4">
                       <FormField
                         control={form.control}
@@ -224,8 +257,143 @@ export default function ManageProgram() {
                   </FormSection>
                 </div>
 
-                {/* Column 3: Students */}
+                {/* Column 2: Intakes & Students */}
                 <div className="space-y-6">
+                  <FormSection title="Program Intakes">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium">Manage Intakes</h3>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addIntake}
+                          className="gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add Intake
+                        </Button>
+                      </div>
+
+                      {form.watch("intakes")?.map((intake, index) => (
+                        <div
+                          key={index}
+                          className="border rounded-lg p-4 space-y-4 relative"
+                        >
+                          {index > 0 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => removeIntake(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+
+                          <FormField
+                            control={form.control}
+                            name={`intakes.${index}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Intake Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} className="bg-white" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`intakes.${index}.startDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Start Date</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      {...field}
+                                      className="bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`intakes.${index}.endDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>End Date</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      {...field}
+                                      className="bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`intakes.${index}.maxStudents`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Max Students</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      {...field}
+                                      onChange={(e) =>
+                                        field.onChange(parseInt(e.target.value))
+                                      }
+                                      className="bg-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`intakes.${index}.status`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Status</FormLabel>
+                                  <FormControl>
+                                    <select
+                                      {...field}
+                                      className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
+                                    >
+                                      <option value="Open">Open</option>
+                                      <option value="Closed">Closed</option>
+                                      <option value="In Progress">
+                                        In Progress
+                                      </option>
+                                    </select>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </FormSection>
+
                   <FormSection title="Students">
                     <FormField
                       control={form.control}
