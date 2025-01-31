@@ -17,9 +17,8 @@ import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, X, ArrowLeft, Pencil, Copy, Clipboard } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowLeft, Globe, AlertCircle, Database, ChevronDown, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -37,6 +36,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import {Checkbox} from "@/components/ui/checkbox";
 
 // Constants for schedule
@@ -968,24 +972,38 @@ export default function ManageProgram() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <h3 className="text-sm font-medium">Manage Intakes</h3>
-                        <Button type="button" onClick={addIntake}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addIntake}
+                          className="mb-4"
+                        >
                           Add Intake
                         </Button>
                       </div>
                       <div className="space-y-4">
-                        {(form.watch("intakes") || []).map((intake, intakeIndex) => (
-                          <Card key={intakeIndex}>
-                            <CardContent className="p-4 relative">
+                        {form.watch("intakes")?.map((intake, intakeIndex) => (
+                          <Collapsible key={intakeIndex} className="border rounded-lg">
+                            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
+                              <div className="flex items-center gap-2">
+                                <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-90" />
+                                <span className="font-medium">Intake {intakeIndex + 1}</span>
+                              </div>
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="absolute top-2 right-2"
-                                onClick={() => removeIntake(intakeIndex)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeIntake(intakeIndex);
+                                }}
+                                className="hover:bg-destructive/10 hover:text-destructive"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
-
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="p-4 pt-0">
                               <div className="space-y-6">
                                 <ScheduleSection
                                   form={form}
@@ -1008,18 +1026,28 @@ export default function ManageProgram() {
                                   <div className="space-y-4">
                                     {(form.watch(`intakes.${intakeIndex}.groups`) || []).map(
                                       (group, groupIndex) => (
-                                        <Card key={groupIndex}>
-                                          <CardContent className="p-4 relative">
+                                        <Collapsible key={groupIndex} className="border rounded-lg">
+                                          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
+                                            <div className="flex items-center gap-2">
+                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-90" />
+                                              <span className="font-medium">
+                                                {group.name || `Group ${groupIndex + 1}`}
+                                              </span>
+                                            </div>
                                             <Button
                                               type="button"
                                               variant="ghost"
                                               size="sm"
-                                              className="absolute top-2 right-2"
-                                              onClick={() => removeGroup(intakeIndex, groupIndex)}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                removeGroup(intakeIndex, groupIndex);
+                                              }}
+                                              className="hover:bg-destructive/10 hover:text-destructive"
                                             >
                                               <X className="h-4 w-4" />
                                             </Button>
-
+                                          </CollapsibleTrigger>
+                                          <CollapsibleContent className="p-4 pt-0">
                                             <div className="space-y-4">
                                               <FormField
                                                 control={form.control}
@@ -1030,97 +1058,97 @@ export default function ManageProgram() {
                                                     <FormControl>
                                                       <Input {...field} className="bg-white" />
                                                     </FormControl>
-                                                                                   <FormMessage />
+                                                    <FormMessage />
                                                   </FormItem>
                                                 )}
-                                              />                                              <div className="space-y-4">
+                                              />
+
+                                              <FormField
+                                                control={form.control}
+                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.status`}
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel>Status</FormLabel>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                      <FormControl>
+                                                        <SelectTrigger>
+                                                          <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                      </FormControl>
+                                                      <SelectContent>
+                                                        {GROUP_STATUS.map((status) => (
+                                                          <SelectItem key={status.value} value={status.value}>
+                                                            {status.label}
+                                                          </SelectItem>
+                                                        ))}
+                                                      </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <div className="grid md:grid-cols-2 gap-4">
                                                 <FormField
                                                   control={form.control}
-                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.status`}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
                                                   render={({ field }) => (
                                                     <FormItem>
-                                                      <FormLabel>Status</FormLabel>
-                                                      <Select onValueChange={field.onChange} value={field.value}>
-                                                        <FormControl>
-                                                          <SelectTrigger>
-                                                            <SelectValue placeholder="Select status" />
-                                                          </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                          {GROUP_STATUS.map((status) => (
-                                                            <SelectItem key={status.value} value={status.value}>
-                                                              {status.label}
-                                                            </SelectItem>
-                                                          ))}
-                                                        </SelectContent>
-                                                      </Select>
+                                                      <FormLabel>Capacity</FormLabel>
+                                                      <FormControl>
+                                                        <Input
+                                                          type="number"
+                                                          {...field}
+                                                          onChange={(e) =>
+                                                            field.onChange(parseInt(e.target.value))
+                                                          }
+                                                          className="bg-white"
+                                                        />
+                                                      </FormControl>
                                                       <FormMessage />
                                                     </FormItem>
                                                   )}
                                                 />
-                                                <div className="grid md:grid-cols-2 gap-4">
-                                                  <FormField
-                                                    control={form.control}
-                                                    name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
-                                                    render={({ field }) => (
-                                                      <FormItem>
-                                                        <FormLabel>Capacity</FormLabel>
-                                                        <FormControl>
-                                                          <Input
-                                                            type="number"
-                                                            {...field}
-                                                            onChange={(e) =>
-                                                              field.onChange(parseInt(e.target.value))
-                                                            }
-                                                            className="bg-white"
-                                                          />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                      </FormItem>
-                                                    )}
-                                                  />
 
-                                                  <FormField
-                                                    control={form.control}
-                                                    name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
-                                                    render={({ field }) => (
-                                                      <FormItem>
-                                                        <FormLabel>Cost per Student</FormLabel>
-                                                        <FormControl>
-                                                          <Input
-                                                            type="number"
-                                                            {...field}
-                                                            onChange={(e) =>
-                                                              field.onChange(parseFloat(e.target.value))
-                                                            }
-                                                            className="bg-white"
-                                                          />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                      </FormItem>
-                                                    )}
-                                                  />
-                                                </div>
-
-                                                <GroupModuleTeacher
-                                                  form={form}
-                                                  intakeIndex={intakeIndex}
-                                                  groupIndex={groupIndex}
-                                                  teachers={teachers}
-                                                  modules={form.watch("modules")}
+                                                <FormField
+                                                  control={form.control}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel>Cost per Student</FormLabel>
+                                                      <FormControl>
+                                                        <Input
+                                                          type="number"
+                                                          {...field}
+                                                          onChange={(e) =>
+                                                            field.onChange(parseFloat(e.target.value))
+                                                          }
+                                                          className="bg-white"
+                                                        />
+                                                      </FormControl>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
                                                 />
-
                                               </div>
+
+                                              <GroupModuleTeacher
+                                                form={form}
+                                                intakeIndex={intakeIndex}
+                                                groupIndex={groupIndex}
+                                                teachers={teachers}
+                                                modules={form.watch("modules")}
+                                              />
                                             </div>
-                                          </CardContent>
-                                        </Card>
+                                          </CollapsibleContent>
+                                        </Collapsible>
                                       )
                                     )}
                                   </div>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
+                            </CollapsibleContent>
+                          </Collapsible>
                         ))}
                       </div>
                     </div>
@@ -1131,13 +1159,13 @@ export default function ManageProgram() {
               <div className="flex justify-end gap-4">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => navigate("/programs")}
                 >
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {isEdit ? "Update Program" : "Create Program"}
+                  {isEdit ? "Save Changes" : "Create Program"}
                 </Button>
               </div>
             </form>
