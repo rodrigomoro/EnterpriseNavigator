@@ -37,6 +37,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {Checkbox} from "@/components/ui/checkbox";
+
+// Constants for schedule
+const WEEKDAYS = [
+  { id: "monday", label: "Monday" },
+  { id: "tuesday", label: "Tuesday" },
+  { id: "wednesday", label: "Wednesday" },
+  { id: "thursday", label: "Thursday" },
+  { id: "friday", label: "Friday" },
+  { id: "saturday", label: "Saturday" },
+  { id: "sunday", label: "Sunday" },
+] as const;
 
 // Constants
 const PROGRAM_AREAS = [
@@ -74,7 +86,6 @@ const moduleSchema = z.object({
   hours: z.number().min(1, "Hours must be at least 1"),
   credits: z.number().min(1, "Credits must be at least 1"),
   costPerCredit: z.number().min(0, "Cost per credit must be non-negative"),
-  teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
 });
 
 type ModuleType = z.infer<typeof moduleSchema>;
@@ -177,7 +188,7 @@ const ModuleDetailsDialog: React.FC<{
   </DialogContent>
 );
 
-const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, removeModule, teachers }) => (
+const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, removeModule }) => (
   <Card>
     <CardContent className="p-6">
       <FormSection title="Program Modules">
@@ -198,11 +209,10 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
 
           <div className="border rounded-md">
             <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
-              <div className="col-span-3">Module Name</div>
+              <div className="col-span-4">Module Name</div>
               <div className="col-span-2">Hours</div>
               <div className="col-span-2">Credits</div>
-              <div className="col-span-2">Cost/Credit</div>
-              <div className="col-span-2">Teachers</div>
+              <div className="col-span-3">Cost/Credit</div>
               <div className="col-span-1">Actions</div>
             </div>
 
@@ -210,7 +220,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
               <div className="divide-y">
                 {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                   <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
-                    <div className="col-span-3">
+                    <div className="col-span-4">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.name`}
@@ -265,7 +275,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                       />
                     </div>
 
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.costPerCredit`}
@@ -277,26 +287,6 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                                 {...field}
                                 onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                 className="bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.teacherIds`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <PeoplePicker
-                                people={teachers}
-                                selectedIds={field.value}
-                                onChange={field.onChange}
-                                placeholder="Select teachers"
                               />
                             </FormControl>
                             <FormMessage />
@@ -321,7 +311,6 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                           module={module}
                           moduleIndex={moduleIndex}
                           form={form}
-                          teachers={teachers}
                         />
                       </Dialog>
                       <Button
@@ -468,70 +457,71 @@ const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
         )}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`intakes.${intakeIndex}.schedule.weekdayTime.startTime`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Weekday Start Time</FormLabel>
-              <FormControl>
-                <Input type="time" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">Schedule per Day</h4>
+        {WEEKDAYS.map((day, dayIndex) => (
+          <div key={day.id} className="flex items-start gap-4 p-3 rounded-lg border bg-card">
+            <FormField
+              control={form.control}
+              name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="!mt-0 font-medium min-w-[100px]">{day.label}</FormLabel>
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name={`intakes.${intakeIndex}.schedule.weekdayTime.endTime`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Weekday End Time</FormLabel>
-              <FormControl>
-                <Input type="time" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+            <div className="flex-1 grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`intakes.${intakeIndex}.schedule.weekendTime.startTime`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Weekend Start Time</FormLabel>
-              <FormControl>
-                <Input type="time" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name={`intakes.${intakeIndex}.schedule.weekendTime.endTime`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Weekend End Time</FormLabel>
-              <FormControl>
-                <Input type="time" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-// Main Form Schema
+// Update schema to include per-day schedules
 const formSchema = z.object({
   name: z.string().min(1, "Program name is required"),
   area: z.string().min(1, "Area is required"),
@@ -544,30 +534,83 @@ const formSchema = z.object({
   whyChoose: z.string(),
   careerOpportunities: z.string(),
   certifications: z.string(),
-  modules: z.array(moduleSchema).min(1, "At least one module is required"),
+  modules: z.array(moduleSchema.omit({ teacherIds: true })).min(1, "At least one module is required"),
   intakes: z.array(z.object({
     modality: z.string().min(1, "Modality is required"),
     schedule: z.object({
-      weekdayTime: z.object({
+      days: z.array(z.object({
+        dayId: z.string(),
         startTime: z.string(),
         endTime: z.string(),
-      }),
-      weekendTime: z.object({
-        startTime: z.string(),
-        endTime: z.string(),
-      }),
+        enabled: z.boolean()
+      }))
     }),
     groups: z.array(z.object({
       name: z.string(),
       capacity: z.number(),
       costPerStudent: z.number(),
-      teacherIds: z.array(z.string()),
-      moduleIds: z.array(z.string()) 
+      moduleTeachers: z.array(z.object({
+        moduleId: z.string(),
+        teacherIds: z.array(z.string())
+      }))
     }))
   }))
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+// Group Module-Teacher Mapping Component
+interface GroupModuleTeacherProps {
+  form: any;
+  intakeIndex: number;
+  groupIndex: number;
+  teachers: any[];
+  modules: any[];
+}
+
+const GroupModuleTeacher: React.FC<GroupModuleTeacherProps> = ({
+  form,
+  intakeIndex,
+  groupIndex,
+  teachers,
+  modules
+}) => {
+  return (
+    <div className="space-y-4">
+      <h4 className="text-sm font-medium">Module Teachers</h4>
+      <div className="space-y-4">
+        {modules.map((module, moduleIndex) => (
+          <div key={moduleIndex} className="p-3 rounded-lg border bg-card">
+            <div className="flex items-center gap-2 mb-2">
+              <h5 className="font-medium">{module.name}</h5>
+              <span className="text-sm text-muted-foreground">
+                ({module.credits} credits)
+              </span>
+            </div>
+            <FormField
+              control={form.control}
+              name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleTeachers.${moduleIndex}.teacherIds`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PeoplePicker
+                      people={teachers}
+                      selectedIds={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select teachers for this module"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
 export default function ManageProgram() {
   const [teachers] = useState(mockTeamMembers);
@@ -602,20 +645,17 @@ export default function ManageProgram() {
         syllabus: "",
         hours: 0,
         credits: 0,
-        costPerCredit: 0,
-        teacherIds: [],
+        costPerCredit: 0
       }],
       intakes: [{
         modality: "",
         schedule: {
-          weekdayTime: {
+          days: WEEKDAYS.map(day => ({
+            dayId: day.id,
             startTime: "",
             endTime: "",
-          },
-          weekendTime: {
-            startTime: "",
-            endTime: "",
-          },
+            enabled: false
+          }))
         },
         groups: []
       }]
@@ -635,7 +675,6 @@ export default function ManageProgram() {
         hours: 0,
         credits: 0,
         costPerCredit: 0,
-        teacherIds: []
       }
     ]);
   };
@@ -659,12 +698,16 @@ export default function ManageProgram() {
   );
 
   const addIntake = () => {
-    form.setValue("intakes", [...form.getValues("intakes"), { 
-      groups: [], 
-      modality: "", 
-      schedule: { 
-        weekdayTime: { startTime: "", endTime: "" }, 
-        weekendTime: { startTime: "", endTime: "" } 
+    form.setValue("intakes", [...form.getValues("intakes"), {
+      groups: [],
+      modality: "",
+      schedule: {
+        days: WEEKDAYS.map(day => ({
+          dayId: day.id,
+          startTime: "",
+          endTime: "",
+          enabled: false
+        }))
       }
     }]);
   };
@@ -678,8 +721,7 @@ export default function ManageProgram() {
       name: "",
       capacity: 0,
       costPerStudent: 0,
-      teacherIds: [],
-      moduleIds: [],
+      moduleTeachers: form.watch("modules")?.map(m => ({moduleId: `${form.watch("modules").indexOf(m)}`, teacherIds: []})) || []
     });
     form.setValue("intakes", intakes);
   };
@@ -963,57 +1005,14 @@ export default function ManageProgram() {
                                                 />
                                               </div>
 
-                                              <FormField
-                                                control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.teacherIds`}
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel>Group Teachers</FormLabel>
-                                                    <FormControl>
-                                                      <PeoplePicker
-                                                        people={teachers}
-                                                        selectedIds={field.value}
-                                                        onChange={field.onChange}
-                                                        placeholder="Select group teachers"
-                                                      />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
+                                              <GroupModuleTeacher 
+                                                form={form} 
+                                                intakeIndex={intakeIndex} 
+                                                groupIndex={groupIndex} 
+                                                teachers={teachers} 
+                                                modules={form.watch("modules")} 
                                               />
 
-                                              <FormField
-                                                control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleIds`}
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel>Group Modules</FormLabel>
-                                                    <FormControl>
-                                                      <select
-                                                        multiple
-                                                        {...field}
-                                                        className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                                                        value={field.value}
-                                                        onChange={(e) => {
-                                                          const selectedOptions = Array.from(
-                                                            e.target.selectedOptions
-                                                          ).map((option) => option.value);
-                                                          field.onChange(selectedOptions);
-                                                        }}
-                                                      >
-                                                        {form.watch("modules")?.map((module, idx) => (
-                                                          <option key={idx} value={idx}>
-                                                            {module.name} ({module.credits} credits - ${
-                                                              module.costPerCredit
-                                                            }/credit)
-                                                          </option>
-                                                        ))}
-                                                      </select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
-                                              />
                                             </div>
                                           </CardContent>
                                         </Card>
