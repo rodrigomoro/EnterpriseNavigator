@@ -664,6 +664,7 @@ const formSchema = z.object({
   certifications: z.string(),
   modules: z.array(moduleSchema.omit({ teacherIds: true })).min(1, "At least one module is required"),
   intakes: z.array(z.object({
+    name: z.string(),
     modality: z.string().min(1, "Modality is required"),
     schedule: z.object({
       days: z.array(z.object({
@@ -726,6 +727,7 @@ export default function ManageProgram() {
         costPerCredit: 0
       }],
       intakes: [{
+        name: "",
         modality: "",
         schedule: {
           days: WEEKDAYS.map(day => ({
@@ -777,6 +779,7 @@ export default function ManageProgram() {
 
   const addIntake = () => {
     form.setValue("intakes", [...form.getValues("intakes"), {
+      name: "",
       groups: [],
       modality: "",
       schedule: {
@@ -998,7 +1001,9 @@ export default function ManageProgram() {
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
                               <div className="flex items-center gap-2">
                                 <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-90" />
-                                <span className="font-medium">Intake {intakeIndex + 1}</span>
+                                <span className="font-medium">
+                                  {intake.name || `Intake ${intakeIndex + 1}`}
+                                </span>
                               </div>
                               <Button
                                 type="button"
@@ -1015,7 +1020,48 @@ export default function ManageProgram() {
                             </CollapsibleTrigger>
                             <CollapsibleContent className="p-4 pt-0">
                               <div className="space-y-6">
-                                <ScheduleSection
+                                <div className="grid grid-cols-2 gap-4">
+                                  <FormField
+                                    control={form.control}
+                                    name={`intakes.${intakeIndex}.name`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Name</FormLabel>
+                                        <FormControl>
+                                          <Input {...field} className="bg-white" placeholder="Enter intake name" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name={`intakes.${intakeIndex}.modality`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Modality</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                          <FormControl>
+                                            <SelectTrigger>
+                                              <SelectValue placeholder="Select modality" />
+                                            </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent>
+                                            {MODALITIES.map((modality) => (
+                                              <SelectItem key={modality} value={modality}>
+                                                {modality}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+
+                                <ScheduleSection 
                                   form={form}
                                   intakeIndex={intakeIndex}
                                 />
