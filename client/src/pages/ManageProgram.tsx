@@ -318,28 +318,26 @@ export default function ManageProgram() {
                         </Button>
                       </div>
 
-                      <ScrollArea className="h-[400px] pr-4">
-                        <div className="space-y-6">
-                          {form.watch("modules")?.map((module, moduleIndex) => (
-                            <Card key={moduleIndex}>
-                              <CardContent className="p-6 relative">
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute top-2 right-2"
-                                  onClick={() => removeModule(moduleIndex)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                      <div className="border rounded-md">
+                        <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
+                          <div className="col-span-3">Module Name</div>
+                          <div className="col-span-3">Description</div>
+                          <div className="col-span-1">Credits</div>
+                          <div className="col-span-2">Cost/Credit</div>
+                          <div className="col-span-2">Teachers</div>
+                          <div className="col-span-1"></div>
+                        </div>
 
-                                <div className="space-y-4">
+                        <ScrollArea className="h-[400px]">
+                          <div className="divide-y">
+                            {form.watch("modules")?.map((module, moduleIndex) => (
+                              <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
+                                <div className="col-span-3">
                                   <FormField
                                     control={form.control}
                                     name={`modules.${moduleIndex}.name`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>Module Name</FormLabel>
                                         <FormControl>
                                           <Input {...field} className="bg-white" />
                                         </FormControl>
@@ -347,81 +345,37 @@ export default function ManageProgram() {
                                       </FormItem>
                                     )}
                                   />
+                                </div>
 
+                                <div className="col-span-3">
                                   <FormField
                                     control={form.control}
                                     name={`modules.${moduleIndex}.description`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>Description</FormLabel>
                                         <FormControl>
-                                          <textarea
-                                            className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[80px]"
-                                            placeholder="Enter module description"
-                                            {...field}
-                                          />
+                                          <Input {...field} className="bg-white" />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
                                     )}
                                   />
+                                </div>
 
-                                  <div className="grid md:grid-cols-2 gap-4">
-                                    <FormField
-                                      control={form.control}
-                                      name={`modules.${moduleIndex}.credits`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Credits</FormLabel>
-                                          <FormControl>
-                                            <Input
-                                              type="number"
-                                              {...field}
-                                              onChange={(e) =>
-                                                field.onChange(parseInt(e.target.value))
-                                              }
-                                              className="bg-white"
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-
-                                    <FormField
-                                      control={form.control}
-                                      name={`modules.${moduleIndex}.costPerCredit`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Cost per Credit</FormLabel>
-                                          <FormControl>
-                                            <Input
-                                              type="number"
-                                              {...field}
-                                              onChange={(e) =>
-                                                field.onChange(parseFloat(e.target.value))
-                                              }
-                                              className="bg-white"
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                  </div>
-
+                                <div className="col-span-1">
                                   <FormField
                                     control={form.control}
-                                    name={`modules.${moduleIndex}.teacherIds`}
+                                    name={`modules.${moduleIndex}.credits`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>Module Teachers</FormLabel>
                                         <FormControl>
-                                          <PeoplePicker
-                                            people={teachers}
-                                            selectedIds={field.value}
-                                            onChange={field.onChange}
-                                            placeholder="Select module teachers"
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            onChange={(e) =>
+                                              field.onChange(parseInt(e.target.value))
+                                            }
+                                            className="bg-white"
                                           />
                                         </FormControl>
                                         <FormMessage />
@@ -429,11 +383,65 @@ export default function ManageProgram() {
                                     )}
                                   />
                                 </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      </ScrollArea>
+
+                                <div className="col-span-2">
+                                  <FormField
+                                    control={form.control}
+                                    name={`modules.${moduleIndex}.costPerCredit`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormControl>
+                                          <Input
+                                            type="number"
+                                            {...field}
+                                            onChange={(e) =>
+                                              field.onChange(parseFloat(e.target.value))
+                                            }
+                                            className="bg-white"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+
+                                <div className="col-span-2">
+                                  <FormField
+                                    control={form.control}
+                                    name={`modules.${moduleIndex}.teacherIds`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormControl>
+                                          <PeoplePicker
+                                            people={teachers}
+                                            selectedIds={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="Select teachers"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+
+                                <div className="col-span-1 flex justify-end">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeModule(moduleIndex)}
+                                    className="hover:bg-destructive/10 hover:text-destructive"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </div>
                     </div>
                   </FormSection>
                 </CardContent>
