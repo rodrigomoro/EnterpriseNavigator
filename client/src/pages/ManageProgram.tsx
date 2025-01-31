@@ -19,9 +19,8 @@ import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, X, ArrowLeft, Pencil } from "lucide-react";
+import { Plus, X, ArrowLeft, Pencil, Copy, Clipboard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Sidebar from "@/components/Sidebar";
 import {
   Select,
   SelectContent,
@@ -75,6 +74,15 @@ const MODALITIES = [
   "In Person",
   "Hybrid",
 ];
+
+// Group status options
+const GROUP_STATUS = [
+  { value: "open", label: "Open for Enrollment" },
+  { value: "closed", label: "Closed" },
+  { value: "full", label: "Full" },
+  { value: "waitlist", label: "Waitlist" },
+  { value: "cancelled", label: "Cancelled" },
+] as const;
 
 // Module Schema and Components
 const moduleSchema = z.object({
@@ -430,6 +438,37 @@ interface ScheduleProps {
 }
 
 const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
+  const [copiedSchedule, setCopiedSchedule] = useState<{
+    startTime: string;
+    endTime: string;
+  } | null>(null);
+
+  const { toast } = useToast();
+
+  const copySchedule = (dayIndex: number) => {
+    const day = form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}`);
+    setCopiedSchedule({
+      startTime: day.startTime,
+      endTime: day.endTime
+    });
+    toast({
+      title: "Schedule copied",
+      description: "You can now paste these hours to another day"
+    });
+  };
+
+  const pasteSchedule = (dayIndex: number) => {
+    if (!copiedSchedule) return;
+
+    form.setValue(`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`, copiedSchedule.startTime);
+    form.setValue(`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`, copiedSchedule.endTime);
+
+    toast({
+      title: "Schedule pasted",
+      description: "Hours have been applied to this day"
+    });
+  };
+
   return (
     <div className="space-y-4">
       <FormField
@@ -459,69 +498,152 @@ const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
 
       <div className="space-y-4">
         <h4 className="text-sm font-medium">Schedule per Day</h4>
-        {WEEKDAYS.map((day, dayIndex) => (
-          <div key={day.id} className="flex items-start gap-4 p-3 rounded-lg border bg-card">
-            <FormField
-              control={form.control}
-              name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="!mt-0 font-medium min-w-[100px]">{day.label}</FormLabel>
-                </FormItem>
-              )}
-            />
-
-            <div className="flex-1 grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-7 gap-4"> {/* Changed to grid-cols-7 for better alignment */}
+          {WEEKDAYS.map((day, dayIndex) => (
+            <div key={day.id} className="flex items-start gap-2 p-3 rounded-lg border bg-card">
               <FormField
                 control={form.control}
-                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`}
+                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Time</FormLabel>
+                  <FormItem className="flex items-center space-x-2">
                     <FormControl>
-                      <Input
-                        type="time"
-                        {...field}
-                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormLabel className="!mt-0 font-medium min-w-[80px]">{day.label}</FormLabel>
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Time</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        {...field}
-                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex-1 grid grid-cols-2 gap-2">
+                <FormField
+                  control={form.control}
+                  name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="time"
+                          {...field}
+                          className="h-8"
+                          disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="time"
+                          {...field}
+                          className="h-8"
+                          disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copySchedule(dayIndex)}
+                  className="h-8 w-8 p-0"
+                  disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => pasteSchedule(dayIndex)}
+                  className="h-8 w-8 p-0"
+                  disabled={!copiedSchedule || !form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                >
+                  <Clipboard className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-// Update schema to include per-day schedules
+// Group Module-Teacher Mapping Component
+interface GroupModuleTeacherProps {
+  form: any;
+  intakeIndex: number;
+  groupIndex: number;
+  teachers: any[];
+  modules: any[];
+}
+
+const GroupModuleTeacher: React.FC<GroupModuleTeacherProps> = ({
+  form,
+  intakeIndex,
+  groupIndex,
+  teachers,
+  modules
+}) => {
+  return (
+    <div className="space-y-2">
+      <h4 className="text-sm font-medium">Module Teachers</h4>
+      <div className="border rounded-md">
+        <div className="bg-muted/50 p-2 grid grid-cols-12 gap-2 text-sm font-medium">
+          <div className="col-span-4">Module</div>
+          <div className="col-span-8">Teachers</div>
+        </div>
+        <div className="divide-y">
+          {modules.map((module, moduleIndex) => (
+            <div key={moduleIndex} className="p-2 grid grid-cols-12 gap-2 items-center">
+              <div className="col-span-4">
+                <div className="font-medium">{module.name}</div>
+                <div className="text-sm text-muted-foreground">
+                  {module.credits} credits
+                </div>
+              </div>
+              <div className="col-span-8">
+                <FormField
+                  control={form.control}
+                  name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleTeachers.${moduleIndex}.teacherIds`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <PeoplePicker
+                          people={teachers}
+                          selectedIds={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select teachers"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const formSchema = z.object({
   name: z.string().min(1, "Program name is required"),
   area: z.string().min(1, "Area is required"),
@@ -547,6 +669,7 @@ const formSchema = z.object({
     }),
     groups: z.array(z.object({
       name: z.string(),
+      status: z.string().min(1, "Status is required"),
       capacity: z.number(),
       costPerStudent: z.number(),
       moduleTeachers: z.array(z.object({
@@ -560,57 +683,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 // Group Module-Teacher Mapping Component
-interface GroupModuleTeacherProps {
-  form: any;
-  intakeIndex: number;
-  groupIndex: number;
-  teachers: any[];
-  modules: any[];
-}
-
-const GroupModuleTeacher: React.FC<GroupModuleTeacherProps> = ({
-  form,
-  intakeIndex,
-  groupIndex,
-  teachers,
-  modules
-}) => {
-  return (
-    <div className="space-y-4">
-      <h4 className="text-sm font-medium">Module Teachers</h4>
-      <div className="space-y-4">
-        {modules.map((module, moduleIndex) => (
-          <div key={moduleIndex} className="p-3 rounded-lg border bg-card">
-            <div className="flex items-center gap-2 mb-2">
-              <h5 className="font-medium">{module.name}</h5>
-              <span className="text-sm text-muted-foreground">
-                ({module.credits} credits)
-              </span>
-            </div>
-            <FormField
-              control={form.control}
-              name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleTeachers.${moduleIndex}.teacherIds`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <PeoplePicker
-                      people={teachers}
-                      selectedIds={field.value}
-                      onChange={field.onChange}
-                      placeholder="Select teachers for this module"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 
 export default function ManageProgram() {
   const [teachers] = useState(mockTeamMembers);
@@ -719,6 +791,7 @@ export default function ManageProgram() {
     const intakes = form.getValues("intakes");
     intakes[intakeIndex].groups.push({
       name: "",
+      status: "", // Added status field
       capacity: 0,
       costPerStudent: 0,
       moduleTeachers: form.watch("modules")?.map(m => ({moduleId: `${form.watch("modules").indexOf(m)}`, teacherIds: []})) || []
@@ -737,7 +810,6 @@ export default function ManageProgram() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
       <div className="flex-1 overflow-y-auto">
         <div className="container p-6 max-w-[1200px]">
           <div className="flex justify-between items-center mb-6">
@@ -959,60 +1031,84 @@ export default function ManageProgram() {
                                                     <FormMessage />
                                                   </FormItem>
                                                 )}
-                                              />
-
-                                              <div className="grid md:grid-cols-2 gap-4">
+                                              />                                              <div className="space-y-4">
                                                 <FormField
                                                   control={form.control}
-                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.status`}
                                                   render={({ field }) => (
                                                     <FormItem>
-                                                      <FormLabel>Capacity</FormLabel>
-                                                      <FormControl>
-                                                        <Input
-                                                          type="number"
-                                                          {...field}
-                                                          onChange={(e) =>
-                                                            field.onChange(parseInt(e.target.value))
-                                                          }
-                                                          className="bg-white"
-                                                        />
-                                                      </FormControl>
+                                                      <FormLabel>Status</FormLabel>
+                                                      <Select onValueChange={field.onChange} value={field.value}>
+                                                        <FormControl>
+                                                          <SelectTrigger>
+                                                            <SelectValue placeholder="Select status" />
+                                                          </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                          {GROUP_STATUS.map((status) => (
+                                                            <SelectItem key={status.value} value={status.value}>
+                                                              {status.label}
+                                                            </SelectItem>
+                                                          ))}
+                                                        </SelectContent>
+                                                      </Select>
                                                       <FormMessage />
                                                     </FormItem>
                                                   )}
                                                 />
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                  <FormField
+                                                    control={form.control}
+                                                    name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
+                                                    render={({ field }) => (
+                                                      <FormItem>
+                                                        <FormLabel>Capacity</FormLabel>
+                                                        <FormControl>
+                                                          <Input
+                                                            type="number"
+                                                            {...field}
+                                                            onChange={(e) =>
+                                                              field.onChange(parseInt(e.target.value))
+                                                            }
+                                                            className="bg-white"
+                                                          />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                      </FormItem>
+                                                    )}
+                                                  />
 
-                                                <FormField
-                                                  control={form.control}
-                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
-                                                  render={({ field }) => (
-                                                    <FormItem>
-                                                      <FormLabel>Cost per Student</FormLabel>
-                                                      <FormControl>
-                                                        <Input
-                                                          type="number"
-                                                          {...field}
-                                                          onChange={(e) =>
-                                                            field.onChange(parseFloat(e.target.value))
-                                                          }
-                                                          className="bg-white"
-                                                        />
-                                                      </FormControl>
-                                                      <FormMessage />
-                                                    </FormItem>
-                                                  )}
+                                                  <FormField
+                                                    control={form.control}
+                                                    name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
+                                                    render={({ field }) => (
+                                                      <FormItem>
+                                                        <FormLabel>Cost per Student</FormLabel>
+                                                        <FormControl>
+                                                          <Input
+                                                            type="number"
+                                                            {...field}
+                                                            onChange={(e) =>
+                                                              field.onChange(parseFloat(e.target.value))
+                                                            }
+                                                            className="bg-white"
+                                                          />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                      </FormItem>
+                                                    )}
+                                                  />
+                                                </div>
+
+                                                <GroupModuleTeacher
+                                                  form={form}
+                                                  intakeIndex={intakeIndex}
+                                                  groupIndex={groupIndex}
+                                                  teachers={teachers}
+                                                  modules={form.watch("modules")}
                                                 />
+
                                               </div>
-
-                                              <GroupModuleTeacher 
-                                                form={form} 
-                                                intakeIndex={intakeIndex} 
-                                                groupIndex={groupIndex} 
-                                                teachers={teachers} 
-                                                modules={form.watch("modules")} 
-                                              />
-
                                             </div>
                                           </CardContent>
                                         </Card>
