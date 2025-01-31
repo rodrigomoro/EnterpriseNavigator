@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,6 +23,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Define module schema
 const moduleSchema = z.object({
@@ -32,38 +41,56 @@ const moduleSchema = z.object({
   teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
 });
 
-// Define group schema
-const groupSchema = z.object({
-  name: z.string().min(1, "Group name is required"),
-  capacity: z.number().min(1, "Capacity must be at least 1"),
-  teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
-  moduleIds: z.array(z.string()).min(1, "At least one module is required"),
-  costPerStudent: z.number().min(0, "Cost per student must be non-negative"),
+// Define schedule schema
+const scheduleSchema = z.object({
+  days: z.array(z.string()),
+  startTime: z.string(),
+  endTime: z.string(),
 });
 
-// Update intake schema to include groups
 const intakeSchema = z.object({
   name: z.string().min(1, "Intake name is required"),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   maxStudents: z.number().min(1, "Maximum number of students is required"),
   status: z.enum(["Open", "Closed", "In Progress"]),
-  groups: z.array(groupSchema).optional(),
+  groups: z.array(z.object({
+    name: z.string().min(1, "Group name is required"),
+    capacity: z.number().min(1, "Capacity must be at least 1"),
+    teacherIds: z.array(z.string()).min(1, "At least one teacher is required"),
+    moduleIds: z.array(z.string()).min(1, "At least one module is required"),
+    costPerStudent: z.number().min(0, "Cost per student must be non-negative"),
+  })).optional(),
 });
 
 const formSchema = z.object({
+  // Basic Information
   name: z.string().min(1, "Program name is required"),
-  description: z.string(),
-  progress: z.number().min(0).max(100),
+  area: z.string().min(1, "Area is required"),
+  type: z.string().min(1, "Program type is required"),
+  durationHours: z.number().min(1, "Duration must be at least 1 hour"),
+  modality: z.string().min(1, "Modality is required"),
+  schedule: scheduleSchema,
+
+  // Leadership
   directorIds: z.array(z.string()).min(1, "At least one director is required"),
+
+  // Program Details
+  description: z.string().min(1, "Description is required"),
+  prerequisites: z.string(),
+  targetAudience: z.string().min(1, "Target audience is required"),
+
+  // Career & Certifications
+  objectives: z.string().min(1, "Objectives are required"),
+  whyChoose: z.string(),
+  careerOpportunities: z.string(),
+  certifications: z.string(),
+
+  // Modules and Progress
+  progress: z.number().min(0).max(100),
   modules: z.array(moduleSchema).min(1, "At least one module is required"),
   intakes: z.array(intakeSchema).min(1, "At least one intake is required"),
 });
-
-type FormValues = z.infer<typeof formSchema>;
-type IntakeFormValues = z.infer<typeof intakeSchema>;
-type GroupFormValues = z.infer<typeof groupSchema>;
-type ModuleFormValues = z.infer<typeof moduleSchema>;
 
 export default function ManageProgram() {
   const params = useParams();
@@ -82,13 +109,37 @@ export default function ManageProgram() {
     (member) => member.role === "Teacher" || member.role === "Director",
   );
 
-  const form = useForm<FormValues>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      // Basic Information
       name: programData?.name ?? "",
-      description: programData?.description ?? "",
-      progress: programData?.progress ?? 0,
+      area: programData?.area ?? "",
+      type: programData?.type ?? "",
+      durationHours: programData?.durationHours ?? 0,
+      modality: programData?.modality ?? "",
+      schedule: programData?.schedule ?? {
+        days: [],
+        startTime: "",
+        endTime: "",
+      },
+
+      // Leadership
       directorIds: programData ? [programData.director.id] : [],
+
+      // Program Details
+      description: programData?.description ?? "",
+      prerequisites: programData?.prerequisites ?? "",
+      targetAudience: programData?.targetAudience ?? "",
+
+      // Career & Certifications
+      objectives: programData?.objectives ?? "",
+      whyChoose: programData?.whyChoose ?? "",
+      careerOpportunities: programData?.careerOpportunities ?? "",
+      certifications: programData?.certifications ?? "",
+
+      // Progress and Other Data
+      progress: programData?.progress ?? 0,
       modules: programData?.modules ?? [{
         name: "",
         description: "",
@@ -107,7 +158,7 @@ export default function ManageProgram() {
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", data);
     toast({
       title: isEdit ? "Program Updated" : "Program Created",
@@ -179,6 +230,16 @@ export default function ManageProgram() {
     form.setValue("intakes", currentIntakes.filter((_, i) => i !== index));
   };
 
+  const weekDays = [
+    { label: "Monday", value: "MON" },
+    { label: "Tuesday", value: "TUE" },
+    { label: "Wednesday", value: "WED" },
+    { label: "Thursday", value: "THU" },
+    { label: "Friday", value: "FRI" },
+    { label: "Saturday", value: "SAT" },
+    { label: "Sunday", value: "SUN" },
+  ];
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -203,10 +264,10 @@ export default function ManageProgram() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* General Information - Full Width */}
+              {/* Basic Information */}
               <Card>
                 <CardContent className="p-6">
-                  <FormSection title="General Information">
+                  <FormSection title="Basic Information">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <FormField
@@ -216,9 +277,75 @@ export default function ManageProgram() {
                             <FormItem>
                               <FormLabel>Program Name</FormLabel>
                               <FormControl>
+                                <Input placeholder="Enter program name" {...field} className="bg-white" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="area"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Area</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select area" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="cloud">Cloud Computing</SelectItem>
+                                  <SelectItem value="cybersecurity">Cybersecurity</SelectItem>
+                                  <SelectItem value="data">Data Science</SelectItem>
+                                  <SelectItem value="development">Software Development</SelectItem>
+                                  <SelectItem value="ai">Artificial Intelligence</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Program Type</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="master">Master</SelectItem>
+                                  <SelectItem value="bootcamp">Bootcamp</SelectItem>
+                                  <SelectItem value="course">Course</SelectItem>
+                                  <SelectItem value="certification">Certification Program</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="durationHours"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Duration (hours)</FormLabel>
+                              <FormControl>
                                 <Input
-                                  placeholder="Enter program name"
+                                  type="number"
                                   {...field}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
                                   className="bg-white"
                                 />
                               </FormControl>
@@ -229,71 +356,272 @@ export default function ManageProgram() {
 
                         <FormField
                           control={form.control}
-                          name="description"
+                          name="modality"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
-                              <FormControl>
-                                <textarea
-                                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[80px]"
-                                  placeholder="Enter program description"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="progress"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Progress (%)</FormLabel>
-                              <FormControl>
-                                <div className="flex items-center gap-4">
-                                  <Slider
-                                    min={0}
-                                    max={100}
-                                    step={1}
-                                    value={[field.value]}
-                                    onValueChange={([value]) =>
-                                      field.onChange(value)
-                                    }
-                                    className="flex-1"
-                                  />
-                                  <span className="text-sm font-medium w-12 text-right">
-                                    {field.value}%
-                                  </span>
-                                </div>
-                              </FormControl>
+                              <FormLabel>Modality</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select modality" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="online">Online</SelectItem>
+                                  <SelectItem value="inperson">In Person</SelectItem>
+                                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
 
-                        <FormField
-                          control={form.control}
-                          name="directorIds"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Program Directors</FormLabel>
-                              <FormControl>
-                                <PeoplePicker
-                                  people={directors}
-                                  selectedIds={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Select program directors"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <div className="space-y-4">
+                          <FormLabel>Schedule</FormLabel>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="schedule.days"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Days</FormLabel>
+                                  <div className="flex flex-wrap gap-2">
+                                    {weekDays.map((day) => (
+                                      <FormField
+                                        key={day.value}
+                                        control={form.control}
+                                        name="schedule.days"
+                                        render={({ field }) => (
+                                          <FormItem
+                                            key={day.value}
+                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                          >
+                                            <FormControl>
+                                              <Checkbox
+                                                checked={field.value?.includes(day.value)}
+                                                onCheckedChange={(checked) => {
+                                                  return checked
+                                                    ? field.onChange([...field.value, day.value])
+                                                    : field.onChange(
+                                                        field.value?.filter((value) => value !== day.value)
+                                                      )
+                                                }}
+                                              />
+                                            </FormControl>
+                                            <FormLabel className="text-sm font-normal">
+                                              {day.label}
+                                            </FormLabel>
+                                          </FormItem>
+                                        )}
+                                      />
+                                    ))}
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="schedule.startTime"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Start Time</FormLabel>
+                                  <FormControl>
+                                    <Input type="time" {...field} className="bg-white" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="schedule.endTime"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>End Time</FormLabel>
+                                  <FormControl>
+                                    <Input type="time" {...field} className="bg-white" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
                       </div>
+                    </div>
+                  </FormSection>
+                </CardContent>
+              </Card>
+
+              {/* Leadership */}
+              <Card>
+                <CardContent className="p-6">
+                  <FormSection title="Leadership">
+                    <FormField
+                      control={form.control}
+                      name="directorIds"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Program Director</FormLabel>
+                          <FormControl>
+                            <PeoplePicker
+                              people={directors}
+                              selectedIds={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select program director"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </FormSection>
+                </CardContent>
+              </Card>
+
+              {/* Program Details */}
+              <Card>
+                <CardContent className="p-6">
+                  <FormSection title="Program Details">
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="Enter program description"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="prerequisites"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Prerequisites</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="Enter program prerequisites"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="targetAudience"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Who is it for?</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="Describe the target audience"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </FormSection>
+                </CardContent>
+              </Card>
+
+              {/* Career & Certifications */}
+              <Card>
+                <CardContent className="p-6">
+                  <FormSection title="Career & Certifications">
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="objectives"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Objectives/Training</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="Enter program objectives"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="whyChoose"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Why Choose This Course?</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="Enter reasons to choose this course"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="careerOpportunities"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Career Opportunities</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="List career opportunities"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="certifications"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Certifications Provided</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                placeholder="List certifications provided"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </FormSection>
                 </CardContent>
@@ -675,7 +1003,7 @@ export default function ManageProgram() {
                                                 render={({ field }) => (
                                                   <FormItem>
                                                     <FormLabel>Group Teachers</FormLabel>
-                                                    <FormControl>
+                                                                                                        <FormControl>
                                                       <PeoplePicker
                                                         people={teachers}
                                                         selectedIds={field.value}
@@ -736,13 +1064,13 @@ export default function ManageProgram() {
               <div className="flex justify-end gap-4">
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="outline"
                   onClick={() => navigate("/programs")}
                 >
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {isEdit ? "Save Changes" : "Create Program"}
+                  {isEdit ? "Update Program" : "Create Program"}
                 </Button>
               </div>
             </form>
