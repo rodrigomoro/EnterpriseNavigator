@@ -1050,46 +1050,46 @@ export default function ManageProgram() {
                                           </CollapsibleTrigger>
                                           <CollapsibleContent className="p-4 pt-0">
                                             <div className="space-y-4">
-                                              <FormField
-                                                control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.name`}
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel>Group Name</FormLabel>
-                                                    <FormControl>
-                                                      <Input {...field} className="bg-white" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
-                                              />
-
-                                              <FormField
-                                                control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.status`}
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel>Status</FormLabel>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                              <div className="grid grid-cols-4 gap-4">
+                                                <FormField
+                                                  control={form.control}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.name`}
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel>Group Name</FormLabel>
                                                       <FormControl>
-                                                        <SelectTrigger>
-                                                          <SelectValue placeholder="Select status" />
-                                                        </SelectTrigger>
+                                                        <Input {...field} className="bg-white" />
                                                       </FormControl>
-                                                      <SelectContent>
-                                                        {GROUP_STATUS.map((status) => (
-                                                          <SelectItem key={status.value} value={status.value}>
-                                                            {status.label}
-                                                          </SelectItem>
-                                                        ))}
-                                                      </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
-                                              />
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
 
-                                              <div className="grid md:grid-cols-2 gap-4">
+                                                <FormField
+                                                  control={form.control}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.status`}
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel>Status</FormLabel>
+                                                      <Select onValueChange={field.onChange} value={field.value}>
+                                                        <FormControl>
+                                                          <SelectTrigger>
+                                                            <SelectValue placeholder="Select status" />
+                                                          </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                          {GROUP_STATUS.map((status) => (
+                                                            <SelectItem key={status.value} value={status.value}>
+                                                              {status.label}
+                                                            </SelectItem>
+                                                          ))}
+                                                        </SelectContent>
+                                                      </Select>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
+
                                                 <FormField
                                                   control={form.control}
                                                   name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
