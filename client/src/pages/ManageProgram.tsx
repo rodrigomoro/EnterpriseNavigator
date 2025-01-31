@@ -18,18 +18,17 @@ import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, X, ArrowLeft } from "lucide-react";
+import { Plus, X, ArrowLeft, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
-import UserAvatar from "@/components/UserAvatar";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Define module schema with new fields
 const moduleSchema = z.object({
@@ -53,6 +52,95 @@ interface ModulesSectionProps {
   teachers: any[];
 }
 
+const ModuleDetailsDialog: React.FC<{
+  module: ModuleType;
+  moduleIndex: number;
+  form: any;
+  teachers: any[];
+}> = ({ module, moduleIndex, form, teachers }) => (
+  <DialogContent className="max-w-2xl">
+    <DialogHeader>
+      <DialogTitle>Module Details</DialogTitle>
+      <DialogDescription>
+        View and edit detailed information about this module
+      </DialogDescription>
+    </DialogHeader>
+    <div className="grid gap-4 py-4">
+      <FormField
+        control={form.control}
+        name={`modules.${moduleIndex}.description`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <textarea
+                {...field}
+                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                placeholder="Module description"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`modules.${moduleIndex}.competencies`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Competencies</FormLabel>
+            <FormControl>
+              <textarea
+                {...field}
+                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                placeholder="Key competencies"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`modules.${moduleIndex}.tools`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Tools</FormLabel>
+            <FormControl>
+              <textarea
+                {...field}
+                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                placeholder="Required tools"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`modules.${moduleIndex}.syllabus`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Syllabus</FormLabel>
+            <FormControl>
+              <textarea
+                {...field}
+                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                placeholder="Module syllabus"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  </DialogContent>
+);
+
 const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, removeModule, teachers }) => (
   <Card>
     <CardContent className="p-6">
@@ -74,21 +162,19 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
 
           <div className="border rounded-md">
             <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
-              <div className="col-span-2">Module Name</div>
-              <div className="col-span-2">Competencies</div>
-              <div className="col-span-2">Tools</div>
-              <div className="col-span-2">Syllabus</div>
-              <div className="col-span-1">Hours</div>
-              <div className="col-span-1">Credits</div>
-              <div className="col-span-1">Cost/Credit</div>
-              <div className="col-span-1"></div>
+              <div className="col-span-3">Module Name</div>
+              <div className="col-span-2">Hours</div>
+              <div className="col-span-2">Credits</div>
+              <div className="col-span-2">Cost/Credit</div>
+              <div className="col-span-2">Teachers</div>
+              <div className="col-span-1">Actions</div>
             </div>
 
             <ScrollArea className="h-[400px]">
               <div className="divide-y">
                 {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                   <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.name`}
@@ -104,55 +190,6 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                     </div>
 
                     <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.competencies`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} className="bg-white" placeholder="Key competencies" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.tools`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} className="bg-white" placeholder="Required tools" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.syllabus`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <textarea
-                                {...field}
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm h-[38px] resize-none"
-                                placeholder="Module syllabus"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-1">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.hours`}
@@ -172,7 +209,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                       />
                     </div>
 
-                    <div className="col-span-1">
+                    <div className="col-span-2">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.credits`}
@@ -192,7 +229,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                       />
                     </div>
 
-                    <div className="col-span-1">
+                    <div className="col-span-2">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.costPerCredit`}
@@ -212,7 +249,45 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                       />
                     </div>
 
-                    <div className="col-span-1 flex justify-end">
+                    <div className="col-span-2">
+                      <FormField
+                        control={form.control}
+                        name={`modules.${moduleIndex}.teacherIds`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <PeoplePicker
+                                people={teachers}
+                                selectedIds={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select teachers"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-1 flex justify-end gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-primary/10 hover:text-primary"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <ModuleDetailsDialog
+                          module={module}
+                          moduleIndex={moduleIndex}
+                          form={form}
+                          teachers={teachers}
+                        />
+                      </Dialog>
                       <Button
                         type="button"
                         variant="ghost"
@@ -599,7 +674,7 @@ export default function ManageProgram() {
                 </CardContent>
               </Card>
 
-              <ModulesSection 
+              <ModulesSection
                 form={form}
                 addModule={addModule}
                 removeModule={removeModule}
