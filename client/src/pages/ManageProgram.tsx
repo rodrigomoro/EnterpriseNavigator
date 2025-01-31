@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Globe, AlertCircle, Database, ChevronDown, ChevronRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus, X, ArrowLeft, Pencil, Copy, Clipboard, ChevronDown, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -40,8 +41,8 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {Checkbox} from "@/components/ui/checkbox";
+} from "@/components/ui/collapsible";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Constants for schedule
 const WEEKDAYS = [
@@ -799,7 +800,7 @@ export default function ManageProgram() {
       status: "", // Added status field
       capacity: 0,
       costPerStudent: 0,
-      moduleTeachers: form.watch("modules")?.map(m => ({moduleId: `${form.watch("modules").indexOf(m)}`, teacherIds: []})) || []
+      moduleTeachers: form.watch("modules")?.map(m => ({ moduleId: `${form.watch("modules").indexOf(m)}`, teacherIds: [] })) || []
     });
     form.setValue("intakes", intakes);
   };
