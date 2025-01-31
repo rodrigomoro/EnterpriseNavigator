@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, X, ArrowLeft, Pencil, Copy, Clipboard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Sidebar from "@/components/Sidebar";
 import {
   Select,
   SelectContent,
@@ -498,9 +499,9 @@ const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
 
       <div className="space-y-4">
         <h4 className="text-sm font-medium">Schedule per Day</h4>
-        <div className="grid grid-cols-7 gap-4"> {/* Changed to grid-cols-7 for better alignment */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {WEEKDAYS.map((day, dayIndex) => (
-            <div key={day.id} className="flex items-start gap-2 p-3 rounded-lg border bg-card">
+            <div key={day.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
               <FormField
                 control={form.control}
                 name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
@@ -810,6 +811,7 @@ export default function ManageProgram() {
 
   return (
     <div className="flex min-h-screen bg-background">
+      <Sidebar />
       <div className="flex-1 overflow-y-auto">
         <div className="container p-6 max-w-[1200px]">
           <div className="flex justify-between items-center mb-6">
@@ -1028,7 +1030,7 @@ export default function ManageProgram() {
                                                     <FormControl>
                                                       <Input {...field} className="bg-white" />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                                                   <FormMessage />
                                                   </FormItem>
                                                 )}
                                               />                                              <div className="space-y-4">
