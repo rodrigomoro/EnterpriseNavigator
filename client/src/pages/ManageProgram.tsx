@@ -58,86 +58,88 @@ const ModuleDetailsDialog: React.FC<{
   form: any;
   teachers: any[];
 }> = ({ module, moduleIndex, form, teachers }) => (
-  <DialogContent className="max-w-2xl">
-    <DialogHeader>
+  <DialogContent className="max-w-4xl h-[90vh]">
+    <DialogHeader className="px-6 py-4 border-b">
       <DialogTitle>Module Details</DialogTitle>
       <DialogDescription>
         View and edit detailed information about this module
       </DialogDescription>
     </DialogHeader>
-    <div className="grid gap-4 py-4">
-      <FormField
-        control={form.control}
-        name={`modules.${moduleIndex}.description`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <textarea
-                {...field}
-                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                placeholder="Module description"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <ScrollArea className="px-6 py-4 h-[calc(90vh-8rem)]">
+      <div className="grid gap-6">
+        <FormField
+          control={form.control}
+          name={`modules.${moduleIndex}.description`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Module description"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name={`modules.${moduleIndex}.competencies`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Competencies</FormLabel>
-            <FormControl>
-              <textarea
-                {...field}
-                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                placeholder="Key competencies"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        <FormField
+          control={form.control}
+          name={`modules.${moduleIndex}.competencies`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Competencies</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Key competencies"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name={`modules.${moduleIndex}.tools`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Tools</FormLabel>
-            <FormControl>
-              <textarea
-                {...field}
-                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                placeholder="Required tools"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        <FormField
+          control={form.control}
+          name={`modules.${moduleIndex}.tools`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tools</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Required tools"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name={`modules.${moduleIndex}.syllabus`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Syllabus</FormLabel>
-            <FormControl>
-              <textarea
-                {...field}
-                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                placeholder="Module syllabus"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
+        <FormField
+          control={form.control}
+          name={`modules.${moduleIndex}.syllabus`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Syllabus</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Module syllabus"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </ScrollArea>
   </DialogContent>
 );
 
