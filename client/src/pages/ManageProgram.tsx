@@ -206,7 +206,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
               <div className="col-span-1">Actions</div>
             </div>
 
-            <ScrollArea className="h-[400px]">
+            <ScrollArea className="h-[250px]">
               <div className="divide-y">
                 {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                   <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
@@ -720,7 +720,7 @@ export default function ManageProgram() {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-6">
-                    <FormSection title="Program Details" />
+                    <b>Program Details</b>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
