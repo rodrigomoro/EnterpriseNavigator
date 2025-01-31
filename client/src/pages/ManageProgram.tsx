@@ -795,13 +795,22 @@ export default function ManageProgram() {
   };
   const addGroup = (intakeIndex: number) => {
     const intakes = form.getValues("intakes");
+    const modules = form.getValues("modules") || [];
+
+    // Initialize moduleTeachers with empty arrays for teacherIds
+    const moduleTeachers = modules.map((_, index) => ({
+      moduleId: `${index}`,
+      teacherIds: [] // Ensure teacherIds is always an empty array
+    }));
+
     intakes[intakeIndex].groups.push({
       name: "",
-      status: "", // Added status field
+      status: "",
       capacity: 0,
       costPerStudent: 0,
-      moduleTeachers: form.watch("modules")?.map(m => ({ moduleId: `${form.watch("modules").indexOf(m)}`, teacherIds: [] })) || []
+      moduleTeachers
     });
+
     form.setValue("intakes", intakes);
   };
   const removeGroup = (intakeIndex: number, groupIndex: number) => {

@@ -26,7 +26,7 @@ interface Person {
 
 interface Props {
   people: Person[];
-  selectedIds: string[];
+  selectedIds?: string[];
   onChange: (ids: string[]) => void;
   placeholder?: string;
   className?: string;
@@ -35,7 +35,7 @@ interface Props {
 
 export default function PeoplePicker({
   people,
-  selectedIds,
+  selectedIds = [], // Provide default empty array
   onChange,
   placeholder = "Select people...",
   className,
@@ -44,7 +44,8 @@ export default function PeoplePicker({
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  const selected = people.filter(person => selectedIds.includes(person.id));
+  // Filter selected people only if people array exists
+  const selected = people?.filter(person => selectedIds?.includes(person.id)) || [];
 
   const handleSelect = (personId: string) => {
     if (multiple) {
@@ -92,7 +93,7 @@ export default function PeoplePicker({
             <CommandEmpty>No person found.</CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-auto">
               {people
-                .filter(person =>
+                ?.filter(person =>
                   person.name.toLowerCase().includes(inputValue.toLowerCase()) ||
                   person.role.toLowerCase().includes(inputValue.toLowerCase())
                 )
@@ -113,7 +114,7 @@ export default function PeoplePicker({
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        selectedIds.includes(person.id) ? "opacity-100" : "opacity-0"
+                        selectedIds?.includes(person.id) ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
