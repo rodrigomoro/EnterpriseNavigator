@@ -477,113 +477,86 @@ const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
 
   return (
     <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name={`intakes.${intakeIndex}.modality`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Modality</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select modality" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {MODALITIES.map((modality) => (
-                  <SelectItem key={modality} value={modality}>
-                    {modality}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <h4 className="text-sm font-medium">Schedule per Day</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {WEEKDAYS.map((day, dayIndex) => (
+          <div key={day.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
+            <FormField
+              control={form.control}
+              name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="!mt-0 font-medium min-w-[80px]">{day.label}</FormLabel>
+                </FormItem>
+              )}
+            />
 
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium">Schedule per Day</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {WEEKDAYS.map((day, dayIndex) => (
-            <div key={day.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
+            <div className="flex-1 grid grid-cols-2 gap-2">
               <FormField
                 control={form.control}
-                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`}
+                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`}
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
+                  <FormItem>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                      <Input
+                        type="time"
+                        {...field}
+                        className="h-8"
+                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
                       />
                     </FormControl>
-                    <FormLabel className="!mt-0 font-medium min-w-[80px]">{day.label}</FormLabel>
                   </FormItem>
                 )}
               />
 
-              <div className="flex-1 grid grid-cols-2 gap-2">
-                <FormField
-                  control={form.control}
-                  name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.startTime`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          className="h-8"
-                          disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          className="h-8"
-                          disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="flex gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => copySchedule(dayIndex)}
-                  className="h-8 w-8 p-0"
-                  disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => pasteSchedule(dayIndex)}
-                  className="h-8 w-8 p-0"
-                  disabled={!copiedSchedule || !form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
-                >
-                  <Clipboard className="h-4 w-4" />
-                </Button>
-              </div>
+              <FormField
+                control={form.control}
+                name={`intakes.${intakeIndex}.schedule.days.${dayIndex}.endTime`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        className="h-8"
+                        disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
-          ))}
-        </div>
+
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => copySchedule(dayIndex)}
+                className="h-8 w-8 p-0"
+                disabled={!form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => pasteSchedule(dayIndex)}
+                className="h-8 w-8 p-0"
+                disabled={!copiedSchedule || !form.watch(`intakes.${intakeIndex}.schedule.days.${dayIndex}.enabled`)}
+              >
+                <Clipboard className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1061,7 +1034,7 @@ export default function ManageProgram() {
                                   />
                                 </div>
 
-                                <ScheduleSection 
+                                <ScheduleSection
                                   form={form}
                                   intakeIndex={intakeIndex}
                                 />
