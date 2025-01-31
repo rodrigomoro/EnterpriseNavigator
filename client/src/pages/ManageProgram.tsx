@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from "wouter";
+import { Link, useLocation, useParams } from 'wouter';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockProjects } from "@/data/mockData";
@@ -22,6 +23,13 @@ import { Plus, X, ArrowLeft, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,7 +38,33 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Define module schema with new fields
+// Constants
+const PROGRAM_AREAS = [
+  "Cloud Computing",
+  "Cybersecurity",
+  "Data Science",
+  "Web Development",
+  "Mobile Development",
+  "DevOps",
+  "Artificial Intelligence",
+  "Blockchain",
+];
+
+const PROGRAM_TYPES = [
+  "Master",
+  "Bootcamp",
+  "Certificate",
+  "Diploma",
+  "Short Course",
+];
+
+const MODALITIES = [
+  "Online",
+  "In Person",
+  "Hybrid",
+];
+
+// Module Schema and Components
 const moduleSchema = z.object({
   name: z.string().min(1, "Module name is required"),
   description: z.string(),
@@ -311,20 +345,199 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
   </Card>
 );
 
+// Program Details Dialog
+const ProgramDetailsDialog: React.FC<{
+  form: any;
+}> = ({ form }) => (
+  <DialogContent className="max-w-4xl h-[90vh]">
+    <DialogHeader className="px-6 py-4 border-b">
+      <DialogTitle>Career & Certifications</DialogTitle>
+      <DialogDescription>
+        Edit career opportunities and certification details
+      </DialogDescription>
+    </DialogHeader>
+    <ScrollArea className="px-6 py-4 h-[calc(90vh-8rem)]">
+      <div className="grid gap-6">
+        <FormField
+          control={form.control}
+          name="objectives"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Objectives/Training</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Enter program objectives"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="whyChoose"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Why Choose This Course?</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="Enter reasons to choose this course"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="careerOpportunities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Career Opportunities</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="List career opportunities"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="certifications"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Certifications Provided</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="List certifications provided"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </ScrollArea>
+  </DialogContent>
+);
+
+// ScheduleSection Component
+interface ScheduleProps {
+  form: any;
+  intakeIndex: number;
+}
+
+const ScheduleSection: React.FC<ScheduleProps> = ({ form, intakeIndex }) => {
+  return (
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name={`intakes.${intakeIndex}.modality`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Modality</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select modality" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {MODALITIES.map((modality) => (
+                  <SelectItem key={modality} value={modality}>
+                    {modality}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name={`intakes.${intakeIndex}.schedule.weekdayTime.startTime`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Weekday Start Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`intakes.${intakeIndex}.schedule.weekdayTime.endTime`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Weekday End Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name={`intakes.${intakeIndex}.schedule.weekendTime.startTime`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Weekend Start Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`intakes.${intakeIndex}.schedule.weekendTime.endTime`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Weekend End Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Main Form Schema
 const formSchema = z.object({
-  // Basic Information
   name: z.string().min(1, "Program name is required"),
   area: z.string().min(1, "Area is required"),
   type: z.string().min(1, "Program type is required"),
-  durationHours: z.number().min(1, "Duration must be at least 1 hour"),
-  modality: z.string().min(1, "Modality is required"),
-  schedule: z.object({
-    days: z.array(z.string()),
-    startTime: z.string(),
-    endTime: z.string(),
-  }),
-  directorIds: z.array(z.string()).min(1, "At least one director is required"),
   description: z.string().min(1, "Description is required"),
+  directorIds: z.array(z.string()).min(1, "At least one director is required"),
   prerequisites: z.string(),
   targetAudience: z.string().min(1, "Target audience is required"),
   objectives: z.string().min(1, "Objectives are required"),
@@ -333,12 +546,23 @@ const formSchema = z.object({
   certifications: z.string(),
   modules: z.array(moduleSchema).min(1, "At least one module is required"),
   intakes: z.array(z.object({
+    modality: z.string().min(1, "Modality is required"),
+    schedule: z.object({
+      weekdayTime: z.object({
+        startTime: z.string(),
+        endTime: z.string(),
+      }),
+      weekendTime: z.object({
+        startTime: z.string(),
+        endTime: z.string(),
+      }),
+    }),
     groups: z.array(z.object({
       name: z.string(),
       capacity: z.number(),
       costPerStudent: z.number(),
       teacherIds: z.array(z.string()),
-      moduleIds: z.array(z.number()),
+      moduleIds: z.array(z.string()) 
     }))
   }))
 });
@@ -350,19 +574,18 @@ export default function ManageProgram() {
   const { isEdit } = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+
+  // Calculate total duration from modules
+  const calculateTotalDuration = (modules: any[]) => {
+    return modules?.reduce((total, module) => total + (module.hours || 0), 0) || 0;
+  };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       area: "",
       type: "",
-      durationHours: 0,
-      modality: "",
-      schedule: {
-        days: [],
-        startTime: "",
-        endTime: "",
-      },
       directorIds: [],
       description: "",
       prerequisites: "",
@@ -382,7 +605,20 @@ export default function ManageProgram() {
         costPerCredit: 0,
         teacherIds: [],
       }],
-      intakes: [{groups: []}]
+      intakes: [{
+        modality: "",
+        schedule: {
+          weekdayTime: {
+            startTime: "",
+            endTime: "",
+          },
+          weekendTime: {
+            startTime: "",
+            endTime: "",
+          },
+        },
+        groups: []
+      }]
     }
   });
 
@@ -423,13 +659,20 @@ export default function ManageProgram() {
   );
 
   const addIntake = () => {
-    form.setValue("intakes", [...form.getValues("intakes"), { groups: [] }]);
+    form.setValue("intakes", [...form.getValues("intakes"), { 
+      groups: [], 
+      modality: "", 
+      schedule: { 
+        weekdayTime: { startTime: "", endTime: "" }, 
+        weekendTime: { startTime: "", endTime: "" } 
+      }
+    }]);
   };
-  const removeIntake = (index) => {
+  const removeIntake = (index: number) => {
     const intakes = form.getValues("intakes");
     form.setValue("intakes", intakes.filter((_, i) => i !== index));
   };
-  const addGroup = (intakeIndex) => {
+  const addGroup = (intakeIndex: number) => {
     const intakes = form.getValues("intakes");
     intakes[intakeIndex].groups.push({
       name: "",
@@ -440,7 +683,7 @@ export default function ManageProgram() {
     });
     form.setValue("intakes", intakes);
   };
-  const removeGroup = (intakeIndex, groupIndex) => {
+  const removeGroup = (intakeIndex: number, groupIndex: number) => {
     const intakes = form.getValues("intakes");
     intakes[intakeIndex].groups = intakes[intakeIndex].groups.filter(
       (_, i) => i !== groupIndex
@@ -448,6 +691,7 @@ export default function ManageProgram() {
     form.setValue("intakes", intakes);
   };
 
+  const totalDuration = calculateTotalDuration(form.watch("modules"));
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -455,9 +699,14 @@ export default function ManageProgram() {
       <div className="flex-1 overflow-y-auto">
         <div className="container p-6 max-w-[1200px]">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">
-              {isEdit ? "Edit Program" : "Create Program"}
-            </h1>
+            <div>
+              <h1 className="text-3xl font-bold">
+                {isEdit ? "Edit Program" : "Create Program"}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Total Duration: {totalDuration} hours
+              </p>
+            </div>
             <Link href="/programs">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -469,22 +718,105 @@ export default function ManageProgram() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Card>
-                <CardContent>
-                  <FormSection title="Program Details">
-                    <div className="grid grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Program Name</FormLabel>
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-6">
+                    <FormSection title="Program Details" />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Pencil className="h-4 w-4" />
+                          Career & Certifications
+                        </Button>
+                      </DialogTrigger>
+                      <ProgramDetailsDialog form={form} />
+                    </Dialog>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Program Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="bg-white" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="area"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Area</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <Input {...field} className="bg-white" />
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select area" />
+                              </SelectTrigger>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                            <SelectContent>
+                              {PROGRAM_AREAS.map((area) => (
+                                <SelectItem key={area} value={area}>
+                                  {area}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {PROGRAM_TYPES.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="directorIds"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Program Directors</FormLabel>
+                          <FormControl>
+                            <PeoplePicker
+                              people={directors}
+                              selectedIds={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select directors"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="col-span-2">
                       <FormField
                         control={form.control}
                         name="description"
@@ -493,7 +825,7 @@ export default function ManageProgram() {
                             <FormLabel>Description</FormLabel>
                             <FormControl>
                               <textarea
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[200px]"
+                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
                                 placeholder="Enter program description"
                                 {...field}
                               />
@@ -503,9 +835,16 @@ export default function ManageProgram() {
                         )}
                       />
                     </div>
-                  </FormSection>
+                  </div>
                 </CardContent>
               </Card>
+
+              <ModulesSection
+                form={form}
+                addModule={addModule}
+                removeModule={removeModule}
+                teachers={teachers}
+              />
 
               <Card>
                 <CardContent>
@@ -531,55 +870,111 @@ export default function ManageProgram() {
                                 <X className="h-4 w-4" />
                               </Button>
 
-                              <div className="space-y-4">
-                                <Button type="button" onClick={() => addGroup(intakeIndex)}>
-                                  Add Group
-                                </Button>
-                                <div className="space-y-4">
-                                  {(form.watch(`intakes.${intakeIndex}.groups`) || []).map(
-                                    (group, groupIndex) => (
-                                      <Card key={groupIndex}>
-                                        <CardContent className="p-4 relative">
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="absolute top-2 right-2"
-                                            onClick={() => removeGroup(intakeIndex, groupIndex)}
-                                          >
-                                            <X className="h-4 w-4" />
-                                          </Button>
+                              <div className="space-y-6">
+                                <ScheduleSection
+                                  form={form}
+                                  intakeIndex={intakeIndex}
+                                />
 
-                                          <div className="space-y-4">
-                                            <FormField
-                                              control={form.control}
-                                              name={`intakes.${intakeIndex}.groups.${groupIndex}.name`}
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel>Group Name</FormLabel>
-                                                  <FormControl>
-                                                    <Input {...field} className="bg-white" />
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
+                                <div className="pt-4">
+                                  <div className="flex justify-between items-center mb-4">
+                                    <h4 className="font-medium">Groups</h4>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => addGroup(intakeIndex)}
+                                    >
+                                      Add Group
+                                    </Button>
+                                  </div>
 
-                                            <div className="grid md:grid-cols-2 gap-4">
+                                  <div className="space-y-4">
+                                    {(form.watch(`intakes.${intakeIndex}.groups`) || []).map(
+                                      (group, groupIndex) => (
+                                        <Card key={groupIndex}>
+                                          <CardContent className="p-4 relative">
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              className="absolute top-2 right-2"
+                                              onClick={() => removeGroup(intakeIndex, groupIndex)}
+                                            >
+                                              <X className="h-4 w-4" />
+                                            </Button>
+
+                                            <div className="space-y-4">
                                               <FormField
                                                 control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
+                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.name`}
                                                 render={({ field }) => (
                                                   <FormItem>
-                                                    <FormLabel>Capacity</FormLabel>
+                                                    <FormLabel>Group Name</FormLabel>
                                                     <FormControl>
-                                                      <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={(e) =>
-                                                          field.onChange(parseInt(e.target.value))
-                                                        }
-                                                        className="bg-white"
+                                                      <Input {...field} className="bg-white" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <div className="grid md:grid-cols-2 gap-4">
+                                                <FormField
+                                                  control={form.control}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.capacity`}
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel>Capacity</FormLabel>
+                                                      <FormControl>
+                                                        <Input
+                                                          type="number"
+                                                          {...field}
+                                                          onChange={(e) =>
+                                                            field.onChange(parseInt(e.target.value))
+                                                          }
+                                                          className="bg-white"
+                                                        />
+                                                      </FormControl>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
+
+                                                <FormField
+                                                  control={form.control}
+                                                  name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel>Cost per Student</FormLabel>
+                                                      <FormControl>
+                                                        <Input
+                                                          type="number"
+                                                          {...field}
+                                                          onChange={(e) =>
+                                                            field.onChange(parseFloat(e.target.value))
+                                                          }
+                                                          className="bg-white"
+                                                        />
+                                                      </FormControl>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
+                                              </div>
+
+                                              <FormField
+                                                control={form.control}
+                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.teacherIds`}
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel>Group Teachers</FormLabel>
+                                                    <FormControl>
+                                                      <PeoplePicker
+                                                        people={teachers}
+                                                        selectedIds={field.value}
+                                                        onChange={field.onChange}
+                                                        placeholder="Select group teachers"
                                                       />
                                                     </FormControl>
                                                     <FormMessage />
@@ -589,82 +984,42 @@ export default function ManageProgram() {
 
                                               <FormField
                                                 control={form.control}
-                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.costPerStudent`}
+                                                name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleIds`}
                                                 render={({ field }) => (
                                                   <FormItem>
-                                                    <FormLabel>Cost per Student</FormLabel>
+                                                    <FormLabel>Group Modules</FormLabel>
                                                     <FormControl>
-                                                      <Input
-                                                        type="number"
+                                                      <select
+                                                        multiple
                                                         {...field}
-                                                        onChange={(e) =>
-                                                          field.onChange(parseFloat(e.target.value))
-                                                        }
-                                                        className="bg-white"
-                                                      />
+                                                        className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
+                                                        value={field.value}
+                                                        onChange={(e) => {
+                                                          const selectedOptions = Array.from(
+                                                            e.target.selectedOptions
+                                                          ).map((option) => option.value);
+                                                          field.onChange(selectedOptions);
+                                                        }}
+                                                      >
+                                                        {form.watch("modules")?.map((module, idx) => (
+                                                          <option key={idx} value={idx}>
+                                                            {module.name} ({module.credits} credits - ${
+                                                              module.costPerCredit
+                                                            }/credit)
+                                                          </option>
+                                                        ))}
+                                                      </select>
                                                     </FormControl>
                                                     <FormMessage />
                                                   </FormItem>
                                                 )}
                                               />
                                             </div>
-
-                                            <FormField
-                                              control={form.control}
-                                              name={`intakes.${intakeIndex}.groups.${groupIndex}.teacherIds`}
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel>Group Teachers</FormLabel>
-                                                  <FormControl>
-                                                    <PeoplePicker
-                                                      people={teachers}
-                                                      selectedIds={field.value}
-                                                      onChange={field.onChange}
-                                                      placeholder="Select group teachers"
-                                                    />
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
-
-                                            <FormField
-                                              control={form.control}
-                                              name={`intakes.${intakeIndex}.groups.${groupIndex}.moduleIds`}
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel>Group Modules</FormLabel>
-                                                  <FormControl>
-                                                    <select
-                                                      multiple
-                                                      {...field}
-                                                      className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[100px]"
-                                                      value={field.value}
-                                                      onChange={(e) => {
-                                                        const selectedOptions = Array.from(
-                                                          e.target.selectedOptions
-                                                        ).map((option) => option.value);
-                                                        field.onChange(selectedOptions);
-                                                      }}
-                                                    >
-                                                      {form.watch("modules")?.map((module, idx) => (
-                                                        <option key={idx} value={idx}>
-                                                          {module.name} ({module.credits} credits - ${
-                                                            module.costPerCredit
-                                                          }/credit)
-                                                        </option>
-                                                      ))}
-                                                    </select>
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    )
-                                  )}
+                                          </CardContent>
+                                        </Card>
+                                      )
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </CardContent>
@@ -676,92 +1031,6 @@ export default function ManageProgram() {
                 </CardContent>
               </Card>
 
-              <ModulesSection
-                form={form}
-                addModule={addModule}
-                removeModule={removeModule}
-                teachers={teachers}
-              />
-
-              <Card>
-                <CardContent className="p-6">
-                  <FormSection title="Career & Certifications">
-                    <div className="grid grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="objectives"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Objectives/Training</FormLabel>
-                            <FormControl>
-                              <textarea
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[200px]"
-                                placeholder="Enter program objectives"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="whyChoose"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Why Choose This Course?</FormLabel>
-                            <FormControl>
-                              <textarea
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[200px]"
-                                placeholder="Enter reasons to choose this course"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="careerOpportunities"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Career Opportunities</FormLabel>
-                            <FormControl>
-                              <textarea
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[200px]"
-                                placeholder="List career opportunities"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="certifications"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Certifications Provided</FormLabel>
-                            <FormControl>
-                              <textarea
-                                className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[200px]"
-                                placeholder="List certifications provided"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </FormSection>
-                </CardContent>
-              </Card>
               <div className="flex justify-end gap-4">
                 <Button
                   type="button"
