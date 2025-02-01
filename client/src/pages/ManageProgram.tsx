@@ -670,6 +670,13 @@ export default function ManageProgram() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
+  // Managing the expanded state of intake and group sections
+  const [isIntakeExpanded, setIsIntakeExpanded] = useState(false);
+  const [isGroupExpanded, setIsGroupExpanded] = useState(false);
+
+  const toggleIntake = () => setIsIntakeExpanded(!isIntakeExpanded);
+  const toggleGroup = () => setIsGroupExpanded(!isGroupExpanded);
+
   // Calculate total duration from modules
   const calculateTotalDuration = (modules: any[]) => {
     return modules?.reduce((total, module) => total + (module.hours || 0), 0) || 0;
@@ -976,12 +983,12 @@ export default function ManageProgram() {
                           Add Intake
                         </Button>
                       </div>
-                      <div className="space-y-4">
+                      <div className="space-y-4" onClick={toggleIntake}>
                         {form.watch("intakes")?.map((intake, intakeIndex) => (
                           <Collapsible key={intakeIndex} className="border rounded-lg">
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                               <div className="flex items-center gap-2">
-                                <ChevronRight className="h-4 w-4 transition-transform ui-open:rotate-90" />
+                                {isIntakeExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                                 <span className="font-medium">
                                   {intake.name || `Intake ${intakeIndex + 1}`}
                                 </span>
@@ -1062,13 +1069,13 @@ export default function ManageProgram() {
                                     </Button>
                                   </div>
 
-                                  <div className="space-y-4">
+                                  <div className="space-y-4" onClick={toggleGroup}>
                                     {intake.groups?.map((group, groupIndex) => (
                                       <div key={groupIndex}>
                                         <Collapsible className="border rounded-lg">
                                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                                             <div className="flex items-center gap-2">
-                                              <ChevronRight className="h-4 w-4 transition-transform ui-open:rotate-90" />
+                                              {isGroupExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                                               <span className="font-medium">
                                                 {group.name || `Group ${groupIndex + 1}`}
                                               </span>
