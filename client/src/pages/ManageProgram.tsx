@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -43,6 +43,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRoute } from 'wouter';
 
 // Constants for schedule
 const WEEKDAYS = [
@@ -666,9 +667,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function ManageProgram() {
   const [teachers] = useState(mockTeamMembers);
-  const { isEdit } = useParams();
+  const [, params] = useRoute("/programs/:id/edit");
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const isEdit = Boolean(params?.id);
+
+  // Get the program data if in edit mode
+  const program = isEdit ? mockProjects.find(p => p.id === params?.id) : null;
 
   // Managing the expanded state of intake and group sections
   const [isIntakeExpanded, setIsIntakeExpanded] = useState(false);
@@ -685,18 +690,18 @@ export default function ManageProgram() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      area: "",
-      type: "",
-      directorIds: [],
-      description: "",
-      prerequisites: "",
-      targetAudience: "",
-      objectives: "",
-      whyChoose: "",
-      careerOpportunities: "",
-      certifications: "",
-      modules: [{
+      name: program?.name ?? "",
+      area: program?.area ?? "",
+      type: program?.type ?? "",
+      directorIds: program?.director?.map(d => d.id) ?? [],
+      description: program?.description ?? "",
+      prerequisites: program?.prerequisites ?? "",
+      targetAudience: program?.targetAudience ?? "",
+      objectives: program?.objectives ?? "",
+      whyChoose: program?.whyChoose ?? "",
+      careerOpportunities: program?.careerOpportunities ?? "",
+      certifications: program?.certifications ?? "",
+      modules: program?.modules ?? [{
         name: "",
         description: "",
         competencies: "",
@@ -706,7 +711,7 @@ export default function ManageProgram() {
         credits: 0,
         costPerCredit: 0
       }],
-      intakes: [{
+      intakes: program?.intakes ?? [{
         name: "",
         modality: "",
         schedule: {
