@@ -979,11 +979,9 @@ export default function ManageProgram() {
                       <div className="space-y-4">
                         {form.watch("intakes")?.map((intake, intakeIndex) => (
                           <Collapsible key={intakeIndex} className="border rounded-lg">
-                            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
+                            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                               <div className="flex items-center gap-2">
-                                <span className="transform transition-transform duration-200" data-state={open ? "open" : "closed"}>
-                                  <ChevronRight className={`h-4 w-4 ${open ? "rotate-90" : ""}`} />
-                                </span>
+                                <ChevronRight className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-90" />
                                 <span className="font-medium">
                                   {intake.name || `Intake ${intakeIndex + 1}`}
                                 </span>
@@ -999,7 +997,8 @@ export default function ManageProgram() {
                                 className="opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                               >
                                 <X className="h-4 w-4" />
-                              </Button></CollapsibleTrigger>
+                              </Button>
+                            </CollapsibleTrigger>
                             <CollapsibleContent className="p-4 pt-0">
                               <div className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
@@ -1048,28 +1047,28 @@ export default function ManageProgram() {
                                   intakeIndex={intakeIndex}
                                 />
 
-                                <div className="pt-4">
-                                  <div className="flex justify-between items-center mb-4">
-                                    <h4 className="font-medium">Groups</h4>
+                                <div className="space-y-4">
+                                  <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-medium">Manage Groups</h4>
                                     <Button
                                       type="button"
                                       variant="outline"
                                       size="sm"
                                       onClick={() => addGroup(intakeIndex)}
+                                      className="gap-2"
                                     >
+                                      <Plus className="h-4 w-4" />
                                       Add Group
                                     </Button>
                                   </div>
 
                                   <div className="space-y-4">
-                                    {(form.watch(`intakes.${intakeIndex}.groups`) || []).map(
-                                      (group, groupIndex) => (
-                                        <Collapsible key={groupIndex} className="border rounded-lg">
-                                          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
+                                    {intake.groups?.map((group, groupIndex) => (
+                                      <div key={groupIndex}>
+                                        <Collapsible className="border rounded-lg">
+                                          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                                             <div className="flex items-center gap-2">
-                                              <span className="transform transition-transform duration-200" data-state={open ? "open" : "closed"}>
-                                                  <ChevronRight className={`h-4 w-4 ${open ? "rotate-90" : ""}`} />
-                                                </span>
+                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-90" />
                                               <span className="font-medium">
                                                 {group.name || `Group ${groupIndex + 1}`}
                                               </span>
@@ -1182,8 +1181,8 @@ export default function ManageProgram() {
                                             </div>
                                           </CollapsibleContent>
                                         </Collapsible>
-                                      )
-                                    )}
+                                      </div>
+                                    ))}
                                   </div>
                                 </div>
                               </div>
