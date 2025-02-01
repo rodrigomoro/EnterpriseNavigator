@@ -14,7 +14,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockProjects } from "@/data/mockData";
+import { mockTeamMembers, mockPrograms } from "@/data/mockData";
 import { FormSection } from "@/components/ui/FormSection";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Globe, AlertCircle, Database } from "lucide-react";

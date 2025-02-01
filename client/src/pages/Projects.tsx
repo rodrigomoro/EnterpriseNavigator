@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'wouter';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { mockProjects } from '@/data/mockData';
+import { mockPrograms, mockTeamMembers } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,8 @@ export default function Projects() {
       variant: "destructive",
     });
   };
+
+  const teachers = mockTeamMembers.filter(member => member.role === 'teacher');
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -92,7 +94,7 @@ export default function Projects() {
               initial="hidden"
               animate="show"
             >
-              {mockProjects.map((project) => (
+              {mockPrograms.map((project) => (
                 <motion.div key={project.id} variants={item}>
                   <div className="relative group">
                     <div className="block">
@@ -137,17 +139,23 @@ export default function Projects() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-muted-foreground mb-2">Teachers</p>
-                                <div className="flex -space-x-2">
-                                  {project.team.map((member) => (
-                                    <Link key={member.id} href={`/people/${member.id}`}>
-                                      <a onClick={(e) => e.stopPropagation()}>
-                                        <Avatar className="border-2 border-background w-8 h-8">
-                                          <AvatarImage src={member.avatar} alt={member.name} />
-                                          <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
-                                        </Avatar>
-                                      </a>
-                                    </Link>
-                                  ))}
+                                <div className="flex -space-x-2"> 
+                                    {project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).map((moduleTeacher) => {
+                                      return moduleTeacher.teacherIds.map((teacherId) => {
+                                      const teacher = teachers.find(t => t.id === teacherId);
+                                      if (!teacher) return null;
+                                      return (
+                                        <Link key={teacher.id} href={`/people/${teacher.id}`}>
+                                        <a onClick={(e) => e.stopPropagation()}>
+                                          <Avatar className="border-2 border-background w-8 h-8">
+                                          <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                                          <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
+                                          </Avatar>
+                                        </a>
+                                        </Link>
+                                      );
+                                      });
+                                    })}
                                 </div>
                               </div>
                               <div className="text-right">

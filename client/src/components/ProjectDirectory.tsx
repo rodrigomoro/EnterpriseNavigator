@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { mockProjects } from '@/data/mockData';
+import { mockPrograms, mockTeamMembers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'wouter';
@@ -7,7 +7,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ProjectDirectory() {
   const [showAll, setShowAll] = useState(false);
-  const displayMembers = showAll ? mockProjects : mockProjects.slice(0, 3);
+  const displayMembers = showAll ? mockPrograms : mockPrograms.slice(0, 3);
+  const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
 
   return (
     <div>
@@ -32,22 +33,27 @@ export default function ProjectDirectory() {
               </div>
 
               <div className="flex -space-x-2">
-                {project.team.map((member) => (
-                  <Link key={member.id} href={`/people/${member.id}`}>
+                {Array.from(new Set(project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => 
+                  moduleTeacher.teacherIds))).map(teacherId => {
+                  const teacher = teachers?.find(m => m.id === teacherId);
+                  return (
+                    <Link key={teacher?.id} href={`/people/${teacher?.id}`}>
                     <a onClick={(e) => e.stopPropagation()}>
                       <Avatar className="border-2 border-background w-8 h-8">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                      <AvatarImage src={teacher?.avatar} alt={teacher?.name} />
+                      <AvatarFallback>{teacher?.name.slice(0, 2)}</AvatarFallback>
                       </Avatar>
                     </a>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                  })
+                }
               </div>
             </a>
           </Link>
         ))}
       </div>
-      {mockProjects.length > 3 && (
+      {mockPrograms.length > 3 && (
         <div className="mt-4 flex justify-center">
           <Button
             variant="ghost"

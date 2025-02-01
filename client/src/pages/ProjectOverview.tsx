@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState } from "react";
-import { mockProjects, mockTeamMembers } from "@/data/mockData";
+import { mockPrograms, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageTransition from "@/components/PageTransition";
@@ -28,7 +28,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ProjectOverview() {
   const [, params] = useRoute("/programs/:id");
-  const project = mockProjects.find((p) => p.id === params?.id);
+  const project = mockPrograms.find((p) => p.id === params?.id);
   const [openSections, setOpenSections] = useState({
     modules: true,
     intakes: true,

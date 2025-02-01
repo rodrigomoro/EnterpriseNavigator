@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockProjects, mockStudents, mockTeamMembers } from "@/data/mockData";
+import { mockPrograms, mockStudents, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
@@ -11,23 +11,35 @@ import { Users, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
 // Calculate program performance metrics
 const programMetrics = {
   totalStudents: mockStudents.length,
-  totalPrograms: mockProjects.length,
+  totalPrograms: mockPrograms.length,
   averageProgress: Math.round(
-    mockProjects.reduce((acc, proj) => acc + proj.progress, 0) / mockProjects.length
+    mockPrograms.reduce((acc, proj) => acc + proj.progress, 0) / mockPrograms.length
   ),
   activeStaff: mockTeamMembers.length
 };
 
 // Calculate program distribution data
-const programDistributionData = mockProjects.map(project => ({
-  name: project.name,
-  value: project.studentCount,
-  progress: project.progress,
-  teamSize: project.team.length
-}));
+const programDistributionData = mockPrograms.map(project => {
+  const moduleTeachers = project.modules.flatMap(module => 
+    project.intakes.flatMap(intake => 
+      intake.groups.flatMap(group => 
+        group.moduleTeachers
+          .filter(mt => mt.moduleId === module.id)
+          .flatMap(mt => mt.teacherIds)
+      )
+    )
+  );
+
+  return {
+    name: project.name,
+    value: project.studentCount,
+    progress: project.progress,
+    teamSize: new Set(moduleTeachers).size
+  };
+});
 
 // Calculate program progress data
-const programProgressData = mockProjects.map(project => ({
+const programProgressData = mockPrograms.map(project => ({
   name: project.name,
   progress: project.progress,
   studentCount: project.studentCount

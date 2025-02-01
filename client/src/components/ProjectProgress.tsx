@@ -1,5 +1,5 @@
 import { Progress } from '@/components/ui/progress';
-import { mockProjects } from '@/data/mockData';
+import { mockPrograms } from '@/data/mockData';
 
 export default function ProjectProgress() {
   return (
@@ -7,7 +7,7 @@ export default function ProjectProgress() {
       <h3 className="text-lg font-semibold mb-4">Project Progress</h3>
       
       <div className="space-y-6">
-        {mockProjects.map((project) => (
+        {mockPrograms.map((project) => (
           <div key={project.id}>
             <div className="flex justify-between mb-2">
               <p className="font-medium">{project.name}</p>

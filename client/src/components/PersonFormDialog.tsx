@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockProjects } from "@/data/mockData";
+import { mockTeamMembers, mockPrograms } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 
@@ -75,7 +75,7 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
   const watchIsTeacher = form.watch("isTeacher");
   const watchIsStudent = form.watch("isStudent");
 
-  const programOptions = mockProjects.map(program => ({
+  const programOptions = mockPrograms.map(program => ({
     id: program.id,
     name: program.name,
     role: 'Program',

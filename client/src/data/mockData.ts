@@ -1109,12 +1109,11 @@ const calculateAverageScore = (students: Student[]) => {
   return Math.round(totalScores / students.length);
 };
 
-export const mockProjects = [
+export const mockPrograms = [
   {
     id: '1',
     name: 'Bootcamp en Cloud Computing & Devops',
     progress: 65,
-    team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
     directors: [mockTeamMembers.find(m => m.id === 'program-dir-2') as TeamMember],
     studentCount: 35,
     students: mockStudents.slice(0, 6),
@@ -1284,7 +1283,6 @@ GCP Professional Architect`
     id: '2',
     name: 'Bootcamp en Ciberseguridad',
     progress: 45,
-    team: mockTeamMembers.filter(m => ['2', '6', '8'].includes(m.id)),
     directors: [
       mockTeamMembers.find(m => m.id === 'program-dir-3') as TeamMember
     ],
@@ -1380,7 +1378,6 @@ CISSP (ISC)²`
     id: '3',
     name: 'Bootcamp en Diseño UX/UI',
     progress: 30,
-    team: mockTeamMembers.filter(m => ['4', '9', '15'].includes(m.id)),
     directors: [
       mockTeamMembers.find(m => m.id === 'program-dir-2') as TeamMember
     ],
@@ -1471,7 +1468,6 @@ NN/g UX Certification`
     id: '4',
     name: 'Bootcamp en Data Analytics',
     progress: 75,
-    team: mockTeamMembers.filter(m => ['5', '10', '11'].includes(m.id)),
     directors: [
       mockTeamMembers.find(m => m.id === 'program-dir-1') as TeamMember
     ],
@@ -1560,7 +1556,6 @@ Microsoft Certified: Data Analyst Associate`
     id: '5',
     name: 'Bootcamp en Full-Stack Web Development',
     progress: 20,
-    team: mockTeamMembers.filter(m => ['6', '7', '15'].includes(m.id)),
     directors: [
       mockTeamMembers.find(m => m.id === 'program-dir-1') as TeamMember
     ],
@@ -1657,7 +1652,6 @@ MERN/MEAN Stack Certifications (various)`
     id: '6',
     name: 'Bootcamp en Inteligencia Artificial',
     progress: 90,
-    team: mockTeamMembers.filter(m => ['2', '3', '4'].includes(m.id)),
     directors: [
       mockTeamMembers.find(m => m.id === 'program-dir-3') as TeamMember
     ],

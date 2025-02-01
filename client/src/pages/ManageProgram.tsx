@@ -14,7 +14,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockProjects } from "@/data/mockData";
+import { mockTeamMembers, mockPrograms } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -674,7 +674,7 @@ export default function ManageProgram() {
   const isEdit = Boolean(params?.id);
 
   // Get the program data if in edit mode
-  const program = isEdit ? mockProjects.find(p => p.id === params?.id) : null;
+  const program = isEdit ? mockPrograms.find(p => p.id === params?.id) : null;
 
   // Managing the expanded state of intake and group sections
   const [isIntakeExpanded, setIsIntakeExpanded] = useState(false);
