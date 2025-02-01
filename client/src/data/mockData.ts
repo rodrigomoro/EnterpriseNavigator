@@ -1019,40 +1019,81 @@ const calculateAverageScore = (students: Student[]) => {
 export const mockProjects = [
   {
     id: '1',
-    name: 'Computer Entreprenurship Bachelor (2409CEB1)',
+    name: 'Bootcamp en Cloud Computing & Devops',
     progress: 65,
     team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
-    director: mockTeamMembers[0],
+    director: mockTeamMembers.filter(m => ['12']),
     studentCount: 45,
     students: mockStudents.slice(0, 6),
     avgScore: calculateAverageScore(mockStudents.slice(0, 6)),
     modules: [
       {
-        name: 'Introduction to Entrepreneurship',
-        description: 'Basics of starting and managing a business.',
+        name: 'PreWork',
+        description: 'Basics of IT and Cloud value.',
         credits: 3,
-        hours: 40,
-        competencies: 'Business Planning, Market Analysis',
-        tools: 'Business Model Canvas, SWOT Analysis'
+        hours: 6,
+        competencies: 'Cloud Computing, DevOps, IT, Cloud Computing, DevOps, IT, Cloud Computing, DevOps,',
+        tools: 'None'
       },
       {
-        name: 'Advanced Programming',
-        description: 'In-depth study of modern programming languages.',
+        name: 'Automation with PowerShell',
+        description: 'Introduction to PowerShell and its usage.',
+        credits: 4,
+        hours: 27,
+        competencies: 'Problem Solving, Coding, Automation, CLI',
+        tools: 'CLI, PowerShell'
+      },
+      {
+        name: 'Azure Cloud Adminisration',
+        description: 'Introduction to Azure and its usage.',
+        credits: 4,
+        hours: 99,
+        competencies: 'Cloud Services and Administration',
+        tools: 'Azure Portal, DrawIO'
+      },
+      {
+        name: 'AWS Assoc Architect',
+        description: 'Introduction to AWS and its usage.',
+        credits: 4,
+        hours: 69,
+        competencies: 'Cloud Services and Architecture',
+        tools: 'AWS Console, AWS Academy'
+      },
+      {
+        name: 'GCP Assoc Cloud Engineer',
+        description: 'Introduction to GCP and its usage.',
+        credits: 4,
+        hours: 51,
+        competencies: 'Cloud Services and Administration',
+        tools: 'GCP Console, DrawIO'
+      },
+      {
+        name: 'DevOps Engineer',
+        description: 'Introduction to DevOps.',
         credits: 4,
         hours: 60,
-        competencies: 'Problem Solving, Coding',
-        tools: 'JavaScript, Python'
-      }
+        competencies: 'Code and release management',
+        tools: 'Azure DevOps, PowerShell'
+      },
+      {
+        name: 'Capstone',
+        description: 'Final project.',
+        credits: 4,
+        hours: 33,
+        competencies: 'Team work and project development',
+        tools: 'Cloud consoles, CLIs, PowerShell, DrawIO'
+      }      
     ],
     intakes: [
       {
-        name: 'Fall 2025',
-        modality: 'Full-time',
+        name: '2410BCCS',
+        modality: 'Online',
         schedule: {
           days: [
-            { dayId: 'Monday', startTime: '09:00', endTime: '12:00', enabled: true },
-            { dayId: 'Wednesday', startTime: '09:00', endTime: '12:00', enabled: true },
-            { dayId: 'Friday', startTime: '09:00', endTime: '12:00', enabled: true }
+            { dayId: 'Monday', startTime: '19:00', endTime: '22:00', enabled: true },
+            { dayId: 'Tuesday', startTime: '19:00', endTime: '22:00', enabled: true },
+            { dayId: 'Wednesday', startTime: '19:00', endTime: '22:00', enabled: true },
+            { dayId: 'Thursday', startTime: '19:00', endTime: '22:00', enabled: true }
           ]
         },
         groups: [
@@ -1064,13 +1105,43 @@ export const mockProjects = [
           },
           {
             name: 'Group B',
-            status: 'Active',
+            status: 'Closed',
             capacity: 25,
             costPerStudent: 500
           }
         ]
       }
-    ]
+    ],
+    area: 'Cloud',
+    type: 'Bootcamp',
+    totalHours: 339,
+    objectives: `El Curso Executive de Cloud Computing y DevOps está dirigido a: 
+
+      - Profesionales de TI: Ingenieros de sistemas, administradores de sistemas y arquitectos de infraestructura que buscan ampliar sus conocimientos y habilidades en cloud computing y DevOps.
+      - Desarrolladores de Software: Programadores y desarrolladores que desean especializarse en el diseño, implementación y gestión de soluciones en la nube.
+      - Gerentes y Líderes de Proyecto: Profesionales que gestionan proyectos tecnológicos y desean adquirir habilidades avanzadas en gestión de proyectos y estrategias de negocio en el entorno cloud.
+      - Consultores de Tecnología: Expertos que asesoran a empresas en la implementación y optimización de soluciones tecnológicas y desean mejorar sus competencias en arquitecturas cloud y DevOps.
+      - Emprendedores y Directivos: Líderes empresariales y emprendedores que buscan integrar soluciones cloud y DevOps en sus estrategias empresariales para impulsar la innovación y la eficiencia operativa.
+      - Profesionales Certificados: Aquellos con certificaciones iniciales en cloud computing (Azure, AWS, GCP) y DevOps que desean avanzar a niveles más altos de especialización.`,
+    whyChoose: ` -Demanda laboral y Reconocimiento en la industria: El crecimiento en la adopción de tecnologías en la nube y DevOps ha generado una gran Demanda de profesionales especializados, lo que significa excelentes oportunidades laborales y salarios competitivos en El mercado. la experiencia en plataformas líderes como Azure, AWS o GCP es altamente valorada por empresas de todos los tamaños y sectores, lo que mejora las perspectivas de empleo y crecimiento profesional. El Cloud Computing market size sigue creciendo con fuerza creando oportunidades de negocio entorno a él.
+
+- Flexibilidad y escalabilidad: El dominio de Cloud Computing y DevOps permitirá a los profesionales diseñar, implementar y administrar soluciones escalables y flexibles, lo que les permitirá adaptarse rápidamente a las necesidades de las empresas y del mercado.
+
+ - Habilidades técnicas y prácticas: Esta formacion cubre una amplia gama de habilidades técnicas y prácticas, desde migraciones y automatización hasta el desarrollo y diseño de soluciones en la nube, lo que permite a los profesionales convertirse en expertos multifuncionales.
+
+- Innovación y adopción de tecnologías emergentes: Arquitecturas serverless, Infraestructura efímera y otros conceptos permitirán a los profesionales mantenerse actualizados en las últimas tendencias tecnológicas y contribuir al desarrollo de soluciones innovadoras.`,
+    careerOpportunities: `- Cloud Architect: Diseñar y gestionar arquitecturas de soluciones en la nube para empresas, garantizando la escalabilidad, seguridad y eficiencia.
+- DevOps Engineer: Implementar y gestionar procesos de desarrollo y operaciones, mejorando la integración continua y el despliegue continuo (CI/CD) en entornos cloud.
+- Site Reliability Engineer (SRE): Asegurar la fiabilidad y disponibilidad de las aplicaciones y servicios en la nube, utilizando principios de ingeniería de software y operaciones.
+- IT Project Manager: Gestionar proyectos tecnológicos complejos, aplicando metodologías ágiles y coordinando equipos de desarrollo y operaciones.
+- Cloud Consultant: Asesorar a empresas en la adopción y optimización de soluciones en la nube, ayudándoles a mejorar su infraestructura y procesos.
+- Data Engineer: Diseñar, construir y gestionar sistemas de procesamiento y almacenamiento de datos, incluyendo lagos de datos y soluciones analíticas.
+- Infrastructure Engineer: Gestionar y optimizar la infraestructura de TI en la nube, asegurando la eficiencia y la seguridad de los recursos.
+- Innovation Manager: Impulsar la innovación tecnológica dentro de la empresa, aplicando estrategias de transformación digital y análisis de datos.
+- Security Engineer: Especializarse en la seguridad de la información en entornos cloud, gestionando la protección de datos y la implementación de políticas de seguridad.`,
+    certifications: `Azure Solutions Architect (AZ-305)
+AWS Solution Architect
+GCP Professional Architect`
   },
   {
     id: '2',
