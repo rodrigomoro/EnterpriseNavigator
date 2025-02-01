@@ -163,7 +163,6 @@ export default function ProjectOverview() {
                     </div>
                     </div>
                   </Card>
-
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4">
                     Program Progress
@@ -182,8 +181,7 @@ export default function ProjectOverview() {
                     </div>
                   </div>
                 </Card>
-                <Card className="p-6">
-                    
+                <Card className="p-6">                    
                   <div className="space-y-4">
                       <div>
                         <h4 className="text-sm font-medium mb-2">Objectives</h4>
@@ -215,12 +213,8 @@ export default function ProjectOverview() {
                           {project.certifications}
                         </p>
                       </div>
-                    </div>
-                  
+                    </div>                  
                 </Card>
-
-                
-                
               </div>
 
               {/* Right Column */}
