@@ -981,7 +981,7 @@ export default function ManageProgram() {
                           <Collapsible key={intakeIndex} className="border rounded-lg">
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                               <div className="flex items-center gap-2">
-                                <ChevronRight className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-90" />
+                                <ChevronRight className="h-4 w-4 transition-transform ui-open:rotate-90" />
                                 <span className="font-medium">
                                   {intake.name || `Intake ${intakeIndex + 1}`}
                                 </span>
@@ -1068,7 +1068,7 @@ export default function ManageProgram() {
                                         <Collapsible className="border rounded-lg">
                                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 group">
                                             <div className="flex items-center gap-2">
-                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-90" />
+                                              <ChevronRight className="h-4 w-4 transition-transform ui-open:rotate-90" />
                                               <span className="font-medium">
                                                 {group.name || `Group ${groupIndex + 1}`}
                                               </span>
