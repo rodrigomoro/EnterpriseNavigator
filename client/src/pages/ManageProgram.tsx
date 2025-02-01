@@ -803,7 +803,7 @@ export default function ManageProgram() {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1 overflow-y-auto">
-        <div className="container p-6 max-w-[1200px]">
+        <div className="container p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold">
@@ -838,91 +838,99 @@ export default function ManageProgram() {
                     </Dialog>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Program Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-white" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="area"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Area</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                  <div className="grid grid-cols-12 gap-6">
+                    <div className="col-span-5">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Program Name</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select area" />
-                              </SelectTrigger>
+                              <Input {...field} className="bg-white" />
                             </FormControl>
-                            <SelectContent>
-                              {PROGRAM_AREAS.map((area) => (
-                                <SelectItem key={area} value={area}>
-                                  {area}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {PROGRAM_TYPES.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="directorIds"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Program Directors</FormLabel>
-                          <FormControl>
-                            <PeoplePicker
-                              people={directors}
-                              selectedIds={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select directors"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <div className="col-span-2">
+                      <FormField
+                        control={form.control}
+                        name="area"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Area</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select area" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {PROGRAM_AREAS.map((area) => (
+                                  <SelectItem key={area} value={area}>
+                                    {area}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-2">
+                      <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Type</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {PROGRAM_TYPES.map((type) => (
+                                  <SelectItem key={type} value={type}>
+                                    {type}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-3">
+                      <FormField
+                        control={form.control}
+                        name="directorIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Program Directors</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={directors}
+                                selectedIds={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select directors"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12">
                       <FormField
                         control={form.control}
                         name="description"
@@ -973,7 +981,7 @@ export default function ManageProgram() {
                           <Collapsible key={intakeIndex} className="border rounded-lg">
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
                               <div className="flex items-center gap-2">
-                                <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-90" />
+                                <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
                                 <span className="font-medium">
                                   {intake.name || `Intake ${intakeIndex + 1}`}
                                 </span>
@@ -1058,7 +1066,7 @@ export default function ManageProgram() {
                                         <Collapsible key={groupIndex} className="border rounded-lg">
                                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
                                             <div className="flex items-center gap-2">
-                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-90" />
+                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
                                               <span className="font-medium">
                                                 {group.name || `Group ${groupIndex + 1}`}
                                               </span>
