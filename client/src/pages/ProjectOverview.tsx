@@ -1,4 +1,13 @@
-import { ArrowLeft, Edit, ChevronDown, ChevronRight, Clock, Users, Calendar as CalendarIcon, GraduationCap } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Users,
+  Calendar as CalendarIcon,
+  GraduationCap,
+} from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState } from "react";
 import { mockProjects } from "@/data/mockData";
@@ -22,15 +31,15 @@ export default function ProjectOverview() {
   const project = mockProjects.find((p) => p.id === params?.id);
   const [openSections, setOpenSections] = useState({
     modules: true,
-    intakes: true
+    intakes: true,
   });
 
   if (!project) return <div>Project not found</div>;
 
   const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
+    setOpenSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -52,9 +61,7 @@ export default function ProjectOverview() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-4">
-                  <h1 className="text-2xl font-bold">
-                    {project.name}
-                  </h1>
+                  <h1 className="text-2xl font-bold">{project.name}</h1>
                   <Badge variant="secondary">{project.type}</Badge>
                   <Link href={`/programs/${project.id}/edit`}>
                     <Button variant="outline" size="sm" className="gap-2">
@@ -74,7 +81,9 @@ export default function ProjectOverview() {
                 <Card className="p-6">
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Program Details</h3>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Program Details
+                      </h3>
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm text-muted-foreground">Area</p>
@@ -85,8 +94,12 @@ export default function ProjectOverview() {
                           <p className="font-medium">{project.type}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Total Duration</p>
-                          <p className="font-medium">{project.totalHours} hours</p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Duration
+                          </p>
+                          <p className="font-medium">
+                            {project.totalHours} hours
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -94,35 +107,63 @@ export default function ProjectOverview() {
                     <div className="space-y-4">
                       <div>
                         <h4 className="text-sm font-medium mb-2">Objectives</h4>
-                        <p className="text-sm text-muted-foreground">{project.objectives}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {project.objectives}
+                        </p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Why Choose This Course?</h4>
-                        <p className="text-sm text-muted-foreground">{project.whyChoose}</p>
+                        <h4 className="text-sm font-medium mb-2">
+                          Why Choose This Course?
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.whyChoose}
+                        </p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Career Opportunities</h4>
-                        <p className="text-sm text-muted-foreground">{project.careerOpportunities}</p>
+                        <h4 className="text-sm font-medium mb-2">
+                          Career Opportunities
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.careerOpportunities}
+                        </p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Certifications</h4>
-                        <p className="text-sm text-muted-foreground">{project.certifications}</p>
+                        <h4 className="text-sm font-medium mb-2">
+                          Certifications
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.certifications}
+                        </p>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Program Directors</h3>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Program Directors
+                      </h3>
                       <div className="space-y-3">
                         {project.directors?.map((director) => (
-                          <Link key={director.id} href={`/people/${director.id}`}>
+                          <Link
+                            key={director.id}
+                            href={`/people/${director.id}`}
+                          >
                             <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={director.avatar} alt={director.name} />
-                                <AvatarFallback>{director.name.slice(0, 2)}</AvatarFallback>
+                                <AvatarImage
+                                  src={director.avatar}
+                                  alt={director.name}
+                                />
+                                <AvatarFallback>
+                                  {director.name.slice(0, 2)}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium text-sm">{director.name}</p>
-                                <p className="text-xs text-muted-foreground">Director</p>
+                                <p className="font-medium text-sm">
+                                  {director.name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Director
+                                </p>
                               </div>
                             </a>
                           </Link>
@@ -138,14 +179,18 @@ export default function ProjectOverview() {
                             <Users className="h-4 w-4" />
                             <span className="text-sm">Total Students</span>
                           </div>
-                          <p className="text-2xl font-semibold">{project.studentCount}</p>
+                          <p className="text-2xl font-semibold">
+                            {project.studentCount}
+                          </p>
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <GraduationCap className="h-4 w-4" />
                             <span className="text-sm">Avg. Score</span>
                           </div>
-                          <p className="text-2xl font-semibold">{project.avgScore}%</p>
+                          <p className="text-2xl font-semibold">
+                            {project.avgScore}%
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -153,12 +198,18 @@ export default function ProjectOverview() {
                 </Card>
 
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Program Progress</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Program Progress
+                  </h3>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium">Overall Progress</span>
-                        <span className="text-sm text-muted-foreground">{project.progress}%</span>
+                        <span className="text-sm font-medium">
+                          Overall Progress
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {project.progress}%
+                        </span>
                       </div>
                       <Progress value={project.progress} className="h-2" />
                     </div>
@@ -170,7 +221,10 @@ export default function ProjectOverview() {
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 {/* Modules Section */}
                 <Card className="p-6">
-                  <Collapsible open={openSections.modules} onOpenChange={() => toggleSection('modules')}>
+                  <Collapsible
+                    open={openSections.modules}
+                    onOpenChange={() => toggleSection("modules")}
+                  >
                     <CollapsibleTrigger className="flex items-center justify-between w-full">
                       <h3 className="text-lg font-semibold">Modules</h3>
                       {openSections.modules ? (
@@ -187,27 +241,45 @@ export default function ProjectOverview() {
                               <div className="flex justify-between items-start mb-3">
                                 <div>
                                   <h4 className="font-medium">{module.name}</h4>
-                                  <p className="text-sm text-muted-foreground">{module.description}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {module.description}
+                                  </p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                   <div className="text-right">
-                                    <p className="text-sm text-muted-foreground">Credits</p>
-                                    <p className="font-medium">{module.credits}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      Credits
+                                    </p>
+                                    <p className="font-medium">
+                                      {module.credits}
+                                    </p>
                                   </div>
                                   <div className="text-right">
-                                    <p className="text-sm text-muted-foreground">Hours</p>
-                                    <p className="font-medium">{module.hours}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      Hours
+                                    </p>
+                                    <p className="font-medium">
+                                      {module.hours}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
                               <div className="grid grid-cols-2 gap-4 mt-4">
                                 <div>
-                                  <p className="text-sm font-medium mb-1">Competencies</p>
-                                  <p className="text-sm text-muted-foreground">{module.competencies}</p>
+                                  <p className="text-sm font-medium mb-1">
+                                    Competencies
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {module.competencies}
+                                  </p>
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium mb-1">Tools</p>
-                                  <p className="text-sm text-muted-foreground">{module.tools}</p>
+                                  <p className="text-sm font-medium mb-1">
+                                    Tools
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {module.tools}
+                                  </p>
                                 </div>
                               </div>
                             </div>
@@ -220,9 +292,14 @@ export default function ProjectOverview() {
 
                 {/* Intakes & Groups Section */}
                 <Card className="p-6">
-                  <Collapsible open={openSections.intakes} onOpenChange={() => toggleSection('intakes')}>
+                  <Collapsible
+                    open={openSections.intakes}
+                    onOpenChange={() => toggleSection("intakes")}
+                  >
                     <CollapsibleTrigger className="flex items-center justify-between w-full">
-                      <h3 className="text-lg font-semibold">Intakes & Groups</h3>
+                      <h3 className="text-lg font-semibold">
+                        Intakes & Groups
+                      </h3>
                       {openSections.intakes ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
@@ -236,51 +313,76 @@ export default function ProjectOverview() {
                             <div key={index} className="border rounded-lg p-4">
                               <div className="flex items-center justify-between mb-4">
                                 <div>
-                                  <h4 className="font-medium">{intake.name}</h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    <Badge variant="outline">{intake.modality}</Badge>
-                                  </p>
+                                  <h4 className="font-medium">
+                                    {intake.name}{" "}
+                                    <Badge variant="outline">
+                                      {intake.modality}
+                                    </Badge>
+                                  </h4>
                                 </div>
                               </div>
 
                               <div className="space-y-4">
                                 {/* Schedule */}
                                 <div>
-                                  <h5 className="text-sm font-medium mb-2">Schedule</h5>
+                                  <h5 className="text-sm font-medium mb-2">
+                                    Schedule
+                                  </h5>
                                   <div className="grid grid-cols-2 gap-4">
-                                    {intake.schedule.days.map((day, dayIndex) => (
-                                      day.enabled && (
-                                        <div key={dayIndex} className="flex items-center gap-2 text-sm">
-                                          <Clock className="h-4 w-4 text-muted-foreground" />
-                                          <span className="font-medium">{day.dayId}</span>
-                                          <span className="text-muted-foreground">
-                                            {day.startTime} - {day.endTime}
-                                          </span>
-                                        </div>
-                                      )
-                                    ))}
+                                    {intake.schedule.days.map(
+                                      (day, dayIndex) =>
+                                        day.enabled && (
+                                          <div
+                                            key={dayIndex}
+                                            className="flex items-center gap-2 text-sm"
+                                          >
+                                            <Clock className="h-4 w-4 text-muted-foreground" />
+                                            <span className="font-medium">
+                                              {day.dayId}
+                                            </span>
+                                            <span className="text-muted-foreground">
+                                              {day.startTime} - {day.endTime}
+                                            </span>
+                                          </div>
+                                        ),
+                                    )}
                                   </div>
                                 </div>
 
                                 {/* Groups */}
                                 <div>
-                                  <h5 className="text-sm font-medium mb-2">Groups</h5>
+                                  <h5 className="text-sm font-medium mb-2">
+                                    Groups
+                                  </h5>
                                   <div className="space-y-3">
                                     {intake.groups.map((group, groupIndex) => (
-                                      <div key={groupIndex} className="border rounded-lg p-3">
+                                      <div
+                                        key={groupIndex}
+                                        className="border rounded-lg p-3"
+                                      >
                                         <div className="flex items-center justify-between mb-2">
                                           <div className="flex items-center gap-2">
-                                            <span className="font-medium">{group.name}</span>
+                                            <span className="font-medium">
+                                              {group.name}
+                                            </span>
                                             <Badge>{group.status}</Badge>
                                           </div>
                                           <div className="flex items-center gap-4">
                                             <div className="text-right">
-                                              <p className="text-xs text-muted-foreground">Capacity</p>
-                                              <p className="font-medium">{group.capacity}</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                Capacity
+                                              </p>
+                                              <p className="font-medium">
+                                                {group.capacity}
+                                              </p>
                                             </div>
                                             <div className="text-right">
-                                              <p className="text-xs text-muted-foreground">Cost/Student</p>
-                                              <p className="font-medium">${group.costPerStudent}</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                Cost/Student
+                                              </p>
+                                              <p className="font-medium">
+                                                ${group.costPerStudent}
+                                              </p>
                                             </div>
                                           </div>
                                         </div>
