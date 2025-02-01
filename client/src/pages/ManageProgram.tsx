@@ -803,7 +803,7 @@ export default function ManageProgram() {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1 overflow-y-auto">
-        <div className="container p-6">
+        <div className="p-6 w-full">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold">
@@ -981,7 +981,9 @@ export default function ManageProgram() {
                           <Collapsible key={intakeIndex} className="border rounded-lg">
                             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
                               <div className="flex items-center gap-2">
-                                <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
+                                <span className="transform transition-transform duration-200" data-state={open ? "open" : "closed"}>
+                                  <ChevronRight className={`h-4 w-4 ${open ? "rotate-90" : ""}`} />
+                                </span>
                                 <span className="font-medium">
                                   {intake.name || `Intake ${intakeIndex + 1}`}
                                 </span>
@@ -994,11 +996,10 @@ export default function ManageProgram() {
                                   e.stopPropagation();
                                   removeIntake(intakeIndex);
                                 }}
-                                className="hover:bg-destructive/10 hover:text-destructive"
+                                className="opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                               >
                                 <X className="h-4 w-4" />
-                              </Button>
-                            </CollapsibleTrigger>
+                              </Button></CollapsibleTrigger>
                             <CollapsibleContent className="p-4 pt-0">
                               <div className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
@@ -1066,7 +1067,9 @@ export default function ManageProgram() {
                                         <Collapsible key={groupIndex} className="border rounded-lg">
                                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50">
                                             <div className="flex items-center gap-2">
-                                              <ChevronRight className="h-4 w-4 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
+                                              <span className="transform transition-transform duration-200" data-state={open ? "open" : "closed"}>
+                                                  <ChevronRight className={`h-4 w-4 ${open ? "rotate-90" : ""}`} />
+                                                </span>
                                               <span className="font-medium">
                                                 {group.name || `Group ${groupIndex + 1}`}
                                               </span>
@@ -1079,7 +1082,7 @@ export default function ManageProgram() {
                                                 e.stopPropagation();
                                                 removeGroup(intakeIndex, groupIndex);
                                               }}
-                                              className="hover:bg-destructive/10 hover:text-destructive"
+                                              className="opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                                             >
                                               <X className="h-4 w-4" />
                                             </Button>
