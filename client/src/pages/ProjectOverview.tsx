@@ -22,8 +22,7 @@ export default function ProjectOverview() {
   const project = mockProjects.find((p) => p.id === params?.id);
   const [openSections, setOpenSections] = useState({
     modules: true,
-    intakes: true,
-    career: false,
+    intakes: true
   });
 
   if (!project) return <div>Project not found</div>;
@@ -89,6 +88,25 @@ export default function ProjectOverview() {
                           <p className="text-sm text-muted-foreground">Total Duration</p>
                           <p className="font-medium">{project.totalHours} hours</p>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Objectives</h4>
+                        <p className="text-sm text-muted-foreground">{project.objectives}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Why Choose This Course?</h4>
+                        <p className="text-sm text-muted-foreground">{project.whyChoose}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Career Opportunities</h4>
+                        <p className="text-sm text-muted-foreground">{project.careerOpportunities}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Certifications</h4>
+                        <p className="text-sm text-muted-foreground">{project.certifications}</p>
                       </div>
                     </div>
 
@@ -275,40 +293,6 @@ export default function ProjectOverview() {
                           ))}
                         </div>
                       </ScrollArea>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </Card>
-
-                {/* Career & Certifications */}
-                <Card className="p-6">
-                  <Collapsible open={openSections.career} onOpenChange={() => toggleSection('career')}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full">
-                      <h3 className="text-lg font-semibold">Career & Certifications</h3>
-                      {openSections.career ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">Objectives</h4>
-                          <p className="text-sm text-muted-foreground">{project.objectives}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">Why Choose This Course?</h4>
-                          <p className="text-sm text-muted-foreground">{project.whyChoose}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">Career Opportunities</h4>
-                          <p className="text-sm text-muted-foreground">{project.careerOpportunities}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">Certifications</h4>
-                          <p className="text-sm text-muted-foreground">{project.certifications}</p>
-                        </div>
-                      </div>
                     </CollapsibleContent>
                   </Collapsible>
                 </Card>
