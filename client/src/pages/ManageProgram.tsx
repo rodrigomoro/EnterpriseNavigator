@@ -63,6 +63,7 @@ const PROGRAM_AREAS = [
   "Data Science",
   "Web Development",
   "Mobile Development",
+  "UX/UI",
   "DevOps",
   "Artificial Intelligence",
   "Blockchain",
@@ -666,7 +667,7 @@ type FormValues = z.infer<typeof formSchema>;
 // Group Module-Teacher Mapping Component
 
 export default function ManageProgram() {
-  const [teachers] = useState(mockTeamMembers);
+  const [teachers] = useState(mockTeamMembers.filter((member) => member.role === "Teacher"));
   const [, params] = useRoute("/programs/:id/edit");
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -693,7 +694,7 @@ export default function ManageProgram() {
       name: program?.name ?? "",
       area: program?.area ?? "",
       type: program?.type ?? "",
-      directorIds: program?.director?.map(d => d.id) ?? [],
+      directorIds: program?.directors?.map(d => d.id) ?? [],
       description: program?.description ?? "",
       prerequisites: program?.prerequisites ?? "",
       targetAudience: program?.targetAudience ?? "",
@@ -759,7 +760,7 @@ export default function ManageProgram() {
   };
 
   const directors = mockTeamMembers.filter(
-    (member) => member.role === "Director",
+    (member) => member.role === "Program Director",
   );
 
   const addIntake = () => {
@@ -825,10 +826,10 @@ export default function ManageProgram() {
                 Total Duration: {totalDuration} hours
               </p>
             </div>
-            <Link href="/programs">
+            <Link href={`/programs/${params?.id}`}>
               <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
               </Button>
             </Link>
           </div>
@@ -1211,7 +1212,7 @@ export default function ManageProgram() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => navigate("/programs")}
+                  onClick={() => navigate("/programs/" + params?.id)}
                 >
                   Cancel
                 </Button>

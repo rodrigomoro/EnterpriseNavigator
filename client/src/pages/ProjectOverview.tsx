@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState } from "react";
-import { mockProjects } from "@/data/mockData";
+import { mockProjects, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageTransition from "@/components/PageTransition";
@@ -33,6 +33,8 @@ export default function ProjectOverview() {
     modules: true,
     intakes: true,
   });
+  const students = mockTeamMembers.filter((m) => m.role === "Student");
+  const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
 
   if (!project) return <div>Project not found</div>;
 
@@ -234,7 +236,7 @@ export default function ProjectOverview() {
                       )}
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-4">
-                      <ScrollArea className="h-[400px] pr-4">
+                      <ScrollArea className="h-[408px] pr-4">
                         <div className="space-y-4">
                           {project.modules?.map((module, index) => (
                             <div key={index} className="border rounded-lg p-4">
@@ -307,7 +309,7 @@ export default function ProjectOverview() {
                       )}
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-4">
-                      <ScrollArea className="h-[400px] pr-4">
+                      {/* <ScrollArea className="h-[800px] pr-4"> */}
                         <div className="space-y-6">
                           {project.intakes?.map((intake, index) => (
                             <div key={index} className="border rounded-lg p-4">
@@ -360,32 +362,107 @@ export default function ProjectOverview() {
                                         key={groupIndex}
                                         className="border rounded-lg p-3"
                                       >
-                                        <div className="flex items-center justify-between mb-2">
-                                          <div className="flex items-center gap-2">
-                                            <span className="font-medium">
-                                              {group.name}
-                                            </span>
-                                            <Badge>{group.status}</Badge>
-                                          </div>
-                                          <div className="flex items-center gap-4">
-                                            <div className="text-right">
-                                              <p className="text-xs text-muted-foreground">
-                                                Capacity
-                                              </p>
-                                              <p className="font-medium">
-                                                {group.capacity}
-                                              </p>
+                                        <Collapsible>
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                              <CollapsibleTrigger className="flex items-center gap-2">
+                                                <ChevronRight className="h-4 w-4" />
+                                                <span className="font-medium">
+                                                  {group.name}
+                                                </span>
+                                              </CollapsibleTrigger>
+                                              <Badge>{group.status}</Badge>
                                             </div>
-                                            <div className="text-right">
-                                              <p className="text-xs text-muted-foreground">
-                                                Cost/Student
-                                              </p>
-                                              <p className="font-medium">
-                                                ${group.costPerStudent}
-                                              </p>
+                                            <div className="flex items-center gap-4">
+                                              <div className="text-right">
+                                                <p className="text-xs text-muted-foreground">
+                                                  Capacity
+                                                </p>
+                                                <p className="font-medium">
+                                                  {group.capacity}
+                                                </p>
+                                              </div>
+                                              <div className="text-right">
+                                                <p className="text-xs text-muted-foreground">
+                                                  Cost/Student
+                                                </p>
+                                                <p className="font-medium">
+                                                  ${group.costPerStudent}
+                                                </p>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
+
+                                          <CollapsibleContent className="pt-4 space-y-4">
+                                            {/* Module-Teacher Mapping */}
+                                            <div>
+                                              <h5 className="text-sm font-medium mb-2">Module Teachers</h5>
+                                              <div className="border rounded-md overflow-hidden">
+                                                <div className="bg-muted/50 p-2 grid grid-cols-12 gap-2 text-sm font-medium">
+                                                  <div className="col-span-4">Module</div>
+                                                  <div className="col-span-8">Teachers</div>
+                                                </div>
+                                                <div className="divide-y">
+                                                  {group.moduleTeachers?.map((mapping, mappingIndex) => {
+                                                    const module = project.modules?.find((m, idx) => idx.toString() === mapping.moduleId);
+                                                    return module ? (
+                                                      <div key={mappingIndex} className="p-2 grid grid-cols-12 gap-2 items-center">
+                                                        <div className="col-span-4">
+                                                          <div className="font-medium">{module.name}</div>
+                                                          <div className="text-sm text-muted-foreground">
+                                                            {module.credits} credits
+                                                          </div>
+                                                        </div>
+                                                        <div className="col-span-8">
+                                                          <div className="flex -space-x-0">
+                                                            {mapping.teacherIds.map((teacherId) => {
+                                                              const teacher = teachers?.find(m => m.id === teacherId);
+                                                              return teacher ? (
+                                                                <Link key={teacher.id} href={`/people/${teacher.id}`}>
+                                                                  <a onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
+                                                                    <Avatar className="border-2 border-background w-8 h-8">
+                                                                      <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                                                                      <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
+                                                                    </Avatar>
+                                                                    <span className="text-sm font-medium mr-2">{teacher.name}</span>
+                                                                  </a>
+                                                                </Link>
+                                                              ) : null;
+                                                            })}
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    ) : null;
+                                                  })}
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* Enrolled Students */}
+                                            <div>
+                                              <h5 className="text-sm font-medium mb-2">Enrolled Students</h5>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                {group.studentIds?.map((studentId) => {
+                                                  const student = students?.find(s => s.id === studentId);
+                                                  return student ? (
+                                                    <Link key={student.id} href={`/people/${student.id}`}>
+                                                      <a className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-md">
+                                                        <Avatar className="h-8 w-8">
+                                                          <AvatarImage src={student.avatar} alt={student.name} />
+                                                          <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                          <p className="font-medium text-sm">{student.name}</p>
+                                                          <p className="text-xs text-muted-foreground">Student</p>
+                                                        </div>
+                                                      </a>
+                                                    </Link>
+                                                  ) : null;
+                                                })}
+                                              </div>
+                                            </div>
+                                          </CollapsibleContent>
+                                        </Collapsible>
                                       </div>
                                     ))}
                                   </div>
@@ -394,7 +471,7 @@ export default function ProjectOverview() {
                             </div>
                           ))}
                         </div>
-                      </ScrollArea>
+                      {/* </ScrollArea> */}
                     </CollapsibleContent>
                   </Collapsible>
                 </Card>
