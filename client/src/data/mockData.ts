@@ -1025,7 +1025,52 @@ export const mockProjects = [
     director: mockTeamMembers[0],
     studentCount: 45,
     students: mockStudents.slice(0, 6),
-    avgScore: calculateAverageScore(mockStudents.slice(0, 6))
+    avgScore: calculateAverageScore(mockStudents.slice(0, 6)),
+    modules: [
+      {
+        name: 'Introduction to Entrepreneurship',
+        description: 'Basics of starting and managing a business.',
+        credits: 3,
+        hours: 40,
+        competencies: 'Business Planning, Market Analysis',
+        tools: 'Business Model Canvas, SWOT Analysis'
+      },
+      {
+        name: 'Advanced Programming',
+        description: 'In-depth study of modern programming languages.',
+        credits: 4,
+        hours: 60,
+        competencies: 'Problem Solving, Coding',
+        tools: 'JavaScript, Python'
+      }
+    ],
+    intakes: [
+      {
+        name: 'Fall 2025',
+        modality: 'Full-time',
+        schedule: {
+          days: [
+            { dayId: 'Monday', startTime: '09:00', endTime: '12:00', enabled: true },
+            { dayId: 'Wednesday', startTime: '09:00', endTime: '12:00', enabled: true },
+            { dayId: 'Friday', startTime: '09:00', endTime: '12:00', enabled: true }
+          ]
+        },
+        groups: [
+          {
+            name: 'Group A',
+            status: 'Active',
+            capacity: 30,
+            costPerStudent: 500
+          },
+          {
+            name: 'Group B',
+            status: 'Active',
+            capacity: 25,
+            costPerStudent: 500
+          }
+        ]
+      }
+    ]
   },
   {
     id: '2',
