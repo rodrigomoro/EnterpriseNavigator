@@ -119,15 +119,17 @@ export default function Projects() {
                             <div>
                               <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm text-muted-foreground">Director</span>
-                                <Link href={`/people/${project.director.id}`}>
-                                  <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                    <span className="text-sm font-medium">{project.director.name}</span>
-                                    <Avatar className="h-6 w-6">
-                                      <AvatarImage src={project.director.avatar} alt={project.director.name} />
-                                      <AvatarFallback>{project.director.name.slice(0, 2)}</AvatarFallback>
-                                    </Avatar>
-                                  </a>
-                                </Link>
+                                {project.directors && project.directors[0] && (
+                                  <Link href={`/people/${project.directors[0].id}`}>
+                                    <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                      <span className="text-sm font-medium">{project.directors[0].name}</span>
+                                      <Avatar className="h-6 w-6">
+                                        <AvatarImage src={project.directors[0].avatar} alt={project.directors[0].name} />
+                                        <AvatarFallback>{project.directors[0].name.slice(0, 2)}</AvatarFallback>
+                                      </Avatar>
+                                    </a>
+                                  </Link>
+                                )}
                               </div>
                             </div>
 
