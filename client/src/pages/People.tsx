@@ -107,7 +107,7 @@ const departments = [
   'Human Resources'
 ];
 
-const roles = ['All', 'Student', 'Teacher', 'Staff', 'Director'];
+const roles = ['All', 'Student', 'Teacher', 'Staff', 'Program Director'];
 
 // Add locations to the filters
 const locationOptions = [

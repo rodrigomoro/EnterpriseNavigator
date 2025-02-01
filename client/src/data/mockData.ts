@@ -5,6 +5,7 @@ export interface TeamMember {
   id: string;
   name: string;
   role: string;
+  jobTitle: string;
   department: string;
   isDirector: boolean;
   avatar: string;
@@ -91,7 +92,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-1',
     name: 'Emily Johnson',
-    role: 'CEO & Founder',         // Stays the same
+    jobTitle: 'CEO & Founder',         // Stays the same
+    role: 'Staff',
     department: 'Executive',
     isDirector: true,             // She is a director-level staff
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
@@ -111,7 +113,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-2',
     name: 'David Anderson',
-    role: 'Chief Academic Officer', 
+    jobTitle: 'Chief Academic Officer', 
+    role: 'Staff',
     department: 'Academic',
     isDirector: true,              // Still director-level, but belongs to staff
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
@@ -131,7 +134,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-3',
     name: 'Andrea Leeland',
-    role: 'CFO',
+    jobTitle: 'CFO',
+    role: 'Staff',
     department: 'Finance',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Andrea',
@@ -151,7 +155,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-4',
     name: 'Sarah Williams',
-    role: 'CTO',
+    jobTitle: 'CTO',
+    role: 'Staff',
     department: 'Technology',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
@@ -171,7 +176,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-5',
     name: 'Jessica Martinez',
-    role: 'Admission Director',
+    jobTitle: 'Admission Director',
+    role: 'Staff',
     department: 'Admissions',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
@@ -191,7 +197,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-6',
     name: 'Robert Chen',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert',
@@ -211,7 +218,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-7',
     name: 'Patricia Wong',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia',
@@ -231,7 +239,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-8',
     name: 'Marcus Johnson',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
@@ -251,7 +260,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-9',
     name: 'Linda Martinez',
-    role: 'Executive Staff',
+    jobTitle: 'Executive Staff',
+    role: 'Staff',
     department: 'Executive',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Linda',
@@ -271,7 +281,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-10',
     name: 'David Wilson',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
@@ -291,7 +302,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-11',
     name: 'Sarah Lee',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SarahL',
@@ -311,7 +323,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-12',
     name: 'James Taylor',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
@@ -331,7 +344,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-13',
     name: 'Emma Davis',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
@@ -351,7 +365,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-14',
     name: 'Michael Brown',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
@@ -371,7 +386,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-15',
     name: 'Jennifer White',
-    role: 'Executive Staff',
+    jobTitle: 'Executive Staff',
+    role: 'Staff',
     department: 'Executive',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
@@ -391,7 +407,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-16',
     name: 'Carlos Rodriguez',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
@@ -411,7 +428,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-17',
     name: 'Sophia Zhang',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
@@ -431,7 +449,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-18',
     name: 'William Park',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=William',
@@ -451,7 +470,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-19',
     name: 'Isabella Garcia',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
@@ -471,7 +491,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-20',
     name: 'Nathan Wright',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nathan',
@@ -491,7 +512,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-21',
     name: 'Oliver Chen',
-    role: 'Executive Staff',
+    jobTitle: 'Executive Staff',
+    role: 'Staff',
     department: 'Executive',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
@@ -511,7 +533,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-22',
     name: 'Ava Thompson',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ava',
@@ -531,7 +554,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-23',
     name: 'Lucas Kim',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
@@ -551,7 +575,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-24',
     name: 'Mia Patel',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia',
@@ -571,7 +596,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-25',
     name: 'Ethan Cooper',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan',
@@ -591,7 +617,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-26',
     name: 'Charlotte Lee',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte',
@@ -611,7 +638,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-27',
     name: 'Benjamin Wilson',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Benjamin',
@@ -631,7 +659,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-28',
     name: 'Victoria Martinez',
-    role: 'Marketing Director',
+    jobTitle: 'Marketing Director',
+    role: 'Staff',
     department: 'Marketing',
     isDirector: true, // She is a director-level staff (not an academic program director)
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Victoria',
@@ -651,7 +680,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-29',
     name: 'Henry Taylor',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Henry',
@@ -671,7 +701,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-30',
     name: 'Scarlett Wong',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Scarlett',
@@ -689,7 +720,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-31',
     name: 'Sebastian Ross',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sebastian',
@@ -707,7 +739,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-32',
     name: 'Zoe Anderson',
-    role: 'HR Staff',
+    jobTitle: 'HR Staff',
+    role: 'Staff',
     department: 'Human Resources',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe',
@@ -725,7 +758,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-33',
     name: 'Christopher Lee',
-    role: 'Tech Staff',
+    jobTitle: 'Tech Staff',
+    role: 'Staff',
     department: 'Technology',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Christopher',
@@ -743,7 +777,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-34',
     name: 'Madison Clark',
-    role: 'Finance Staff',
+    jobTitle: 'Finance Staff',
+    role: 'Staff',
     department: 'Finance',
     isDirector: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Madison',
@@ -761,7 +796,8 @@ export const initialTeamMembers: TeamMember[] = [
   {
     id: 'staff-35',
     name: 'Gabriel Santos',
-    role: 'Sales Director',
+    jobTitle: 'Sales Director',
+    role: 'Staff',
     department: 'Sales',
     isDirector: true, // Director-level staff
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel',
@@ -782,6 +818,7 @@ export const initialTeamMembers: TeamMember[] = [
     id: 'program-dir-1',
     name: 'Richard Chen',
     role: 'Program Director',
+    jobTitle: 'Science Program Director',
     department: 'Academic',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Richard',
@@ -797,6 +834,7 @@ export const initialTeamMembers: TeamMember[] = [
     id: 'program-dir-2',
     name: 'Karen Smith',
     role: 'Program Director',
+    jobTitle: 'Science Program Director',
     department: 'Academic',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Karen',
@@ -812,6 +850,7 @@ export const initialTeamMembers: TeamMember[] = [
     id: 'program-dir-3',
     name: 'Michael Johnson',
     role: 'Program Director',
+    jobTitle: 'Science Program Director',
     department: 'Academic',
     isDirector: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
@@ -847,6 +886,7 @@ function generateTeachers(startIndex: number, count: number): TeamMember[] {
       id: teacherId,
       name: `${firstName} ${lastName}`,
       role: 'Teacher',
+      jobTitle: 'Teacher',
       department: 'Academic',
       isDirector: false,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
@@ -896,6 +936,7 @@ function generateStudents(startIndex: number, count: number): TeamMember[] {
       id: studentId,
       name: `${firstName} ${lastName}`,
       role: 'Student',
+      jobTitle: 'Student',
       department: studentDepartments[
         Math.floor(Math.random() * studentDepartments.length)
       ],
