@@ -104,39 +104,6 @@ export default function ProjectOverview() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">Objectives</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {project.objectives}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">
-                          Why Choose This Course?
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {project.whyChoose}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">
-                          Career Opportunities
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {project.careerOpportunities}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">
-                          Certifications
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {project.certifications}
-                        </p>
-                      </div>
-                    </div>
-
                     <div>
                       <h3 className="text-lg font-semibold mb-4">
                         Program Directors
@@ -194,8 +161,8 @@ export default function ProjectOverview() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
 
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4">
@@ -215,6 +182,45 @@ export default function ProjectOverview() {
                     </div>
                   </div>
                 </Card>
+                <Card className="p-6">
+                    
+                  <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Objectives</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.objectives}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">
+                          Why Choose This Course?
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.whyChoose}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">
+                          Career Opportunities
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.careerOpportunities}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">
+                          Certifications
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {project.certifications}
+                        </p>
+                      </div>
+                    </div>
+                  
+                </Card>
+
+                
+                
               </div>
 
               {/* Right Column */}

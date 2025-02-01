@@ -1022,7 +1022,7 @@ export const mockProjects = [
     name: 'Bootcamp en Cloud Computing & Devops',
     progress: 65,
     team: mockTeamMembers.filter(m => ['1', '2', '12', '13'].includes(m.id)),
-    director: mockTeamMembers.filter(m => ['12']),
+    directors: [mockTeamMembers[4]],
     studentCount: 45,
     students: mockStudents.slice(0, 6),
     avgScore: calculateAverageScore(mockStudents.slice(0, 6)),
@@ -1148,7 +1148,7 @@ GCP Professional Architect`
     name: 'Computer Entreprenurship Bachelor (2309CEB2)',
     progress: 40,
     team: mockTeamMembers.filter(m => ['14', '15'].includes(m.id)),
-    director: mockTeamMembers[13],
+    directors: [mockTeamMembers[13]],
     studentCount: 32,
     students: mockStudents.slice(6, 11),
     avgScore: calculateAverageScore(mockStudents.slice(6, 11))
@@ -1158,7 +1158,7 @@ GCP Professional Architect`
     name: 'Computer Entreprenurship Bachelor (2209CEB3)',
     progress: 85,
     team: mockTeamMembers.filter(m => ['3', '4'].includes(m.id)),
-    director: mockTeamMembers[2],
+    directors: [mockTeamMembers[2]],
     studentCount: 28,
     students: mockStudents.slice(11, 16),
     avgScore: calculateAverageScore(mockStudents.slice(11, 16))
@@ -1168,7 +1168,7 @@ GCP Professional Architect`
     name: 'Bootcamp en Diseño UX/UI (2410BUXS)',
     progress: 20,
     team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
+    directors: [mockTeamMembers[4]],
     studentCount: 52,
     students: mockStudents.slice(16),
     avgScore: calculateAverageScore(mockStudents.slice(16))
@@ -1178,7 +1178,7 @@ GCP Professional Architect`
     name: 'Bootcamp en Cloud Computing & DevOps (2410BCCS)',
     progress: 50,
     team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
+    directors: [mockTeamMembers[4]],
     studentCount: 48,
     students: mockStudents.slice(16),
     avgScore: calculateAverageScore(mockStudents.slice(16))
@@ -1188,7 +1188,7 @@ GCP Professional Architect`
     name: 'Bootcamp en Cloud Computing & DevOps (2503BCCS)',
     progress: 75,
     team: mockTeamMembers.filter(m => ['5', '6', '7', '8', '9', '10', '11'].includes(m.id)),
-    director: mockTeamMembers[4],
+    directors: [mockTeamMembers[4]],
     studentCount: 36,
     students: mockStudents.slice(16),
     avgScore: calculateAverageScore(mockStudents.slice(16))
