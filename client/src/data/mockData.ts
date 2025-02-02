@@ -12,7 +12,7 @@ export interface TeamMember {
   email: string;
   phone: string;
   bio: string;
-  projects: string[];
+  programs: string[];
   reportsTo?: string;
   status: string;
   location: string;
@@ -100,7 +100,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'emily.johnson@company.com',
     phone: '+1 (555) 0101',
     bio: 'Founded the institution in 2020. Previously led education technology initiatives at major enterprises.',
-    projects: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entreprenurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     // CEO => no reportsTo
     status: 'Active',
     location: 'Madrid Campus'
@@ -121,7 +121,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'david.anderson@company.com',
     phone: '+1 (555) 0100',
     bio: 'Chief Academic Officer with over 20 years of experience in educational leadership.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',         // Reports to CEO (staff-1)
     status: 'Active',
     location: 'Madrid Campus'
@@ -142,7 +142,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'andrea.leeland@company.com',
     phone: '+1 (555) 0102',
     bio: 'Over 15 years of experience in financial management and strategic planning.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-1',  // CEO
     status: 'Active',
     location: 'Madrid Campus'
@@ -163,7 +163,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'sarah.williams@company.com',
     phone: '+1 (555) 0103',
     bio: 'Tech leader with a focus on educational software and scalable systems.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-1',  // CEO
     status: 'On Leave',
     location: 'Barcelona Campus'
@@ -184,7 +184,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'jessica.martinez@company.com',
     phone: '+1 (555) 0104',
     bio: 'Specialized in organizational development, now overseeing the admissions process.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-1',  // CEO
     status: 'Active',
     location: 'Madrid Campus'
@@ -205,7 +205,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'robert.chen@company.com',
     phone: '+1 (555) 0114',
     bio: 'Senior Financial Analyst with expertise in educational budgeting.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3', // CFO
     status: 'Active',
     location: 'Madrid Campus'
@@ -226,7 +226,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'patricia.wong@company.com',
     phone: '+1 (555) 0115',
     bio: 'HR Specialist focusing on talent acquisition and development.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5', 
     status: 'On Leave',
     location: 'Madrid Campus'
@@ -247,7 +247,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'marcus.johnson@company.com',
     phone: '+1 (555) 0116',
     bio: 'IT Support Specialist managing educational technology infrastructure.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -268,7 +268,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'linda.martinez@company.com',
     phone: '+1 (555) 0117',
     bio: 'Executive Assistant to the CEO.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',
     status: 'Active',
     location: 'Madrid Campus'
@@ -289,7 +289,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'david.wilson@company.com',
     phone: '+1 (555) 0118',
     bio: 'Accounts Payable Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3', // CFO
     status: 'Terminated',
     location: 'Madrid Campus'
@@ -310,7 +310,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'sarah.lee@company.com',
     phone: '+1 (555) 0119',
     bio: 'Benefits Coordinator managing employee wellness programs.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'Active',
     location: 'Madrid Campus'
@@ -331,7 +331,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'james.taylor@company.com',
     phone: '+1 (555) 0120',
     bio: 'Systems Administrator maintaining educational platforms.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Probationary',
     location: 'Barcelona Campus'
@@ -352,7 +352,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'emma.davis@company.com',
     phone: '+1 (555) 0121',
     bio: 'Financial Operations Analyst.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Active',
     location: 'Madrid Campus'
@@ -373,7 +373,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'michael.brown@company.com',
     phone: '+1 (555) 0122',
     bio: 'Training and Development Coordinator.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'Active',
     location: 'Madrid Campus'
@@ -394,7 +394,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'jennifer.white@company.com',
     phone: '+1 (555) 0123',
     bio: 'Administrative Coordinator for executive office.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',
     status: 'Resigned',
     location: 'Madrid Campus'
@@ -415,7 +415,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'carlos.rodriguez@company.com',
     phone: '+1 (555) 0124',
     bio: 'Network Security Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -436,7 +436,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'sophia.zhang@company.com',
     phone: '+1 (555) 0125',
     bio: 'Financial Risk Analyst.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Active',
     location: 'Madrid Campus'
@@ -457,7 +457,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'william.park@company.com',
     phone: '+1 (555) 0126',
     bio: 'Employee Relations Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'On Probation',
     location: 'Madrid Campus'
@@ -478,7 +478,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'isabella.garcia@company.com',
     phone: '+1 (555) 0127',
     bio: 'Software Development Lead.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -499,7 +499,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'nathan.wright@company.com',
     phone: '+1 (555) 0128',
     bio: 'Budget Planning Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Contractual',
     location: 'Madrid Campus'
@@ -520,7 +520,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'oliver.chen@company.com',
     phone: '+1 (555) 0129',
     bio: 'Strategic Planning Coordinator.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',
     status: 'Active',
     location: 'Madrid Campus'
@@ -541,7 +541,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'ava.thompson@company.com',
     phone: '+1 (555) 0130',
     bio: 'Recruitment Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'Active',
     location: 'Madrid Campus'
@@ -562,7 +562,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'lucas.kim@company.com',
     phone: '+1 (555) 0131',
     bio: 'Cloud Infrastructure Engineer.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -583,7 +583,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'mia.patel@company.com',
     phone: '+1 (555) 0132',
     bio: 'Compliance Officer.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'On Leave',
     location: 'Madrid Campus'
@@ -604,7 +604,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'ethan.cooper@company.com',
     phone: '+1 (555) 0133',
     bio: 'Training Program Developer.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'Active',
     location: 'Madrid Campus'
@@ -625,7 +625,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'charlotte.lee@company.com',
     phone: '+1 (555) 0134',
     bio: 'Quality Assurance Lead.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -646,7 +646,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'benjamin.wilson@company.com',
     phone: '+1 (555) 0135',
     bio: 'Investment Analyst.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Active',
     location: 'Madrid Campus'
@@ -667,7 +667,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'victoria.martinez@company.com',
     phone: '+1 (555) 0136',
     bio: 'Oversees all marketing and communications initiatives.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',  // CEO
     status: 'Active',
     location: 'Madrid Campus'
@@ -688,7 +688,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'henry.taylor@company.com',
     phone: '+1 (555) 0137',
     bio: 'Employee Engagement Specialist.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'On Leave',
     location: 'Madrid Campus'
@@ -709,7 +709,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'scarlett.wong@company.com',
     phone: '+1 (555) 0138',
     bio: 'Data Center Operations Manager.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -728,7 +728,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'sebastian.ross@company.com',
     phone: '+1 (555) 0139',
     bio: 'Treasury Analyst.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Active',
     location: 'Madrid Campus'
@@ -747,7 +747,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'zoe.anderson@company.com',
     phone: '+1 (555) 0140',
     bio: 'Diversity and Inclusion Coordinator.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-5',
     status: 'Active',
     location: 'Madrid Campus'
@@ -766,7 +766,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'christopher.lee@company.com',
     phone: '+1 (555) 0141',
     bio: 'Information Security Analyst.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-4',
     status: 'Active',
     location: 'Barcelona Campus'
@@ -785,7 +785,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'madison.clark@company.com',
     phone: '+1 (555) 0142',
     bio: 'Accounting Operations Manager.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-3',
     status: 'Active',
     location: 'Madrid Campus'
@@ -804,7 +804,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'gabriel.santos@company.com',
     phone: '+1 (555) 0143',
     bio: 'Oversees business development and sales strategies.',
-    projects: [],
+    programs: [],
     reportsTo: 'staff-1',  // CEO
     status: 'Probationary',
     location: 'Madrid Campus'
@@ -825,7 +825,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'richard.chen@company.com',
     phone: '+1 (555) 0112',
     bio: 'Experienced science educator with a focus on practical applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-2', // The CAO
     status: 'Active',
     location: 'Barcelona Campus'
@@ -841,7 +841,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'karen@company.com',
     phone: '+1 (555) 0112',
     bio: 'Experienced computer science educator with a focus on practical applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-2', // The CAO
     status: 'Active',
     location: 'Barcelona Campus'
@@ -857,7 +857,7 @@ export const initialTeamMembers: TeamMember[] = [
     email: 'michael@company.com',
     phone: '+1 (555) 0112',
     bio: 'Experienced mathematics educator with a focus on practical applications.',
-    projects: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
+    programs: ['Computer Entrepreneurship Bachelor (2409CEB1)', 'Bootcamp en Diseño UX/UI (2410BUXS)', 'Bootcamp en Cloud Computing & DevOps (2410BCCS)'],
     reportsTo: 'staff-2', // The CAO
     status: 'Active',
     location: 'Barcelona Campus'
@@ -893,7 +893,7 @@ function generateTeachers(startIndex: number, count: number): TeamMember[] {
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
       phone: `+1 (555) 0${100 + index}`, // Just a sample for uniqueness
       bio: `Teacher specializing in advanced topics of ${firstName}'s domain.`,
-      projects: [],
+      programs: [],
       reportsTo: 'program-dir-1', // or pick randomly if you have multiple Program Dirs
       status: statusOptions.Teacher[
         Math.floor(Math.random() * statusOptions.Teacher.length)
@@ -945,7 +945,7 @@ function generateStudents(startIndex: number, count: number): TeamMember[] {
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
       phone: `+1 (555) 02${String(100 + i).padStart(2, '0')}`,
       bio: `A dedicated student in ${firstName}'s path.`,
-      projects: [],
+      programs: [],
       // Pick who they "report to"; for example:
       reportsTo: 'staff-6', // All students report to Robert Chen (finance) or any staff you want
       status: statusOptions.Student[
@@ -1152,7 +1152,7 @@ const calculateAverageScore = (students: Student[]) => {
 
 export const mockPrograms = [
   {
-    id: '1',
+    id: 'program-1',
     name: 'Bootcamp en Cloud Computing & Devops',
     progress: 65,
     directors: [mockTeamMembers.find(m => m.id === 'program-dir-2') as TeamMember],
@@ -1161,7 +1161,7 @@ export const mockPrograms = [
     avgScore: calculateAverageScore(mockStudents.slice(0, 6)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'PreWork',
         description: 'Basics of IT and Cloud value.',
         credits: 3,
@@ -1170,7 +1170,7 @@ export const mockPrograms = [
         tools: 'None'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Automation with PowerShell',
         description: 'Introduction to PowerShell and its usage.',
         credits: 4,
@@ -1179,7 +1179,7 @@ export const mockPrograms = [
         tools: 'CLI, PowerShell'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Azure Cloud Adminisration',
         description: 'Introduction to Azure and its usage.',
         credits: 4,
@@ -1188,7 +1188,7 @@ export const mockPrograms = [
         tools: 'Azure Portal, DrawIO'
       },
       {
-        id: '4',
+        id: 'module-4',
         name: 'AWS Assoc Architect',
         description: 'Introduction to AWS and its usage.',
         credits: 4,
@@ -1197,7 +1197,7 @@ export const mockPrograms = [
         tools: 'AWS Console, AWS Academy'
       },
       {
-        id: '5',
+        id: 'module-5',
         name: 'GCP Assoc Cloud Engineer',
         description: 'Introduction to GCP and its usage.',
         credits: 4,
@@ -1206,7 +1206,7 @@ export const mockPrograms = [
         tools: 'GCP Console, DrawIO'
       },
       {
-        id: '6',
+        id: 'module-6',
         name: 'DevOps Engineer',
         description: 'Introduction to DevOps.',
         credits: 4,
@@ -1215,17 +1215,18 @@ export const mockPrograms = [
         tools: 'Azure DevOps, PowerShell'
       },
       {
-        id: '7',
+        id: 'module-7',
         name: 'Capstone',
-        description: 'Final project.',
+        description: 'Final program.',
         credits: 4,
         hours: 33,
-        competencies: 'Team work and project development',
+        competencies: 'Team work and program development',
         tools: 'Cloud consoles, CLIs, PowerShell, DrawIO'
       }      
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2410BCCS',
         modality: 'Online',
         schedule: {
@@ -1238,6 +1239,7 @@ export const mockPrograms = [
         },
         groups: [
           {
+            id: 'group-1',
             name: 'Group A',
             status: 'full',
             capacity: 30,
@@ -1260,6 +1262,7 @@ export const mockPrograms = [
             ]
           },
           {
+            id: 'group-2',
             name: 'Group B',
             status: 'closed',
             capacity: 25,
@@ -1310,7 +1313,7 @@ export const mockPrograms = [
     careerOpportunities: `- Cloud Architect: Diseñar y gestionar arquitecturas de soluciones en la nube para empresas, garantizando la escalabilidad, seguridad y eficiencia.
 - DevOps Engineer: Implementar y gestionar procesos de desarrollo y operaciones, mejorando la integración continua y el despliegue continuo (CI/CD) en entornos cloud.
 - Site Reliability Engineer (SRE): Asegurar la fiabilidad y disponibilidad de las aplicaciones y servicios en la nube, utilizando principios de ingeniería de software y operaciones.
-- IT Project Manager: Gestionar proyectos tecnológicos complejos, aplicando metodologías ágiles y coordinando equipos de desarrollo y operaciones.
+- IT Program Manager: Gestionar proyectos tecnológicos complejos, aplicando metodologías ágiles y coordinando equipos de desarrollo y operaciones.
 - Cloud Consultant: Asesorar a empresas en la adopción y optimización de soluciones en la nube, ayudándoles a mejorar su infraestructura y procesos.
 - Data Engineer: Diseñar, construir y gestionar sistemas de procesamiento y almacenamiento de datos, incluyendo lagos de datos y soluciones analíticas.
 - Infrastructure Engineer: Gestionar y optimizar la infraestructura de TI en la nube, asegurando la eficiencia y la seguridad de los recursos.
@@ -1321,7 +1324,7 @@ AWS Solution Architect
 GCP Professional Architect`
   },
   {
-    id: '2',
+    id: 'program-2',
     name: 'Bootcamp en Ciberseguridad',
     progress: 45,
     directors: [
@@ -1332,7 +1335,7 @@ GCP Professional Architect`
     avgScore: calculateAverageScore(mockStudents.slice(6, 12)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'Introducción a la Ciberseguridad',
         description: 'Conceptos básicos, amenazas y vulnerabilidades.',
         credits: 4,
@@ -1341,7 +1344,7 @@ GCP Professional Architect`
         tools: 'Wireshark, Linux CLI'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Pentesting & Ethical Hacking',
         description: 'Metodologías de pruebas de penetración.',
         credits: 5,
@@ -1350,7 +1353,7 @@ GCP Professional Architect`
         tools: 'Kali Linux, Metasploit'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Seguridad en Redes y Sistemas',
         description: 'Arquitectura de redes, firewalls y sistemas seguros.',
         credits: 4,
@@ -1359,7 +1362,7 @@ GCP Professional Architect`
         tools: 'Cisco Packet Tracer, pfSense'
       },
       {
-        id: '4',
+        id: 'module-4',
         name: 'Criptografía y Protocolos Seguros',
         description: 'Conceptos de cifrado, SSL/TLS, PKI y mejores prácticas.',
         credits: 3,
@@ -1370,6 +1373,7 @@ GCP Professional Architect`
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2409CYBS',
         modality: 'Online',
         schedule: {
@@ -1380,6 +1384,7 @@ GCP Professional Architect`
         },
         groups: [
           {
+            id: 'group-1',
             name: 'Group A',
             status: 'open',
             capacity: 25,
@@ -1416,7 +1421,7 @@ CEH (Certified Ethical Hacker)
 CISSP (ISC)²`
   },
   {
-    id: '3',
+    id: 'program-3',
     name: 'Bootcamp en Diseño UX/UI',
     progress: 30,
     directors: [
@@ -1427,7 +1432,7 @@ CISSP (ISC)²`
     avgScore: calculateAverageScore(mockStudents.slice(12, 20)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'Fundamentos de UX',
         description: 'Proceso de diseño centrado en el usuario, research y prototipado rápido.',
         credits: 3,
@@ -1436,7 +1441,7 @@ CISSP (ISC)²`
         tools: 'Figma, Miro'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Interfaz de Usuario (UI)',
         description: 'Diseño visual, tipografía, color y componentes de interacción.',
         credits: 4,
@@ -1445,7 +1450,7 @@ CISSP (ISC)²`
         tools: 'Sketch, Adobe XD'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Usabilidad y Pruebas de Usuario',
         description: 'Evaluación heurística y testing con usuarios.',
         credits: 3,
@@ -1456,6 +1461,7 @@ CISSP (ISC)²`
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2410BUXS',
         modality: 'Hybrid',
         schedule: {
@@ -1466,6 +1472,7 @@ CISSP (ISC)²`
         },
         groups: [
           {
+            id: 'group-1',
             name: 'Morning Cohort',
             status: 'open',
             capacity: 30,
@@ -1478,6 +1485,7 @@ CISSP (ISC)²`
             studentIds: ['student-12', 'student-13', 'student-14', 'student-15', 'student-16', 'student-17']
           },
           {
+            id: 'group-2',
             name: 'Evening Cohort',
             status: 'open',
             capacity: 10,
@@ -1506,7 +1514,7 @@ CISSP (ISC)²`
 NN/g UX Certification`
   },
   {
-    id: '4',
+    id: 'program-4',
     name: 'Bootcamp en Data Analytics',
     progress: 75,
     directors: [
@@ -1517,7 +1525,7 @@ NN/g UX Certification`
     avgScore: calculateAverageScore(mockStudents.slice(20, 30)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'Fundamentos de Análisis de Datos',
         description: 'Introducción a la recolección, limpieza y manipulación de datos.',
         credits: 4,
@@ -1526,7 +1534,7 @@ NN/g UX Certification`
         tools: 'Python, Jupyter, Excel'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Visualización y Business Intelligence',
         description: 'Técnicas de reporting y dashboards.',
         credits: 3,
@@ -1535,7 +1543,7 @@ NN/g UX Certification`
         tools: 'Tableau, Power BI'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Estadística y Modelos Predictivos',
         description: 'Análisis estadístico, regresiones y algoritmos de Machine Learning básicos.',
         credits: 5,
@@ -1546,6 +1554,7 @@ NN/g UX Certification`
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2410BDAA',
         modality: 'In-Person',
         schedule: {
@@ -1556,6 +1565,7 @@ NN/g UX Certification`
         },
         groups: [
           {
+            id: 'group-1',
             name: 'Group A',
             status: 'open',
             capacity: 28,
@@ -1594,7 +1604,7 @@ NN/g UX Certification`
 Microsoft Certified: Data Analyst Associate`
   },
   {
-    id: '5',
+    id: 'program-5',
     name: 'Bootcamp en Full-Stack Web Development',
     progress: 20,
     directors: [
@@ -1605,7 +1615,7 @@ Microsoft Certified: Data Analyst Associate`
     avgScore: calculateAverageScore(mockStudents.slice(30, 45)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'Frontend Fundamentals',
         description: 'HTML, CSS y JavaScript para crear interfaces de usuario.',
         credits: 4,
@@ -1614,7 +1624,7 @@ Microsoft Certified: Data Analyst Associate`
         tools: 'VSCode, Chrome DevTools'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Frontend Frameworks',
         description: 'Aprender React, Vue o Angular para aplicaciones SPA.',
         credits: 3,
@@ -1623,7 +1633,7 @@ Microsoft Certified: Data Analyst Associate`
         tools: 'Node, NPM'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Backend con Node.js',
         description: 'APIs REST, bases de datos y autenticación.',
         credits: 5,
@@ -1634,6 +1644,7 @@ Microsoft Certified: Data Analyst Associate`
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2410BFWD',
         modality: 'Online',
         schedule: {
@@ -1644,6 +1655,7 @@ Microsoft Certified: Data Analyst Associate`
         },
         groups: [
           {
+            id: 'group-1',
             name: 'FS-Group1',
             status: 'open',
             capacity: 30,
@@ -1666,6 +1678,7 @@ Microsoft Certified: Data Analyst Associate`
             ]
           },
           {
+            id: 'group-2',
             name: 'FS-Group2',
             status: 'open',
             capacity: 22,
@@ -1690,7 +1703,7 @@ Microsoft Certified: Data Analyst Associate`
 MERN/MEAN Stack Certifications (various)`
   },
   {
-    id: '6',
+    id: 'program-6',
     name: 'Bootcamp en Inteligencia Artificial',
     progress: 90,
     directors: [
@@ -1701,7 +1714,7 @@ MERN/MEAN Stack Certifications (various)`
     avgScore: calculateAverageScore(mockStudents.slice(45, 50)),
     modules: [
       {
-        id: '1',
+        id: 'module-1',
         name: 'Fundamentos de IA y Machine Learning',
         description: 'Historia de la IA, aprendizaje supervisado y no supervisado.',
         credits: 4,
@@ -1710,7 +1723,7 @@ MERN/MEAN Stack Certifications (various)`
         tools: 'Python, scikit-learn'
       },
       {
-        id: '2',
+        id: 'module-2',
         name: 'Redes Neuronales y Deep Learning',
         description: 'Arquitecturas de redes, backpropagation y frameworks.',
         credits: 5,
@@ -1719,7 +1732,7 @@ MERN/MEAN Stack Certifications (various)`
         tools: 'TensorFlow, Keras, PyTorch'
       },
       {
-        id: '3',
+        id: 'module-3',
         name: 'Procesamiento de Lenguaje Natural',
         description: 'Text analytics, embeddings y chatbots.',
         credits: 3,
@@ -1728,7 +1741,7 @@ MERN/MEAN Stack Certifications (various)`
         tools: 'NLTK, SpaCy, HuggingFace'
       },
       {
-        id: '4',
+        id: 'module-4',
         name: 'Visión por Computadora',
         description: 'Procesamiento de imágenes y detección de objetos.',
         credits: 3,
@@ -1739,6 +1752,7 @@ MERN/MEAN Stack Certifications (various)`
     ],
     intakes: [
       {
+        id: 'intake-1',
         name: '2410BIA',
         modality: 'Hybrid',
         schedule: {
@@ -1749,6 +1763,7 @@ MERN/MEAN Stack Certifications (various)`
         },
         groups: [
           {
+            id: 'group-1',
             name: 'IA-Group1',
             status: 'open',
             capacity: 20,
@@ -2164,7 +2179,7 @@ export const mockInvoices: Invoice[] = [
           status: 'approved',
           userId: 'CFO789',
           timestamp: '2025-01-16T14:30:00Z',
-          comments: 'Final approval granted - High priority project'
+          comments: 'Final approval granted - High priority program'
         }
       ]
     },
@@ -2260,9 +2275,9 @@ export interface CompetencyLevel {
 
 export const mockSkills: Skill[] = [
   {    id: 'skill-1',
-    name: 'Project Management',
+    name: 'Program Management',
     category: 'Management',
-    description: 'Ability to plan, execute and deliver projects effectively'
+    description: 'Ability to plan, execute and deliver programs effectively'
   },
   {
     id: 'skill-2',

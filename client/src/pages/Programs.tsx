@@ -28,7 +28,7 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
-export default function Projects() {
+export default function Programs() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
   const [, navigate] = useLocation();
@@ -94,11 +94,11 @@ export default function Projects() {
               initial="hidden"
               animate="show"
             >
-              {mockPrograms.map((project) => (
-                <motion.div key={project.id} variants={item}>
+              {mockPrograms.map((program) => (
+                <motion.div key={program.id} variants={item}>
                   <div className="relative group">
                     <div className="block">
-                      <Link href={`/programs/${project.id}`}>
+                      <Link href={`/programs/${program.id}`}>
                         <motion.div 
                           className="bg-card rounded-lg shadow-sm p-4 transition-shadow"
                           whileHover={{ 
@@ -107,28 +107,28 @@ export default function Projects() {
                           }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <h3 className="font-semibold mb-3">{project.name}</h3>
+                          <h3 className="font-semibold mb-3">{program.name}</h3>
 
                           <div className="space-y-4">
                             <div>
                               <div className="flex justify-between mb-2">
                                 <span className="text-sm text-muted-foreground">Progress</span>
-                                <span className="text-sm font-medium">{project.progress}%</span>
+                                <span className="text-sm font-medium">{program.progress}%</span>
                               </div>
-                              <Progress value={project.progress} className="h-2" />
+                              <Progress value={program.progress} className="h-2" />
                             </div>
 
                             <div>
                               <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm text-muted-foreground">Director</span>
-                                {project.directors && project.directors[0] && (
-                                  <Link href={`/people/${project.directors[0].id}`}>
+                                {program.directors && program.directors[0] && (
+                                  <Link href={`/people/${program.directors[0].id}`}>
                                     <a className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                       <span className="text-sm font-medium">
-                                        {project.directors[0].name}</span>
+                                        {program.directors[0].name}</span>
                                       <Avatar className="h-6 w-6">
-                                        <AvatarImage src={project.directors[0].avatar} alt={project.directors[0].name} />
-                                        <AvatarFallback>{project.directors[0].name.slice(0, 2)}</AvatarFallback>
+                                        <AvatarImage src={program.directors[0].avatar} alt={program.directors[0].name} />
+                                        <AvatarFallback>{program.directors[0].name.slice(0, 2)}</AvatarFallback>
                                       </Avatar>
                                     </a>
                                   </Link>
@@ -140,7 +140,7 @@ export default function Projects() {
                               <div>
                                 <p className="text-sm text-muted-foreground mb-2">Teachers</p>
                                 <div className="flex -space-x-2"> 
-                                    {Array.from(new Set(project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => moduleTeacher.teacherIds)))
+                                    {Array.from(new Set(program.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => moduleTeacher.teacherIds)))
                                       .map((teacherId) => {
                                       const teacher = teachers.find(t => t.id === teacherId);
                                       if (!teacher) return null;
@@ -159,7 +159,7 @@ export default function Projects() {
                               </div>
                               <div className="text-right">
                                 <p className="text-sm text-muted-foreground">Students</p>
-                                <p className="text-sm font-medium">{project.studentCount}</p>
+                                <p className="text-sm font-medium">{program.studentCount}</p>
                               </div>
                             </div>
                           </div>
@@ -170,7 +170,7 @@ export default function Projects() {
                     {/* Action buttons */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-2">
-                        <Link href={`/programs/${project.id}/edit`}>
+                        <Link href={`/programs/${program.id}/edit`}>
                           <a onClick={(e) => e.stopPropagation()}>
                             <Button
                               variant="secondary"
@@ -186,7 +186,7 @@ export default function Projects() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setDeletingProgramId(project.id);
+                            setDeletingProgramId(program.id);
                           }}
                         >
                           <Trash2 className="h-4 w-4" />

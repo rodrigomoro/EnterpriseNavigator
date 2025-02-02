@@ -277,7 +277,7 @@ export default function Settings() {
       case "google":
         title = "Google Cloud Identity Configuration";
         fields = [
-          { name: "projectId", label: "Project ID", type: "text" },
+          { name: "programId", label: "Program ID", type: "text" },
           { name: "serviceAccount", label: "Service Account JSON", type: "textarea" },
         ];
         break;
@@ -325,7 +325,7 @@ export default function Settings() {
         fields = [
           { name: "clientId", label: "Client ID", type: "text" },
           { name: "clientSecret", label: "Client Secret", type: "password" },
-          { name: "projectId", label: "Project ID", type: "text" },
+          { name: "programId", label: "Program ID", type: "text" },
           { name: "serviceAccount", label: "Service Account JSON", type: "textarea" },
         ];
         break;

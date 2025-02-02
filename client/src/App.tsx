@@ -4,8 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import Projects from "@/pages/Projects";
-import ProjectOverview from "@/pages/ProjectOverview";
+import Programs from "@/pages/Programs";
+import ProgramOverview from "@/pages/ProgramOverview";
 import People from "@/pages/People";
 import PersonOverview from "@/pages/PersonOverview";
 import ManagePerson from "@/pages/ManagePerson";
@@ -28,8 +28,8 @@ function Router() {
       <Route path="/calendar" component={Calendar} />
       <Route path="/programs/new" component={ManageProgram} />
       <Route path="/programs/:id/edit" component={ManageProgram} />
-      <Route path="/programs/:id" component={ProjectOverview} />
-      <Route path="/programs" component={Projects} />
+      <Route path="/programs/:id" component={ProgramOverview} />
+      <Route path="/programs" component={Programs} />
       <Route path="/people/new" component={ManagePerson} />
       <Route path="/people/:id/edit" component={ManagePerson} />
       <Route path="/people/:id" component={PersonOverview} />

@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function ProjectOverview() {
+export default function ProgramOverview() {
   const [, params] = useRoute("/programs/:id");
-  const project = mockPrograms.find((p) => p.id === params?.id);
+  const program = mockPrograms.find((p) => p.id === params?.id);
   const [openSections, setOpenSections] = useState({
     modules: true,
     intakes: true,
@@ -36,7 +36,7 @@ export default function ProjectOverview() {
   const students = mockTeamMembers.filter((m) => m.role === "Student");
   const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
 
-  if (!project) return <div>Project not found</div>;
+  if (!program) return <div>Program not found</div>;
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({
@@ -63,9 +63,9 @@ export default function ProjectOverview() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-4">
-                  <h1 className="text-2xl font-bold">{project.name}</h1>
-                  <Badge variant="secondary">{project.type}</Badge>
-                  <Link href={`/programs/${project.id}/edit`}>
+                  <h1 className="text-2xl font-bold">{program.name}</h1>
+                  <Badge variant="secondary">{program.type}</Badge>
+                  <Link href={`/programs/${program.id}/edit`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Edit className="h-4 w-4" />
                       Edit Program
@@ -89,18 +89,18 @@ export default function ProjectOverview() {
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm text-muted-foreground">Area</p>
-                          <p className="font-medium">{project.area}</p>
+                          <p className="font-medium">{program.area}</p>
                         </div>
                         <div>
                           <p className="text-sm text-muted-foreground">Type</p>
-                          <p className="font-medium">{project.type}</p>
+                          <p className="font-medium">{program.type}</p>
                         </div>
                         <div>
                           <p className="text-sm text-muted-foreground">
                             Total Duration
                           </p>
                           <p className="font-medium">
-                            {project.totalHours} hours
+                            {program.totalHours} hours
                           </p>
                         </div>
                       </div>
@@ -111,7 +111,7 @@ export default function ProjectOverview() {
                         Program Directors
                       </h3>
                       <div className="space-y-3">
-                        {project.directors?.map((director) => (
+                        {program.directors?.map((director) => (
                           <Link
                             key={director.id}
                             href={`/people/${director.id}`}
@@ -149,7 +149,7 @@ export default function ProjectOverview() {
                             <span className="text-sm">Total Students</span>
                           </div>
                           <p className="text-2xl font-semibold">
-                            {project.studentCount}
+                            {program.studentCount}
                           </p>
                         </div>
                         <div className="space-y-1">
@@ -158,7 +158,7 @@ export default function ProjectOverview() {
                             <span className="text-sm">Avg. Score</span>
                           </div>
                           <p className="text-2xl font-semibold">
-                            {project.avgScore}%
+                            {program.avgScore}%
                           </p>
                         </div>
                       </div>
@@ -176,10 +176,10 @@ export default function ProjectOverview() {
                           Overall Progress
                         </span>
                         <span className="text-sm text-muted-foreground">
-                          {project.progress}%
+                          {program.progress}%
                         </span>
                       </div>
-                      <Progress value={project.progress} className="h-2" />
+                      <Progress value={program.progress} className="h-2" />
                     </div>
                   </div>
                 </Card>
@@ -188,7 +188,7 @@ export default function ProjectOverview() {
                       <div>
                         <h4 className="text-sm font-medium mb-2">Objectives</h4>
                         <p className="text-sm text-muted-foreground">
-                          {project.objectives}
+                          {program.objectives}
                         </p>
                       </div>
                       <div>
@@ -196,7 +196,7 @@ export default function ProjectOverview() {
                           Why Choose This Course?
                         </h4>
                         <p className="text-sm text-muted-foreground">
-                          {project.whyChoose}
+                          {program.whyChoose}
                         </p>
                       </div>
                       <div>
@@ -204,7 +204,7 @@ export default function ProjectOverview() {
                           Career Opportunities
                         </h4>
                         <p className="text-sm text-muted-foreground">
-                          {project.careerOpportunities}
+                          {program.careerOpportunities}
                         </p>
                       </div>
                       <div>
@@ -212,7 +212,7 @@ export default function ProjectOverview() {
                           Certifications
                         </h4>
                         <p className="text-sm text-muted-foreground">
-                          {project.certifications}
+                          {program.certifications}
                         </p>
                       </div>
                     </div>                  
@@ -238,7 +238,7 @@ export default function ProjectOverview() {
                     <CollapsibleContent className="pt-4">
                       <ScrollArea className="h-[408px] pr-4">
                         <div className="space-y-4">
-                          {project.modules?.map((module, index) => (
+                          {program.modules?.map((module, index) => (
                             <div key={index} className="border rounded-lg p-4">
                               <div className="flex justify-between items-start mb-3">
                                 <div>
@@ -311,7 +311,7 @@ export default function ProjectOverview() {
                     <CollapsibleContent className="pt-4">
                       {/* <ScrollArea className="h-[800px] pr-4"> */}
                         <div className="space-y-6">
-                          {project.intakes?.map((intake, index) => (
+                          {program.intakes?.map((intake, index) => (
                             <div key={index} className="border rounded-lg p-4">
                               <div className="flex items-center justify-between mb-4">
                                 <div>
@@ -404,7 +404,7 @@ export default function ProjectOverview() {
                                                 </div>
                                                 <div className="divide-y">
                                                   {group.moduleTeachers?.map((mapping, mappingIndex) => {
-                                                    const module = project.modules?.find((m, idx) => idx.toString() === mapping.moduleId);
+                                                    const module = program.modules?.find((m, idx) => idx.toString() === mapping.moduleId);
                                                     return module ? (
                                                       <div key={mappingIndex} className="p-2 grid grid-cols-12 gap-2 items-center">
                                                         <div className="col-span-4">

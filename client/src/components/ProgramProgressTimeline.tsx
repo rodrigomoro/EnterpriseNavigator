@@ -29,10 +29,10 @@ const data = [
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June'];
 
-export default function ProjectProgressTimeline() {
+export default function ProgramProgressTimeline() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Project Progress</h3>
+      <h3 className="text-lg font-semibold mb-4">Program Progress</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

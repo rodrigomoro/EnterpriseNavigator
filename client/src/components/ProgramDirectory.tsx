@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'wouter';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function ProjectDirectory() {
+export default function ProgramDirectory() {
   const [showAll, setShowAll] = useState(false);
   const displayMembers = showAll ? mockPrograms : mockPrograms.slice(0, 3);
   const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
@@ -20,20 +20,20 @@ export default function ProjectDirectory() {
       </div>
 
       <div className="space-y-4">
-        {displayMembers.map((project) => (
-          <Link key={project.id} href={`/program/${project.id}`}>
+        {displayMembers.map((program) => (
+          <Link key={program.id} href={`/program/${program.id}`}>
             <a className="flex items-center justify-between py-2 hover:bg-muted/50 px-2 rounded-md cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                   <span className="text-primary text-sm">P</span>
                 </div>
                 <div>
-                  <p className="font-medium">{project.name}</p>
+                  <p className="font-medium">{program.name}</p>
                 </div>
               </div>
 
               <div className="flex -space-x-2">
-                {Array.from(new Set(project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => 
+                {Array.from(new Set(program.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => 
                   moduleTeacher.teacherIds))).map(teacherId => {
                   const teacher = teachers?.find(m => m.id === teacherId);
                   return (

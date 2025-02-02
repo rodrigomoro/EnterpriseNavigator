@@ -19,9 +19,9 @@ const programMetrics = {
 };
 
 // Calculate program distribution data
-const programDistributionData = mockPrograms.map(project => {
-  const moduleTeachers = project.modules.flatMap(module => 
-    project.intakes.flatMap(intake => 
+const programDistributionData = mockPrograms.map(program => {
+  const moduleTeachers = program.modules.flatMap(module => 
+    program.intakes.flatMap(intake => 
       intake.groups.flatMap(group => 
         group.moduleTeachers
           .filter(mt => mt.moduleId === module.id)
@@ -31,18 +31,18 @@ const programDistributionData = mockPrograms.map(project => {
   );
 
   return {
-    name: project.name,
-    value: project.studentCount,
-    progress: project.progress,
+    name: program.name,
+    value: program.studentCount,
+    progress: program.progress,
     teamSize: new Set(moduleTeachers).size
   };
 });
 
 // Calculate program progress data
-const programProgressData = mockPrograms.map(project => ({
-  name: project.name,
-  progress: project.progress,
-  studentCount: project.studentCount
+const programProgressData = mockPrograms.map(program => ({
+  name: program.name,
+  progress: program.progress,
+  studentCount: program.studentCount
 }));
 
 // Colors for charts
