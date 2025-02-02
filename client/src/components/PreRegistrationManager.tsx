@@ -87,7 +87,7 @@ export const PreRegistrationManager = () => {
   const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>(mockPreRegistrations);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
-  const [selectedPreReg, setSelectedPreReg] = useState<PreRegistration | null>(null);
+  const [selectedPreRegs, setSelectedPreRegs] = useState<PreRegistration[]>([]);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -114,46 +114,49 @@ export const PreRegistrationManager = () => {
   };
 
   const handleConvert = (preReg: PreRegistration) => {
-    setSelectedPreReg(preReg);
+    setSelectedPreRegs([preReg]);
     setConversionDialogOpen(true);
   };
 
   const handleConvertSelected = () => {
-    // For now, we'll only convert the first selected pre-registration
-    const firstSelected = preRegistrations.find(p => selectedIds.has(p.id));
-    if (firstSelected) {
-      handleConvert(firstSelected);
+    const selectedPreRegs = preRegistrations.filter(p => selectedIds.has(p.id));
+    if (selectedPreRegs.length > 0) {
+      setSelectedPreRegs(selectedPreRegs);
+      setConversionDialogOpen(true);
     }
   };
 
   const handleConversionComplete = (data: { 
-    preRegistrationId: string;
-    moduleAssignments: Array<{
-      moduleId: string;
-      groupId: string;
+    conversions: Array<{
+      preRegistrationId: string;
+      moduleAssignments: Array<{
+        moduleId: string;
+        groupId: string;
+      }>;
     }>;
   }) => {
-    // Here we would make the API call to convert the pre-registration
+    // Here we would make the API call to convert the pre-registrations
     console.log('Converting with assignments:', data);
 
-    // Remove the converted pre-registration
+    // Remove all converted pre-registrations
+    const convertedIds = new Set(data.conversions.map(c => c.preRegistrationId));
     setPreRegistrations(prev => 
-      prev.filter(p => p.id !== data.preRegistrationId)
+      prev.filter(p => !convertedIds.has(p.id))
     );
 
-    // Clear selection if it was part of the selected items
+    // Clear selections
     setSelectedIds(prev => {
       const next = new Set(prev);
-      next.delete(data.preRegistrationId);
+      convertedIds.forEach(id => next.delete(id));
       return next;
     });
 
     setConversionDialogOpen(false);
-    setSelectedPreReg(null);
+    setSelectedPreRegs([]);
 
     toast({
-      title: "Pre-registration converted",
-      description: "The student has been successfully enrolled in the selected groups.",
+      title: "Pre-registrations converted",
+      description: `Successfully enrolled ${data.conversions.length} student(s) in their selected groups.`,
     });
   };
 
@@ -213,11 +216,11 @@ export const PreRegistrationManager = () => {
         </DndContext>
       </ScrollArea>
 
-      {selectedPreReg && (
+      {selectedPreRegs.length > 0 && (
         <ConversionDialog 
           open={conversionDialogOpen}
           onOpenChange={setConversionDialogOpen}
-          preRegistration={selectedPreReg}
+          preRegistrations={selectedPreRegs}
           onConvert={handleConversionComplete}
         />
       )}
