@@ -46,7 +46,7 @@ export default function Projects() {
     });
   };
 
-  const teachers = mockTeamMembers.filter(member => member.role === 'teacher');
+  const teachers = mockTeamMembers.filter(member => member.role === 'Teacher');
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -140,8 +140,8 @@ export default function Projects() {
                               <div>
                                 <p className="text-sm text-muted-foreground mb-2">Teachers</p>
                                 <div className="flex -space-x-2"> 
-                                    {project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).map((moduleTeacher) => {
-                                      return moduleTeacher.teacherIds.map((teacherId) => {
+                                    {Array.from(new Set(project.intakes.flatMap(intake => intake.groups.flatMap(group => group.moduleTeachers)).flatMap(moduleTeacher => moduleTeacher.teacherIds)))
+                                      .map((teacherId) => {
                                       const teacher = teachers.find(t => t.id === teacherId);
                                       if (!teacher) return null;
                                       return (
@@ -154,8 +154,7 @@ export default function Projects() {
                                         </a>
                                         </Link>
                                       );
-                                      });
-                                    })}
+                                      })}
                                 </div>
                               </div>
                               <div className="text-right">
