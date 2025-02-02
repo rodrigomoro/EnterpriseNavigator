@@ -1,4 +1,5 @@
 import { PreRegistrationManager } from '@/components/PreRegistrationManager'
+import { PreRegistrationFormDialog } from '@/components/PreRegistrationFormDialog'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,9 +9,19 @@ import { Input } from '@/components/ui/input'
 import UserAvatar from '@/components/UserAvatar'
 import PageTransition from '@/components/PageTransition'
 import { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 
 export const ProgramEnrollments = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { toast } = useToast()
+
+  const handlePreRegister = (data: any) => {
+    console.log('Creating pre-registration:', data)
+    toast({
+      title: "Pre-registration created",
+      description: "The pre-registration has been created successfully.",
+    })
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -38,7 +49,7 @@ export const ProgramEnrollments = () => {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button>New Pre-registration</Button>
+                <PreRegistrationFormDialog onPreRegister={handlePreRegister} />
                 <UserAvatar />
               </div>
             </div>
