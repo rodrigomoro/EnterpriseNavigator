@@ -113,7 +113,7 @@ export function ConversionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="sm:max-w-[1000px]">
         <DialogHeader>
           <DialogTitle>Convert Pre-registrations to Enrollments</DialogTitle>
           <DialogDescription>
@@ -125,7 +125,7 @@ export function ConversionDialog({
         </DialogHeader>
 
         <ScrollArea className="max-h-[600px] mt-4">
-          <div className="space-y-6 pr-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
             {preRegistrations.map((preReg) => (
               <Card key={preReg.id} className="p-4">
                 <div className="flex items-center gap-3 mb-4">
