@@ -10,6 +10,7 @@ import People from "@/pages/People";
 import PersonOverview from "@/pages/PersonOverview";
 import ManagePerson from "@/pages/ManagePerson";
 import ManageProgram from "@/pages/ManageProgram";
+import ProgramEnrollments from "@/pages/ProgramEnrollments";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
 import CreateEditInvoice from "@/pages/CreateEditInvoice";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/programs/new" component={ManageProgram} />
       <Route path="/programs/:id/edit" component={ManageProgram} />
       <Route path="/programs/:id" component={ProgramOverview} />
+      <Route path="/programs/enrollments" component={ProgramEnrollments} />
       <Route path="/programs" component={Programs} />
       <Route path="/people/new" component={ManagePerson} />
       <Route path="/people/:id/edit" component={ManagePerson} />
