@@ -14,7 +14,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockPrograms } from "@/data/mockData";
+import { mockTeamMembers, mockPrograms, mockModuleCatalog } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -92,8 +92,34 @@ const GROUP_STATUS = [
   { value: "cancelled", label: "Cancelled" },
 ] as const;
 
+function getFullModulesFromIDs(moduleIds: string[]) {
+  return moduleIds.map((moduleId) => {
+    const catalogEntry = mockModuleCatalog.find((m) => m.id === moduleId);
+    if (!catalogEntry) {
+      // If the ID isn't found, decide how to handle it.
+      // We'll create a placeholder object or skip it. For now:
+      return {
+        id: moduleId, // at least store the original ID
+        name: "",
+        description: "",
+        competencies: "",
+        tools: "",
+        syllabus: "",
+        hours: 0,
+        credits: 0,
+        costPerCredit: 0,
+      };
+    }
+    // Return the full catalog data, which matches your schema
+    return {
+      ...catalogEntry,
+    };
+  });
+}
+
 // Module Schema and Components
 const moduleSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(1, "Module name is required"),
   description: z.string(),
   competencies: z.string().min(1, "Competencies are required"),
@@ -702,16 +728,22 @@ export default function ManageProgram() {
       whyChoose: program?.whyChoose ?? "",
       careerOpportunities: program?.careerOpportunities ?? "",
       certifications: program?.certifications ?? "",
-      modules: program?.modules ?? [{
-        name: "",
-        description: "",
-        competencies: "",
-        tools: "",
-        syllabus: "",
-        hours: 0,
-        credits: 0,
-        costPerCredit: 0
-      }],
+      modules: program
+        ? getFullModulesFromIDs(program.modules) 
+        : [
+            // if new program, let’s start with one empty module
+            {
+              id: undefined,
+              name: "",
+              description: "",
+              competencies: "",
+              tools: "",
+              syllabus: "",
+              hours: 0,
+              credits: 0,
+              costPerCredit: 0
+            }
+          ],
       intakes: program?.intakes ?? [{
         name: "",
         modality: "",
@@ -752,12 +784,44 @@ export default function ManageProgram() {
 
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
+  
+    // Convert modules (with full details) back to an array of IDs
+    const moduleIds = data.modules.map(mod => {
+      // If mod.id doesn't exist (for newly created modules),
+      // create a new ID or handle them accordingly.
+      // For example, let's generate a random ID:
+      if (!mod.id) {
+        mod.id = "module-" + Math.random().toString(36).slice(2);
+        // Possibly also push to mockModuleCatalog or handle new modules
+        // mockModuleCatalog.push(mod)
+      }
+      return mod.id;
+    });
+  
+    // Make an updated program object
+    const updatedProgram = {
+      ...program, // if there's an existing program
+      name: data.name,
+      area: data.area,
+      type: data.type,
+      // ...
+      modules: moduleIds, // Only store the array of IDs
+      intakes: data.intakes,
+    };
+  
+    // Now you can save updatedProgram to your store / mock array / API
+    // e.g. if you keep them in an array:
+    // const idx = mockPrograms.findIndex((p) => p.id === updatedProgram.id)
+    // mockPrograms[idx] = updatedProgram;
+  
     toast({
       title: isEdit ? "Program Updated" : "Program Created",
       description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
     });
-    navigate("/programs");
+  
+    navigate("/programs/" + updatedProgram.id);
   };
+  
 
   const directors = mockTeamMembers.filter(
     (member) => member.role === "Program Director",
