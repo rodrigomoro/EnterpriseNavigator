@@ -1651,7 +1651,7 @@ GCP Professional Architect`
     ],
     intakes: [
       {
-        id: 'intake-1',
+        id: 'intake-2',
         name: '2409CYBS',
         modality: 'Online',
         schedule: {
@@ -1662,7 +1662,7 @@ GCP Professional Architect`
         },
         groups: [
           {
-            id: 'group-1',
+            id: 'group-3',
             name: 'Group A',
             status: 'open',
             capacity: 25,
@@ -1715,7 +1715,7 @@ CISSP (ISC)²`
     ],
     intakes: [
       {
-        id: 'intake-1',
+        id: 'intake-4',
         name: '2410BUXS',
         modality: 'Hybrid',
         schedule: {
@@ -1726,7 +1726,7 @@ CISSP (ISC)²`
         },
         groups: [
           {
-            id: 'group-1',
+            id: 'group-4',
             name: 'Morning Cohort',
             status: 'open',
             capacity: 30,
@@ -1739,7 +1739,7 @@ CISSP (ISC)²`
             studentIds: ['student-12', 'student-13', 'student-14', 'student-15', 'student-16', 'student-17']
           },
           {
-            id: 'group-2',
+            id: 'group-5',
             name: 'Evening Cohort',
             status: 'open',
             capacity: 10,
@@ -1784,7 +1784,7 @@ NN/g UX Certification`
     ],
     intakes: [
       {
-        id: 'intake-1',
+        id: 'intake-5',
         name: '2410BDAA',
         modality: 'In-Person',
         schedule: {
@@ -1795,7 +1795,7 @@ NN/g UX Certification`
         },
         groups: [
           {
-            id: 'group-1',
+            id: 'group-6',
             name: 'Group A',
             status: 'open',
             capacity: 28,
@@ -1845,12 +1845,12 @@ Microsoft Certified: Data Analyst Associate`
     avgScore: calculateAverageScore(mockStudents.slice(30, 45)),
     modules: [
       'module-18',
-      'module-18',
+      'module-19',
       'module-20'     
     ],
     intakes: [
       {
-        id: 'intake-1',
+        id: 'intake-6',
         name: '2410BFWD',
         modality: 'Online',
         schedule: {
@@ -1861,7 +1861,7 @@ Microsoft Certified: Data Analyst Associate`
         },
         groups: [
           {
-            id: 'group-1',
+            id: 'group-7',
             name: 'FS-Group1',
             status: 'open',
             capacity: 30,
@@ -1884,7 +1884,7 @@ Microsoft Certified: Data Analyst Associate`
             ]
           },
           {
-            id: 'group-2',
+            id: 'group-8',
             name: 'FS-Group2',
             status: 'open',
             capacity: 22,
@@ -1930,7 +1930,7 @@ MERN/MEAN Stack Certifications (various)`
     ],
     intakes: [
       {
-        id: 'intake-1',
+        id: 'intake-7',
         name: '2410BIA',
         modality: 'Hybrid',
         schedule: {
@@ -1941,7 +1941,7 @@ MERN/MEAN Stack Certifications (various)`
         },
         groups: [
           {
-            id: 'group-1',
+            id: 'group-9',
             name: 'IA-Group1',
             status: 'open',
             capacity: 20,

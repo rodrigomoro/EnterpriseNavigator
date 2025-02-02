@@ -20,8 +20,6 @@ import { mockPrograms } from '@/data/mockData';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 
 interface ConversionDialogProps {
   open: boolean;
@@ -30,7 +28,10 @@ interface ConversionDialogProps {
     id: string;
     studentId: string;
     studentName: string;
-    modules: string[];
+    modules: Array<{
+      moduleId: string;
+      groupId: string;
+    }>;
   }>;
   onConvert: (data: { 
     conversions: Array<{
@@ -52,8 +53,6 @@ export function ConversionDialog({
   const [moduleAssignments, setModuleAssignments] = useState<
     Record<string, Record<string, string>>
   >({});
-  const [isConverting, setIsConverting] = useState(false);
-  const { toast } = useToast();
 
   const getGroupsForModule = (moduleId: string) => {
     const groups: Array<{ id: string; name: string; capacity: number; enrolled: number }> = [];
@@ -77,31 +76,19 @@ export function ConversionDialog({
     return groups;
   };
 
-  const handleConvert = async () => {
-    // Validate all students have all their modules assigned to groups
-    const incompleteStudents = preRegistrations.filter(preReg =>
-      !preReg.modules.every(moduleId => 
+  const handleConvert = () => {
+    const isComplete = preRegistrations.every(preReg =>
+      preReg.modules.every(moduleId => 
         moduleAssignments[preReg.id]?.[moduleId]
       )
     );
 
-    if (incompleteStudents.length > 0) {
-      toast({
-        title: "Incomplete Assignments",
-        description: `Please select groups for all modules of ${incompleteStudents.map(s => s.studentName).join(", ")}`,
-        variant: "destructive",
-      });
+    if (!isComplete) {
       return;
     }
 
-    try {
-      setIsConverting(true);
-
-      // Here we would make the API call to convert pre-registrations to enrollments
-      // For now, we'll simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const conversions = preRegistrations.map(preReg => ({
+    onConvert({
+      conversions: preRegistrations.map(preReg => ({
         preRegistrationId: preReg.id,
         moduleAssignments: Object.entries(moduleAssignments[preReg.id] || {}).map(
           ([moduleId, groupId]) => ({
@@ -109,19 +96,8 @@ export function ConversionDialog({
             groupId,
           })
         ),
-      }));
-
-      onConvert({ conversions });
-
-    } catch (error) {
-      toast({
-        title: "Conversion Failed",
-        description: "There was an error converting the pre-registrations. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsConverting(false);
-    }
+      })),
+    });
   };
 
   const handleGroupSelect = (preRegId: string, moduleId: string, groupId: string) => {
@@ -135,8 +111,8 @@ export function ConversionDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !isConverting && onOpenChange(open)}>
-      <DialogContent className="sm:max-w-[1000px]">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>Convert Pre-registrations to Enrollments</DialogTitle>
           <DialogDescription>
@@ -147,8 +123,8 @@ export function ConversionDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[600px] mt-4">
-          <div className="space-y-6 pr-4">
+        <ScrollArea className="max-h-[450px] mt-4">
+          <div className="grid grid-cols-1 gap-4 pr-4">
             {preRegistrations.map((preReg) => (
               <Card key={preReg.id} className="p-4">
                 <div className="flex items-center gap-3 mb-4">
@@ -165,15 +141,15 @@ export function ConversionDialog({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {preReg.modules.map((moduleId) => {
-                    const groups = getGroupsForModule(moduleId);
-                    const selectedGroupId = moduleAssignments[preReg.id]?.[moduleId];
+                  {preReg.modules.map((m) => {
+                    const groups = getGroupsForModule(m.moduleId);
+                    const selectedGroupId = moduleAssignments[preReg.id]?.[m.moduleId];
 
                     return (
-                      <div key={moduleId} className="space-y-2">
+                      <div key={m.moduleId} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Badge variant="outline" className="truncate">
-                            {moduleId}
+                            {m.moduleId}
                           </Badge>
                           {selectedGroupId && (
                             <Badge variant="secondary" className="ml-2 shrink-0">
@@ -184,9 +160,8 @@ export function ConversionDialog({
                         <Select
                           value={selectedGroupId}
                           onValueChange={(value) => 
-                            handleGroupSelect(preReg.id, moduleId, value)
+                            handleGroupSelect(preReg.id, m.moduleId, value)
                           }
-                          disabled={isConverting}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a group" />
@@ -215,25 +190,11 @@ export function ConversionDialog({
         </ScrollArea>
 
         <DialogFooter className="mt-6">
-          <Button 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            disabled={isConverting}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleConvert}
-            disabled={isConverting}
-          >
-            {isConverting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Converting...
-              </>
-            ) : (
-              'Convert to Enrollments'
-            )}
+          <Button onClick={handleConvert}>
+            Convert to Enrollments
           </Button>
         </DialogFooter>
       </DialogContent>
