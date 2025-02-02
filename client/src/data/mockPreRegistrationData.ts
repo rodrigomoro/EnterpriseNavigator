@@ -1,14 +1,14 @@
-import { mockTeamMembers } from './mockData';
+import { mockTeamMembers, mockPrograms } from './mockData';
 
 export const mockStudents = mockTeamMembers.filter(member => member.role === 'Student');
 
-export const mockModules = [
-  { id: '1', name: 'Introduction to Biology', credits: 3 },
-  { id: '2', name: 'Advanced Chemistry', credits: 4 },
-  { id: '3', name: 'Medical Ethics', credits: 3 },
-  { id: '4', name: 'Anatomy & Physiology', credits: 5 },
-  { id: '5', name: 'Clinical Practice', credits: 4 },
-];
+export const mockModules = mockPrograms.flatMap(program =>
+  program.intakes.flatMap(intake =>
+    intake.groups
+      .filter(group => group.status === 'open' || group.status === 'waitlist')
+      .flatMap(group => group.moduleTeachers.map(mt => program.modules.find(m => m.id === mt.moduleId)))
+  )
+).filter((module, index, self) => module && self.indexOf(module) === index);
 
 export const mockPreRegistrations = [
   {

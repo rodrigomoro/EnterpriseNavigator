@@ -1245,14 +1245,14 @@ export const mockPrograms = [
             capacity: 30,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: '0', teacherIds: ['teacher-1'] },
-              { moduleId: '1', teacherIds: ['teacher-1'] },
-              { moduleId: '2', teacherIds: ['teacher-1'] },
-              { moduleId: '3', teacherIds: ['teacher-2'] },
-              { moduleId: '4', teacherIds: ['teacher-3'] },
-              { moduleId: '5', teacherIds: ['teacher-4', 'teacher-5', 'teacher-6'] },
-              { moduleId: '6', teacherIds: ['teacher-1'] },
-              { moduleId: '7', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-0', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-1', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-2'] },
+              { moduleId: 'module-4', teacherIds: ['teacher-3'] },
+              { moduleId: 'module-5', teacherIds: ['teacher-4', 'teacher-5', 'teacher-6'] },
+              { moduleId: 'module-6', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-7', teacherIds: ['teacher-1'] },
             ],
             studentIds: ['student-1', 'student-2', 'student-3', 'student-4', 'student-5', 'student-6',
               'student-7', 'student-8', 'student-9', 'student-10', 'student-11', 'student-12',
@@ -1268,14 +1268,14 @@ export const mockPrograms = [
             capacity: 25,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: '0', teacherIds: ['teacher-8'] },
-              { moduleId: '1', teacherIds: ['teacher-9'] },
-              { moduleId: '2', teacherIds: ['teacher-10','teacher-11'] },
-              { moduleId: '3', teacherIds: ['teacher-8'] },
-              { moduleId: '4', teacherIds: [] },
-              { moduleId: '5', teacherIds: [] },
-              { moduleId: '6', teacherIds: [] },
-              { moduleId: '7', teacherIds: [] },
+              { moduleId: 'module-0', teacherIds: ['teacher-8'] },
+              { moduleId: 'module-1', teacherIds: ['teacher-9'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-10','teacher-11'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-8'] },
+              { moduleId: 'module-4', teacherIds: [] },
+              { moduleId: 'module-5', teacherIds: [] },
+              { moduleId: 'module-6', teacherIds: [] },
+              { moduleId: 'module-7', teacherIds: [] },
             ],
             studentIds: ['student-31', 'student-32', 'student-33', 'student-34', 'student-35',
             ]
@@ -1390,10 +1390,10 @@ GCP Professional Architect`
             capacity: 25,
             costPerStudent: 600,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-8'] },
-              { moduleId: '2', teacherIds: ['teacher-9'] },
-              { moduleId: '3', teacherIds: ['teacher-10'] },
-              { moduleId: '4', teacherIds: ['teacher-11'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-8'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-9'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-10'] },
+              { moduleId: 'module-4', teacherIds: ['teacher-11'] }
             ],
             studentIds: [
               'student-6',
@@ -1478,9 +1478,9 @@ CISSP (ISC)²`
             capacity: 30,
             costPerStudent: 400,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-12'] },
-              { moduleId: '2', teacherIds: ['teacher-13'] },
-              { moduleId: '3', teacherIds: ['teacher-14'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-12'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-13'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-14'] }
             ],
             studentIds: ['student-12', 'student-13', 'student-14', 'student-15', 'student-16', 'student-17']
           },
@@ -1491,9 +1491,9 @@ CISSP (ISC)²`
             capacity: 10,
             costPerStudent: 400,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-15'] },
-              { moduleId: '2', teacherIds: ['teacher-16'] },
-              { moduleId: '3', teacherIds: ['teacher-17'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-15'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-16'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-17'] }
             ],
             studentIds: ['student-18', 'student-19']
           }
@@ -1571,9 +1571,9 @@ NN/g UX Certification`
             capacity: 28,
             costPerStudent: 750,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-15'] },
-              { moduleId: '2', teacherIds: ['teacher-16'] },
-              { moduleId: '3', teacherIds: ['teacher-17'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-15'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-16'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-17'] }
             ],
             studentIds: [
               'student-21',
@@ -1661,9 +1661,9 @@ Microsoft Certified: Data Analyst Associate`
             capacity: 30,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-18'] },
-              { moduleId: '2', teacherIds: ['teacher-19'] },
-              { moduleId: '3', teacherIds: ['teacher-20'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-18'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-19'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-20'] }
             ],
             studentIds: [
               'student-31',
@@ -1769,10 +1769,10 @@ MERN/MEAN Stack Certifications (various)`
             capacity: 20,
             costPerStudent: 900,
             moduleTeachers: [
-              { moduleId: '1', teacherIds: ['teacher-21'] },
-              { moduleId: '2', teacherIds: ['teacher-22'] },
-              { moduleId: '3', teacherIds: ['teacher-23'] },
-              { moduleId: '4', teacherIds: ['teacher-24'] }
+              { moduleId: 'module-1', teacherIds: ['teacher-21'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-22'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-23'] },
+              { moduleId: 'module-4', teacherIds: ['teacher-24'] }
             ],
             studentIds: [
               'student-46',
