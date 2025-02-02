@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useToast } from '@/hooks/use-toast';
-import UserAvatar from './UserAvatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 import { ConversionDialog } from './ConversionDialog';
 import { mockModuleCatalog } from '@/data/mockData';
@@ -53,7 +53,10 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
           checked={selected}
           onCheckedChange={() => onSelect(preReg.id)}
         />
-        <UserAvatar />
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${preReg.studentId}`} />
+          <AvatarFallback>{preReg.studentName.slice(0, 2)}</AvatarFallback>
+        </Avatar>
         <div className="flex-1">
           <h4 className="font-semibold">{preReg.studentName}</h4>
           <div className="flex gap-2 mt-1 flex-wrap">
