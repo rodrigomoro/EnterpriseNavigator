@@ -49,7 +49,7 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
           checked={selected}
           onCheckedChange={() => onSelect(preReg.id)}
         />
-        <UserAvatar userId={preReg.studentId} />
+        <UserAvatar />
         <div className="flex-1">
           <h4 className="font-semibold">{preReg.studentName}</h4>
           <div className="flex gap-2 mt-1">
@@ -98,7 +98,7 @@ export const PreRegistrationManager = () => {
       setPreRegistrations((items) => {
         const oldIndex = items.findIndex((i) => i.id === active.id)
         const newIndex = items.findIndex((i) => i.id === over.id)
-        
+
         return arrayMove(items, oldIndex, newIndex).map((item, index) => ({
           ...item,
           priority: index + 1
