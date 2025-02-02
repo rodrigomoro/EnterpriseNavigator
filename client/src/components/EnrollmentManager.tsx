@@ -17,12 +17,45 @@ interface Enrollment {
 }
 
 export const EnrollmentManager = () => {
-  // In a real app, this would be fetched from an API
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  // Mock enrollments data
+  const [enrollments] = useState<Enrollment[]>([
+    {
+      id: 'enrollment-1',
+      studentId: 'student-1',
+      studentName: 'Emma Thompson',
+      moduleAssignments: [
+        { moduleId: 'module-1', groupId: 'group-1' },
+        { moduleId: 'module-2', groupId: 'group-2' },
+        { moduleId: 'module-3', groupId: 'group-3' }
+      ],
+      enrolledAt: '2025-02-01T14:30:00Z'
+    },
+    {
+      id: 'enrollment-2',
+      studentId: 'student-2',
+      studentName: 'Michael Chen',
+      moduleAssignments: [
+        { moduleId: 'module-4', groupId: 'group-4' },
+        { moduleId: 'module-5', groupId: 'group-5' }
+      ],
+      enrolledAt: '2025-02-01T15:45:00Z'
+    },
+    {
+      id: 'enrollment-3',
+      studentId: 'student-3',
+      studentName: 'Sofia Rodriguez',
+      moduleAssignments: [
+        { moduleId: 'module-2', groupId: 'group-2' },
+        { moduleId: 'module-6', groupId: 'group-6' },
+        { moduleId: 'module-7', groupId: 'group-7' }
+      ],
+      enrolledAt: '2025-02-01T16:15:00Z'
+    }
+  ]);
 
   const getGroupInfo = (groupId: string) => {
     let groupInfo = { programName: '', intakeName: '', groupName: '' };
-    
+
     mockPrograms.some(program => 
       program.intakes.some(intake => 
         intake.groups.some(group => {
@@ -49,7 +82,7 @@ export const EnrollmentManager = () => {
       </div>
 
       <ScrollArea className="h-[600px] pr-4">
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
           {enrollments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No enrollments yet. Convert pre-registrations to see them here.
