@@ -18,8 +18,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { useToast } from '@/hooks/use-toast';
 import UserAvatar from './UserAvatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
+import { ConversionDialog } from './ConversionDialog';
 
 interface PreRegistration {
   id: string;
@@ -32,7 +34,7 @@ interface PreRegistration {
 
 interface PreRegistrationItemProps {
   preReg: PreRegistration;
-  onConvert: (id: string) => void;
+  onConvert: (preReg: PreRegistration) => void;
   selected: boolean;
   onSelect: (id: string) => void;
 }
@@ -72,7 +74,7 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => onConvert(preReg.id)}
+          onClick={() => onConvert(preReg)}
         >
           Convert
         </Button>
@@ -84,6 +86,9 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
 export const PreRegistrationManager = () => {
   const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>(mockPreRegistrations);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
+  const [selectedPreReg, setSelectedPreReg] = useState<PreRegistration | null>(null);
+  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -108,9 +113,48 @@ export const PreRegistrationManager = () => {
     }
   };
 
+  const handleConvert = (preReg: PreRegistration) => {
+    setSelectedPreReg(preReg);
+    setConversionDialogOpen(true);
+  };
+
   const handleConvertSelected = () => {
-    // Will be implemented when backend is ready
-    console.log('Converting selected:', Array.from(selectedIds));
+    // For now, we'll only convert the first selected pre-registration
+    const firstSelected = preRegistrations.find(p => selectedIds.has(p.id));
+    if (firstSelected) {
+      handleConvert(firstSelected);
+    }
+  };
+
+  const handleConversionComplete = (data: { 
+    preRegistrationId: string;
+    moduleAssignments: Array<{
+      moduleId: string;
+      groupId: string;
+    }>;
+  }) => {
+    // Here we would make the API call to convert the pre-registration
+    console.log('Converting with assignments:', data);
+
+    // Remove the converted pre-registration
+    setPreRegistrations(prev => 
+      prev.filter(p => p.id !== data.preRegistrationId)
+    );
+
+    // Clear selection if it was part of the selected items
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.delete(data.preRegistrationId);
+      return next;
+    });
+
+    setConversionDialogOpen(false);
+    setSelectedPreReg(null);
+
+    toast({
+      title: "Pre-registration converted",
+      description: "The student has been successfully enrolled in the selected groups.",
+    });
   };
 
   const toggleSelect = (id: string) => {
@@ -160,7 +204,7 @@ export const PreRegistrationManager = () => {
               <PreRegistrationItem
                 key={preReg.id}
                 preReg={preReg}
-                onConvert={(id) => console.log('Converting:', id)}
+                onConvert={handleConvert}
                 selected={selectedIds.has(preReg.id)}
                 onSelect={toggleSelect}
               />
@@ -168,6 +212,15 @@ export const PreRegistrationManager = () => {
           </SortableContext>
         </DndContext>
       </ScrollArea>
+
+      {selectedPreReg && (
+        <ConversionDialog 
+          open={conversionDialogOpen}
+          onOpenChange={setConversionDialogOpen}
+          preRegistration={selectedPreReg}
+          onConvert={handleConversionComplete}
+        />
+      )}
     </div>
   );
 };
