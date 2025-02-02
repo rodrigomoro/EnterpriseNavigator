@@ -1,4 +1,4 @@
-import { mockTeamMembers, mockPrograms } from './mockData';
+import { mockTeamMembers, mockPrograms, mockModuleCatalog } from './mockData';
 
 export const mockStudents = mockTeamMembers.filter(member => member.role === 'Student');
 
@@ -6,9 +6,11 @@ export const mockModules = mockPrograms.flatMap(program =>
   program.intakes.flatMap(intake =>
     intake.groups
       .filter(group => group.status === 'open' || group.status === 'waitlist')
-      .flatMap(group => group.moduleTeachers.map(mt => program.modules.find(m => m.id === mt.moduleId)))
+      .flatMap(group => group.moduleTeachers.map(mt => program.modules.find(m => m === mt.moduleId)))
   )
-).filter((module, index, self) => module && self.indexOf(module) === index);
+).filter((module, index, self) => module && self.indexOf(module) === index)
+  .map(moduleId => mockModuleCatalog.find(m => m.id === moduleId))
+  .filter(module => module);
 
 export const mockPreRegistrations = [
   {
