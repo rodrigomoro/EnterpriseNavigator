@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockPrograms } from '@/data/mockData';
+import { mockModuleCatalog, mockPrograms } from '@/data/mockData';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +28,7 @@ interface ConversionDialogProps {
     id: string;
     studentId: string;
     studentName: string;
-    modules: Array<{
-      moduleId: string;
-      groupId: string;
-    }>;
+    modules: string[];
   }>;
   onConvert: (data: { 
     conversions: Array<{
@@ -141,15 +138,16 @@ export function ConversionDialog({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {preReg.modules.map((m) => {
-                    const groups = getGroupsForModule(m.moduleId);
-                    const selectedGroupId = moduleAssignments[preReg.id]?.[m.moduleId];
+                  {preReg.modules.map((moduleId) => {
+                    const groups = getGroupsForModule(moduleId);
+                    const selectedGroupId = moduleAssignments[preReg.id]?.[moduleId];
+                    const moduleName = mockModuleCatalog.find(m => m.id === moduleId)?.name;
 
                     return (
-                      <div key={m.moduleId} className="space-y-2">
+                      <div key={moduleId} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Badge variant="outline" className="truncate">
-                            {m.moduleId}
+                            {moduleName}
                           </Badge>
                           {selectedGroupId && (
                             <Badge variant="secondary" className="ml-2 shrink-0">
@@ -160,7 +158,7 @@ export function ConversionDialog({
                         <Select
                           value={selectedGroupId}
                           onValueChange={(value) => 
-                            handleGroupSelect(preReg.id, m.moduleId, value)
+                            handleGroupSelect(preReg.id, moduleId, value)
                           }
                         >
                           <SelectTrigger className="w-full">

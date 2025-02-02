@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import UserAvatar from './UserAvatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 import { ConversionDialog } from './ConversionDialog';
+import { mockModuleCatalog } from '@/data/mockData';
 
 interface PreRegistration {
   id: string;
@@ -56,11 +57,14 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
         <div className="flex-1">
           <h4 className="font-semibold">{preReg.studentName}</h4>
           <div className="flex gap-2 mt-1 flex-wrap">
-            {preReg.modules.map((module) => (
-              <Badge key={module} variant="secondary">
-                {module}
+            {preReg.modules.map((module) => {
+            const moduleName = mockModuleCatalog.find(m => m.id === module)?.name;
+            
+            return (
+              <Badge key={moduleName} variant="secondary">
+                {moduleName}
               </Badge>
-            ))}
+            )})}
           </div>
         </div>
         <div className="text-right">
