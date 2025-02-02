@@ -30,6 +30,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const preRegistrationSchema = z.object({
   studentId: z.string().min(1, 'Please select a student'),
@@ -59,7 +62,10 @@ export function PreRegistrationFormDialog({
   });
 
   const onSubmit = (data: PreRegistrationFormValues) => {
-    onPreRegister(data);
+    onPreRegister({
+      ...data,
+      timestamp: new Date().toISOString(),
+    });
     setOpen(false);
     form.reset();
   };
@@ -98,8 +104,17 @@ export function PreRegistrationFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="1">John Doe</SelectItem>
-                      <SelectItem value="2">Jane Smith</SelectItem>
+                      <ScrollArea className="max-h-[200px]">
+                        {mockStudents.map((student) => (
+                          <SelectItem key={student.id} value={student.id} className="flex items-center gap-2 py-2">
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage src={student.avatar} />
+                              <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                            <span>{student.name}</span>
+                          </SelectItem>
+                        ))}
+                      </ScrollArea>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -113,29 +128,34 @@ export function PreRegistrationFormDialog({
               render={() => (
                 <FormItem>
                   <FormLabel>Modules</FormLabel>
-                  <div className="space-y-2">
-                    {['1', '2', '3'].map((moduleId) => (
-                      <div key={moduleId} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`module-${moduleId}`}
-                          onCheckedChange={(checked) => {
-                            const currentModules = form.getValues('moduleIds');
-                            if (checked) {
-                              form.setValue('moduleIds', [...currentModules, moduleId]);
-                            } else {
-                              form.setValue(
-                                'moduleIds',
-                                currentModules.filter((id) => id !== moduleId)
-                              );
-                            }
-                          }}
-                        />
-                        <Label htmlFor={`module-${moduleId}`}>
-                          Module {moduleId}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    <div className="space-y-2">
+                      {mockModules.map((module) => (
+                        <div key={module.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`module-${module.id}`}
+                            onCheckedChange={(checked) => {
+                              const currentModules = form.getValues('moduleIds');
+                              if (checked) {
+                                form.setValue('moduleIds', [...currentModules, module.id]);
+                              } else {
+                                form.setValue(
+                                  'moduleIds',
+                                  currentModules.filter((id) => id !== module.id)
+                                );
+                              }
+                            }}
+                          />
+                          <Label htmlFor={`module-${module.id}`} className="flex-1">
+                            {module.name}
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              ({module.credits} credits)
+                            </span>
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
                   <FormMessage />
                 </FormItem>
               )}

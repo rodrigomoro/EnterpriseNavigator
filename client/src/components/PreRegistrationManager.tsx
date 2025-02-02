@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { Button } from './ui/button'
-import { Card } from './ui/card'
-import { Badge } from './ui/badge'
-import { ScrollArea } from './ui/scroll-area'
-import { Checkbox } from './ui/checkbox'
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
+import { ScrollArea } from './ui/scroll-area';
+import { Checkbox } from './ui/checkbox';
 import { 
   DndContext, 
   closestCenter,
@@ -11,29 +11,30 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core'
+} from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import UserAvatar from './UserAvatar'
+} from '@dnd-kit/sortable';
+import UserAvatar from './UserAvatar';
+import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 
 interface PreRegistration {
-  id: string
-  studentId: string
-  studentName: string
-  modules: string[]
-  timestamp: string
-  priority: number
+  id: string;
+  studentId: string;
+  studentName: string;
+  modules: string[];
+  timestamp: string;
+  priority: number;
 }
 
 interface PreRegistrationItemProps {
-  preReg: PreRegistration
-  onConvert: (id: string) => void
-  selected: boolean
-  onSelect: (id: string) => void
+  preReg: PreRegistration;
+  onConvert: (id: string) => void;
+  selected: boolean;
+  onSelect: (id: string) => void;
 }
 
 const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
@@ -77,52 +78,52 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
         </Button>
       </div>
     </Card>
-  )
-}
+  );
+};
 
 export const PreRegistrationManager = () => {
-  const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>([])
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>(mockPreRegistrations);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
-  )
+  );
 
   const handleDragEnd = (event: any) => {
-    const {active, over} = event
+    const {active, over} = event;
 
     if (active.id !== over.id) {
       setPreRegistrations((items) => {
-        const oldIndex = items.findIndex((i) => i.id === active.id)
-        const newIndex = items.findIndex((i) => i.id === over.id)
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
 
         return arrayMove(items, oldIndex, newIndex).map((item, index) => ({
           ...item,
           priority: index + 1
-        }))
-      })
+        }));
+      });
     }
-  }
+  };
 
   const handleConvertSelected = () => {
     // Will be implemented when backend is ready
-    console.log('Converting selected:', Array.from(selectedIds))
-  }
+    console.log('Converting selected:', Array.from(selectedIds));
+  };
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(id)) {
-        next.delete(id)
+        next.delete(id);
       } else {
-        next.add(id)
+        next.add(id);
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -168,5 +169,5 @@ export const PreRegistrationManager = () => {
         </DndContext>
       </ScrollArea>
     </div>
-  )
-}
+  );
+};
