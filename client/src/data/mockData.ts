@@ -1150,6 +1150,374 @@ const calculateAverageScore = (students: Student[]) => {
   return Math.round(totalScores / students.length);
 };
 
+export const mockModuleCatalog = [
+  {
+    id: 'module-1',
+    name: 'PreWork',
+    description: 'Basics of IT and Cloud value.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 6,
+    competencies: 'Cloud Computing, DevOps, IT, Cloud Computing, DevOps, IT, Cloud Computing, DevOps,',
+    tools: 'None',
+    syllabus: `
+      - Introduction to Cloud Computing
+      - Introduction to DevOps
+      - Introduction to IT
+    `
+  },
+  {
+    id: 'module-2',
+    name: 'Automation with PowerShell',
+    description: 'Introduction to PowerShell and its usage.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 27,
+    competencies: 'Problem Solving, Coding, Automation, CLI',
+    tools: 'CLI, PowerShell',
+    syllabus: `
+      - Introduction to PowerShell
+      - Variables and Operators
+      - Functions and Scripting
+      - Automation and Scripting
+    `
+  },
+  {
+    id: 'module-3',
+    name: 'Azure Cloud Adminisration',
+    description: 'Introduction to Azure and its usage.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 99,
+    competencies: 'Cloud Services and Administration',
+    tools: 'Azure Portal, DrawIO',
+    syllabus: `
+      - Introduction to Azure
+      - Azure Services
+      - Azure Administration
+      - Azure Networking
+    `
+  },
+  {
+    id: 'module-4',
+    name: 'AWS Assoc Architect',
+    description: 'Introduction to AWS and its usage.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 69,
+    competencies: 'Cloud Services and Architecture',
+    tools: 'AWS Console, AWS Academy',
+    syllabus: `
+      - Introduction to AWS
+      - AWS Services
+      - AWS Architecture
+      - AWS Networking
+    `
+  },
+  {
+    id: 'module-5',
+    name: 'GCP Assoc Cloud Engineer',
+    description: 'Introduction to GCP and its usage.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 51,
+    competencies: 'Cloud Services and Administration',
+    tools: 'GCP Console, DrawIO',
+    syllabus: `
+      - Introduction to GCP
+      - GCP Services
+      - GCP Administration
+      - GCP Networking
+    `
+  },
+  {
+    id: 'module-6',
+    name: 'DevOps Engineer',
+    description: 'Introduction to DevOps.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 60,
+    competencies: 'Code and release management',
+    tools: 'Azure DevOps, PowerShell',
+    syllabus: `
+      - Introduction to DevOps
+      - Code Management
+      - Release Management
+      - DevOps Tools
+    `
+  },
+  {
+    id: 'module-7',
+    name: 'Capstone',
+    description: 'Final program.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 33,
+    competencies: 'Team work and program development',
+    tools: '',
+    syllabus: `
+      - Team work
+      - Program Development
+      - Final Project
+    `
+  },
+  {
+    id: 'module-8',
+    name: 'Introducción a la Ciberseguridad',
+    description: 'Conceptos básicos, amenazas y vulnerabilidades.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 40,
+    competencies: 'Fundamentals, Networking, Attack Vectors',
+    tools: 'Wireshark, Linux CLI',
+    syllabus: `
+      - Conceptos básicos
+      - Amenazas y vulnerabilidades
+      - Herramientas de seguridad
+    `
+  },
+  {
+    id: 'module-9',
+    name: 'Pentesting & Ethical Hacking',
+    description: 'Metodologías de pruebas de penetración.',
+    credits: 5,
+    costPerCredit: 100,
+    hours: 50,
+    competencies: 'PenTesting, Ethical Hacking, Vulnerability Scans',
+    tools: 'Kali Linux, Metasploit',
+    syllabus: `
+      - Metodologías de pruebas de penetración
+      - Herramientas de hacking ético
+      - Escaneo de vulnerabilidades
+    `
+  },
+  {
+    id: 'module-10',
+    name: 'Seguridad en Redes y Sistemas',
+    description: 'Arquitectura de redes, firewalls y sistemas seguros.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 35,
+    competencies: 'Network Security, Hardening, Firewalls',
+    tools: 'Cisco Packet Tracer, pfSense',
+    syllabus: `
+      - Arquitectura de redes
+      - Hardening de sistemas
+      - Firewalls y seguridad perimetral
+    `
+  },
+  {
+    id: 'module-11',
+    name: 'Criptografía y Protocolos Seguros',
+    description: 'Conceptos de cifrado, SSL/TLS, PKI y mejores prácticas.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 20,
+    competencies: 'Cryptography, PKI, SSL, TLS',
+    tools: 'OpenSSL, GPG',
+    syllabus: `
+      - Conceptos de cifrado
+      - SSL/TLS y PKI
+      - Mejores prácticas de seguridad
+    `
+  },
+  {
+    id: 'module-12',
+    name: 'Fundamentos de UX',
+    description: 'Proceso de diseño centrado en el usuario, research y prototipado rápido.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 25,
+    competencies: 'User Research, Wireframing',
+    tools: 'Figma, Miro',
+    syllabus: `
+      - Proceso de diseño centrado en el usuario
+      - Investigación de usuarios
+      - Prototipado rápido
+    `
+  },
+  {
+    id: 'module-13',
+    name: 'Interfaz de Usuario (UI)',
+    description: 'Diseño visual, tipografía, color y componentes de interacción.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 30,
+    competencies: 'Visual Design, Layout, Branding',
+    tools: 'Sketch, Adobe XD',
+    syllabus: `
+      - Diseño visual
+      - Tipografía y color
+      - Componentes de interacción
+    `
+  },
+  {
+    id: 'module-14',
+    name: 'Usabilidad y Pruebas de Usuario',
+    description: 'Evaluación heurística y testing con usuarios.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 15,
+    competencies: 'Usability Testing, Iteration',
+    tools: 'UserTesting, Maze',
+    syllabus: `
+      - Evaluación heurística
+      - Testing con usuarios
+      - Iteración y mejora continua
+    `
+  },
+  {
+    id: 'module-15',
+    name: 'Fundamentos de Análisis de Datos',
+    description: 'Introducción a la recolección, limpieza y manipulación de datos.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 40,
+    competencies: 'Data Wrangling, Python, Excel',
+    tools: 'Python, Jupyter, Excel',
+    syllabus: `
+      - Introducción al análisis de datos
+      - Recolección y limpieza de datos
+      - Manipulación de datos
+    `
+  },
+  {
+    id: 'module-16',
+    name: 'Visualización y Business Intelligence',
+    description: 'Técnicas de reporting y dashboards.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 30,
+    competencies: 'Data Viz, Tableau, Power BI',
+    tools: 'Tableau, Power BI',
+    syllabus: `
+      - Técnicas de reporting
+      - Dashboards interactivos
+      - Business Intelligence
+    `
+  },
+  {
+    id: 'module-17',
+    name: 'Estadística y Modelos Predictivos',
+    description: 'Análisis estadístico, regresiones y algoritmos de Machine Learning básicos.',
+    credits: 5,
+    costPerCredit: 100,
+    hours: 50,
+    competencies: 'Statistics, Regression, Intro ML',
+    tools: 'Python, scikit-learn',
+    syllabus: `
+      - Análisis estadístico
+      - Regresiones
+      - Modelos predictivos básicos
+    `
+  },
+  {
+    id: 'module-18',
+    name: 'Frontend Fundamentals',
+    description: 'HTML, CSS y JavaScript para crear interfaces de usuario.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 40,
+    competencies: 'HTML, CSS, JavaScript',
+    tools: 'VSCode, Chrome DevTools',
+    syllabus: `
+      - HTML y CSS
+      - JavaScript básico
+      - DOM y eventos
+    `
+  },
+  {
+    id: 'module-19',
+    name: 'Frontend Frameworks',
+    description: 'Aprender React, Vue o Angular para aplicaciones SPA.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 30,
+    competencies: 'SPA, React, Vue',
+    tools: 'Node, NPM',
+    syllabus: `
+      - React, Vue o Angular
+      - Componentes y props
+      - Routing y state management
+    `
+  },
+  {
+    id: 'module-20',
+    name: 'Backend con Node.js',
+    description: 'APIs REST, bases de datos y autenticación.',
+    credits: 5,
+    costPerCredit: 100,
+    hours: 50,
+    competencies: 'Node, Express, SQL/NoSQL',
+    tools: 'Postman, MongoDB, MySQL',
+    syllabus: `
+      - APIs REST
+      - Bases de datos
+      - Autenticación y autorización
+    `
+  },
+  {
+    id: 'module-21',
+    name: 'Fundamentos de IA y Machine Learning',
+    description: 'Historia de la IA, aprendizaje supervisado y no supervisado.',
+    credits: 4,
+    costPerCredit: 100,
+    hours: 40,
+    competencies: 'ML Basics, Classification, Clustering',
+    tools: 'Python, scikit-learn',
+    syllabus: `
+      - Historia de la IA
+      - Aprendizaje supervisado
+      - Aprendizaje no supervisado
+    `
+  },
+  {
+    id: 'module-22',
+    name: 'Redes Neuronales y Deep Learning',
+    description: 'Arquitecturas de redes, backpropagation y frameworks.',
+    credits: 5,
+    costPerCredit: 100,
+    hours: 60,
+    competencies: 'Neural Networks, CNNs, RNNs',
+    tools: 'TensorFlow, Keras, PyTorch',
+    syllabus: `
+      - Redes neuronales
+      - Convolutional NNs
+      - Recurrent NNs
+    `
+  },
+  {
+    id: 'module-23',
+    name: 'Procesamiento de Lenguaje Natural',
+    description: 'Text analytics, embeddings y chatbots.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 25,
+    competencies: 'NLP, Word Embeddings, Transformers',
+    tools: 'NLTK, SpaCy, HuggingFace',
+    syllabus: `
+      - Análisis de texto
+      - Word embeddings
+      - Chatbots y asistentes virtuales
+    `
+  },
+  {
+    id: 'module-24',
+    name: 'Visión por Computadora',
+    description: 'Procesamiento de imágenes y detección de objetos.',
+    credits: 3,
+    costPerCredit: 100,
+    hours: 20,
+    competencies: 'OpenCV, Image Classification',
+    tools: 'OpenCV, TensorFlow',
+    syllabus: `
+      - Procesamiento de imágenes
+      - Detección de objetos
+      - Clasificación de imágenes
+    `
+  }
+];
+
 export const mockPrograms = [
   {
     id: 'program-1',
@@ -1160,69 +1528,13 @@ export const mockPrograms = [
     students: mockStudents.slice(0, 6),
     avgScore: calculateAverageScore(mockStudents.slice(0, 6)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'PreWork',
-        description: 'Basics of IT and Cloud value.',
-        credits: 3,
-        hours: 6,
-        competencies: 'Cloud Computing, DevOps, IT, Cloud Computing, DevOps, IT, Cloud Computing, DevOps,',
-        tools: 'None'
-      },
-      {
-        id: 'module-2',
-        name: 'Automation with PowerShell',
-        description: 'Introduction to PowerShell and its usage.',
-        credits: 4,
-        hours: 27,
-        competencies: 'Problem Solving, Coding, Automation, CLI',
-        tools: 'CLI, PowerShell'
-      },
-      {
-        id: 'module-3',
-        name: 'Azure Cloud Adminisration',
-        description: 'Introduction to Azure and its usage.',
-        credits: 4,
-        hours: 99,
-        competencies: 'Cloud Services and Administration',
-        tools: 'Azure Portal, DrawIO'
-      },
-      {
-        id: 'module-4',
-        name: 'AWS Assoc Architect',
-        description: 'Introduction to AWS and its usage.',
-        credits: 4,
-        hours: 69,
-        competencies: 'Cloud Services and Architecture',
-        tools: 'AWS Console, AWS Academy'
-      },
-      {
-        id: 'module-5',
-        name: 'GCP Assoc Cloud Engineer',
-        description: 'Introduction to GCP and its usage.',
-        credits: 4,
-        hours: 51,
-        competencies: 'Cloud Services and Administration',
-        tools: 'GCP Console, DrawIO'
-      },
-      {
-        id: 'module-6',
-        name: 'DevOps Engineer',
-        description: 'Introduction to DevOps.',
-        credits: 4,
-        hours: 60,
-        competencies: 'Code and release management',
-        tools: 'Azure DevOps, PowerShell'
-      },
-      {
-        id: 'module-7',
-        name: 'Capstone',
-        description: 'Final program.',
-        credits: 4,
-        hours: 33,
-        competencies: 'Team work and program development',
-        tools: 'Cloud consoles, CLIs, PowerShell, DrawIO'
-      }      
+      'module-1',
+      'module-2',
+      'module-3',
+      'module-4',
+      'module-5',
+      'module-6',
+      'module-7',     
     ],
     intakes: [
       {
@@ -1245,13 +1557,12 @@ export const mockPrograms = [
             capacity: 30,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: 'module-0', teacherIds: ['teacher-1'] },
               { moduleId: 'module-1', teacherIds: ['teacher-1'] },
               { moduleId: 'module-2', teacherIds: ['teacher-1'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-2'] },
-              { moduleId: 'module-4', teacherIds: ['teacher-3'] },
-              { moduleId: 'module-5', teacherIds: ['teacher-4', 'teacher-5', 'teacher-6'] },
-              { moduleId: 'module-6', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-1'] },
+              { moduleId: 'module-4', teacherIds: ['teacher-2'] },
+              { moduleId: 'module-5', teacherIds: ['teacher-3'] },
+              { moduleId: 'module-6', teacherIds: ['teacher-4', 'teacher-5', 'teacher-6'] },
               { moduleId: 'module-7', teacherIds: ['teacher-1'] },
             ],
             studentIds: ['student-1', 'student-2', 'student-3', 'student-4', 'student-5', 'student-6',
@@ -1268,11 +1579,10 @@ export const mockPrograms = [
             capacity: 25,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: 'module-0', teacherIds: ['teacher-8'] },
-              { moduleId: 'module-1', teacherIds: ['teacher-9'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-10','teacher-11'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-8'] },
-              { moduleId: 'module-4', teacherIds: [] },
+              { moduleId: 'module-1', teacherIds: ['teacher-8'] },
+              { moduleId: 'module-2', teacherIds: ['teacher-9'] },
+              { moduleId: 'module-3', teacherIds: ['teacher-10','teacher-11'] },
+              { moduleId: 'module-4', teacherIds: ['teacher-8'] },
               { moduleId: 'module-5', teacherIds: [] },
               { moduleId: 'module-6', teacherIds: [] },
               { moduleId: 'module-7', teacherIds: [] },
@@ -1334,42 +1644,10 @@ GCP Professional Architect`
     students: mockStudents.slice(6, 12),
     avgScore: calculateAverageScore(mockStudents.slice(6, 12)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'Introducción a la Ciberseguridad',
-        description: 'Conceptos básicos, amenazas y vulnerabilidades.',
-        credits: 4,
-        hours: 40,
-        competencies: 'Fundamentals, Networking, Attack Vectors',
-        tools: 'Wireshark, Linux CLI'
-      },
-      {
-        id: 'module-2',
-        name: 'Pentesting & Ethical Hacking',
-        description: 'Metodologías de pruebas de penetración.',
-        credits: 5,
-        hours: 50,
-        competencies: 'PenTesting, Ethical Hacking, Vulnerability Scans',
-        tools: 'Kali Linux, Metasploit'
-      },
-      {
-        id: 'module-3',
-        name: 'Seguridad en Redes y Sistemas',
-        description: 'Arquitectura de redes, firewalls y sistemas seguros.',
-        credits: 4,
-        hours: 35,
-        competencies: 'Network Security, Hardening, Firewalls',
-        tools: 'Cisco Packet Tracer, pfSense'
-      },
-      {
-        id: 'module-4',
-        name: 'Criptografía y Protocolos Seguros',
-        description: 'Conceptos de cifrado, SSL/TLS, PKI y mejores prácticas.',
-        credits: 3,
-        hours: 20,
-        competencies: 'Cryptography, PKI, SSL, TLS',
-        tools: 'OpenSSL, GPG'
-      }
+      'module-8',
+      'module-9',
+      'module-10',
+      'module-11'     
     ],
     intakes: [
       {
@@ -1390,10 +1668,10 @@ GCP Professional Architect`
             capacity: 25,
             costPerStudent: 600,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-8'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-9'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-10'] },
-              { moduleId: 'module-4', teacherIds: ['teacher-11'] }
+              { moduleId: 'module-8', teacherIds: ['teacher-8'] },
+              { moduleId: 'module-9', teacherIds: ['teacher-9'] },
+              { moduleId: 'module-10', teacherIds: ['teacher-10'] },
+              { moduleId: 'module-11', teacherIds: ['teacher-11'] }
             ],
             studentIds: [
               'student-6',
@@ -1431,33 +1709,9 @@ CISSP (ISC)²`
     students: mockStudents.slice(12, 20),
     avgScore: calculateAverageScore(mockStudents.slice(12, 20)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'Fundamentos de UX',
-        description: 'Proceso de diseño centrado en el usuario, research y prototipado rápido.',
-        credits: 3,
-        hours: 25,
-        competencies: 'User Research, Wireframing',
-        tools: 'Figma, Miro'
-      },
-      {
-        id: 'module-2',
-        name: 'Interfaz de Usuario (UI)',
-        description: 'Diseño visual, tipografía, color y componentes de interacción.',
-        credits: 4,
-        hours: 30,
-        competencies: 'Visual Design, Layout, Branding',
-        tools: 'Sketch, Adobe XD'
-      },
-      {
-        id: 'module-3',
-        name: 'Usabilidad y Pruebas de Usuario',
-        description: 'Evaluación heurística y testing con usuarios.',
-        credits: 3,
-        hours: 15,
-        competencies: 'Usability Testing, Iteration',
-        tools: 'UserTesting, Maze'
-      }
+      'module-12',
+      'module-13',
+      'module-14'     
     ],
     intakes: [
       {
@@ -1478,9 +1732,9 @@ CISSP (ISC)²`
             capacity: 30,
             costPerStudent: 400,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-12'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-13'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-14'] }
+              { moduleId: 'module-12', teacherIds: ['teacher-12'] },
+              { moduleId: 'module-13', teacherIds: ['teacher-13'] },
+              { moduleId: 'module-14', teacherIds: ['teacher-14'] }
             ],
             studentIds: ['student-12', 'student-13', 'student-14', 'student-15', 'student-16', 'student-17']
           },
@@ -1491,9 +1745,9 @@ CISSP (ISC)²`
             capacity: 10,
             costPerStudent: 400,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-15'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-16'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-17'] }
+              { moduleId: 'module-12', teacherIds: ['teacher-15'] },
+              { moduleId: 'module-13', teacherIds: ['teacher-16'] },
+              { moduleId: 'module-14', teacherIds: ['teacher-17'] }
             ],
             studentIds: ['student-18', 'student-19']
           }
@@ -1524,33 +1778,9 @@ NN/g UX Certification`
     students: mockStudents.slice(20, 30),
     avgScore: calculateAverageScore(mockStudents.slice(20, 30)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'Fundamentos de Análisis de Datos',
-        description: 'Introducción a la recolección, limpieza y manipulación de datos.',
-        credits: 4,
-        hours: 40,
-        competencies: 'Data Wrangling, Python, Excel',
-        tools: 'Python, Jupyter, Excel'
-      },
-      {
-        id: 'module-2',
-        name: 'Visualización y Business Intelligence',
-        description: 'Técnicas de reporting y dashboards.',
-        credits: 3,
-        hours: 30,
-        competencies: 'Data Viz, Tableau, Power BI',
-        tools: 'Tableau, Power BI'
-      },
-      {
-        id: 'module-3',
-        name: 'Estadística y Modelos Predictivos',
-        description: 'Análisis estadístico, regresiones y algoritmos de Machine Learning básicos.',
-        credits: 5,
-        hours: 50,
-        competencies: 'Statistics, Regression, Intro ML',
-        tools: 'Python, scikit-learn'
-      }
+      'module-15',
+      'module-16',
+      'module-17'     
     ],
     intakes: [
       {
@@ -1571,9 +1801,9 @@ NN/g UX Certification`
             capacity: 28,
             costPerStudent: 750,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-15'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-16'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-17'] }
+              { moduleId: 'module-15', teacherIds: ['teacher-15'] },
+              { moduleId: 'module-16', teacherIds: ['teacher-16'] },
+              { moduleId: 'module-17', teacherIds: ['teacher-17'] }
             ],
             studentIds: [
               'student-21',
@@ -1614,33 +1844,9 @@ Microsoft Certified: Data Analyst Associate`
     students: mockStudents.slice(30, 45),
     avgScore: calculateAverageScore(mockStudents.slice(30, 45)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'Frontend Fundamentals',
-        description: 'HTML, CSS y JavaScript para crear interfaces de usuario.',
-        credits: 4,
-        hours: 40,
-        competencies: 'HTML, CSS, JavaScript',
-        tools: 'VSCode, Chrome DevTools'
-      },
-      {
-        id: 'module-2',
-        name: 'Frontend Frameworks',
-        description: 'Aprender React, Vue o Angular para aplicaciones SPA.',
-        credits: 3,
-        hours: 30,
-        competencies: 'SPA, React, Vue',
-        tools: 'Node, NPM'
-      },
-      {
-        id: 'module-3',
-        name: 'Backend con Node.js',
-        description: 'APIs REST, bases de datos y autenticación.',
-        credits: 5,
-        hours: 50,
-        competencies: 'Node, Express, SQL/NoSQL',
-        tools: 'Postman, MongoDB, MySQL'
-      }
+      'module-18',
+      'module-18',
+      'module-20'     
     ],
     intakes: [
       {
@@ -1661,9 +1867,9 @@ Microsoft Certified: Data Analyst Associate`
             capacity: 30,
             costPerStudent: 500,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-18'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-19'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-20'] }
+              { moduleId: 'module-18', teacherIds: ['teacher-18'] },
+              { moduleId: 'module-19', teacherIds: ['teacher-19'] },
+              { moduleId: 'module-20', teacherIds: ['teacher-20'] }
             ],
             studentIds: [
               'student-31',
@@ -1683,7 +1889,11 @@ Microsoft Certified: Data Analyst Associate`
             status: 'open',
             capacity: 22,
             costPerStudent: 500,
-            moduleTeachers: [],
+            moduleTeachers: [
+              { moduleId: 'module-18', teacherIds: [] },
+              { moduleId: 'module-19', teacherIds: [] },
+              { moduleId: 'module-20', teacherIds: [] }
+            ],
             studentIds: ['student-40', 'student-41', 'student-42', 'student-43', 'student-44']
           }
         ]
@@ -1713,42 +1923,10 @@ MERN/MEAN Stack Certifications (various)`
     students: mockStudents.slice(45, 50),
     avgScore: calculateAverageScore(mockStudents.slice(45, 50)),
     modules: [
-      {
-        id: 'module-1',
-        name: 'Fundamentos de IA y Machine Learning',
-        description: 'Historia de la IA, aprendizaje supervisado y no supervisado.',
-        credits: 4,
-        hours: 40,
-        competencies: 'ML Basics, Classification, Clustering',
-        tools: 'Python, scikit-learn'
-      },
-      {
-        id: 'module-2',
-        name: 'Redes Neuronales y Deep Learning',
-        description: 'Arquitecturas de redes, backpropagation y frameworks.',
-        credits: 5,
-        hours: 60,
-        competencies: 'Neural Networks, CNNs, RNNs',
-        tools: 'TensorFlow, Keras, PyTorch'
-      },
-      {
-        id: 'module-3',
-        name: 'Procesamiento de Lenguaje Natural',
-        description: 'Text analytics, embeddings y chatbots.',
-        credits: 3,
-        hours: 25,
-        competencies: 'NLP, Word Embeddings, Transformers',
-        tools: 'NLTK, SpaCy, HuggingFace'
-      },
-      {
-        id: 'module-4',
-        name: 'Visión por Computadora',
-        description: 'Procesamiento de imágenes y detección de objetos.',
-        credits: 3,
-        hours: 20,
-        competencies: 'OpenCV, Image Classification',
-        tools: 'OpenCV, TensorFlow'
-      }
+      'module-21',
+      'module-22',
+      'module-23',
+      'module-24',
     ],
     intakes: [
       {
@@ -1769,10 +1947,10 @@ MERN/MEAN Stack Certifications (various)`
             capacity: 20,
             costPerStudent: 900,
             moduleTeachers: [
-              { moduleId: 'module-1', teacherIds: ['teacher-21'] },
-              { moduleId: 'module-2', teacherIds: ['teacher-22'] },
-              { moduleId: 'module-3', teacherIds: ['teacher-23'] },
-              { moduleId: 'module-4', teacherIds: ['teacher-24'] }
+              { moduleId: 'module-21', teacherIds: ['teacher-21'] },
+              { moduleId: 'module-22', teacherIds: ['teacher-22'] },
+              { moduleId: 'module-23', teacherIds: ['teacher-23'] },
+              { moduleId: 'module-24', teacherIds: ['teacher-24'] }
             ],
             studentIds: [
               'student-46',

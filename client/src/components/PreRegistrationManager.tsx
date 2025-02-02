@@ -53,7 +53,7 @@ const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
         <UserAvatar />
         <div className="flex-1">
           <h4 className="font-semibold">{preReg.studentName}</h4>
-          <div className="flex gap-2 mt-1">
+          <div className="flex gap-2 mt-1 flex-wrap">
             {preReg.modules.map((module) => (
               <Badge key={module} variant="secondary">
                 {module}

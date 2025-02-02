@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState } from "react";
-import { mockPrograms, mockTeamMembers } from "@/data/mockData";
+import { mockModuleCatalog, mockPrograms, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageTransition from "@/components/PageTransition";
@@ -238,54 +238,57 @@ export default function ProgramOverview() {
                     <CollapsibleContent className="pt-4">
                       <ScrollArea className="h-[408px] pr-4">
                         <div className="space-y-4">
-                          {program.modules?.map((module, index) => (
+                          {program.modules?.map((moduleId, index) => {
+                          const module = mockModuleCatalog.find((m) => m.id === moduleId);
+                          return module ? (
                             <div key={index} className="border rounded-lg p-4">
-                              <div className="flex justify-between items-start mb-3">
-                                <div>
-                                  <h4 className="font-medium">{module.name}</h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    {module.description}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                  <div className="text-right">
-                                    <p className="text-sm text-muted-foreground">
-                                      Credits
-                                    </p>
-                                    <p className="font-medium">
-                                      {module.credits}
-                                    </p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-sm text-muted-foreground">
-                                      Hours
-                                    </p>
-                                    <p className="font-medium">
-                                      {module.hours}
-                                    </p>
-                                  </div>
-                                </div>
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                              <h4 className="font-medium">{module.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {module.description}
+                              </p>
                               </div>
-                              <div className="grid grid-cols-2 gap-4 mt-4">
-                                <div>
-                                  <p className="text-sm font-medium mb-1">
-                                    Competencies
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {module.competencies}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium mb-1">
-                                    Tools
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {module.tools}
-                                  </p>
-                                </div>
+                              <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <p className="text-sm text-muted-foreground">
+                                Credits
+                                </p>
+                                <p className="font-medium">
+                                {module.credits}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-muted-foreground">
+                                Hours
+                                </p>
+                                <p className="font-medium">
+                                {module.hours}
+                                </p>
+                              </div>
                               </div>
                             </div>
-                          ))}
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              <div>
+                              <p className="text-sm font-medium mb-1">
+                                Competencies
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {module.competencies}
+                              </p>
+                              </div>
+                              <div>
+                              <p className="text-sm font-medium mb-1">
+                                Tools
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {module.tools}
+                              </p>
+                              </div>
+                            </div>
+                            </div>
+                          ) : null;
+                          })}
                         </div>
                       </ScrollArea>
                     </CollapsibleContent>
@@ -403,37 +406,37 @@ export default function ProgramOverview() {
                                                   <div className="col-span-8">Teachers</div>
                                                 </div>
                                                 <div className="divide-y">
-                                                  {group.moduleTeachers?.map((mapping, mappingIndex) => {
-                                                    const module = program.modules?.find((m, idx) => idx.toString() === mapping.moduleId);
+                                                    {group.moduleTeachers?.map((mapping, mappingIndex) => {
+                                                    const module = mockModuleCatalog.find(m => m.id === mapping.moduleId);
                                                     return module ? (
                                                       <div key={mappingIndex} className="p-2 grid grid-cols-12 gap-2 items-center">
-                                                        <div className="col-span-4">
-                                                          <div className="font-medium">{module.name}</div>
-                                                          <div className="text-sm text-muted-foreground">
-                                                            {module.credits} credits
-                                                          </div>
-                                                        </div>
-                                                        <div className="col-span-8">
-                                                          <div className="flex -space-x-0">
-                                                            {mapping.teacherIds.map((teacherId) => {
-                                                              const teacher = teachers?.find(m => m.id === teacherId);
-                                                              return teacher ? (
-                                                                <Link key={teacher.id} href={`/people/${teacher.id}`}>
-                                                                  <a onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
-                                                                    <Avatar className="border-2 border-background w-8 h-8">
-                                                                      <AvatarImage src={teacher.avatar} alt={teacher.name} />
-                                                                      <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
-                                                                    </Avatar>
-                                                                    <span className="text-sm font-medium mr-2">{teacher.name}</span>
-                                                                  </a>
-                                                                </Link>
-                                                              ) : null;
-                                                            })}
-                                                          </div>
+                                                      <div className="col-span-4">
+                                                        <div className="font-medium">{module.name}</div>
+                                                        <div className="text-sm text-muted-foreground">
+                                                        {module.credits} credits
                                                         </div>
                                                       </div>
+                                                      <div className="col-span-8">
+                                                        <div className="flex -space-x-0">
+                                                        {mapping.teacherIds.map((teacherId) => {
+                                                          const teacher = teachers?.find(m => m.id === teacherId);
+                                                          return teacher ? (
+                                                          <Link key={teacher.id} href={`/people/${teacher.id}`}>
+                                                            <a onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
+                                                            <Avatar className="border-2 border-background w-8 h-8">
+                                                              <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                                                              <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="text-sm font-medium mr-2">{teacher.name}</span>
+                                                            </a>
+                                                          </Link>
+                                                          ) : null;
+                                                        })}
+                                                        </div>
+                                                      </div>
+                                                      </div>
                                                     ) : null;
-                                                  })}
+                                                    })}
                                                 </div>
                                               </div>
                                             </div>

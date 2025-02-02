@@ -138,25 +138,27 @@ export function PreRegistrationFormDialog({
                   <ScrollArea className="h-[200px] w-full rounded-md border p-4">
                     <div className="space-y-2">
                       {mockModules.map((module) => (
-                        <div key={module.id} className="flex items-center space-x-2">
+                        <div key={module?.id} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`module-${module.id}`}
+                            id={`module-${module?.id}`}
                             onCheckedChange={(checked) => {
                               const currentModules = form.getValues('moduleIds');
                               if (checked) {
-                                form.setValue('moduleIds', [...currentModules, module.id]);
+                                if (module) {
+                                  form.setValue('moduleIds', [...currentModules, module.id]);
+                                }
                               } else {
                                 form.setValue(
                                   'moduleIds',
-                                  currentModules.filter((id) => id !== module.id)
+                                  currentModules.filter((id) => id !== module?.id)
                                 );
                               }
                             }}
                           />
-                          <Label htmlFor={`module-${module.id}`} className="flex-1">
-                            {module.name}
+                          <Label htmlFor={`module-${module?.id}`} className="flex-1">
+                            {module?.name}
                             <span className="ml-2 text-xs text-muted-foreground">
-                              ({module.credits} credits)
+                              ({module?.credits} credits)
                             </span>
                           </Label>
                         </div>
