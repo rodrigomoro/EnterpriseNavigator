@@ -5,7 +5,7 @@ import { mockPrograms, mockTeamMembers } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Users } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion } from 'framer-motion';
 import UserAvatar from '@/components/UserAvatar';
@@ -74,6 +74,14 @@ export default function Programs() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
+                <Link href="/programs/enrollments">
+                  <a className="inline-block">
+                    <Button variant="outline">
+                      <Users className="h-4 w-4 mr-2" />
+                      Enrollments
+                    </Button>
+                  </a>
+                </Link>
                 <Link href="/programs/new">
                   <a className="inline-block">
                     <Button>
