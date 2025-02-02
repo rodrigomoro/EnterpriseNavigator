@@ -27,10 +27,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/calendar" component={Calendar} />
+      <Route path="/programs/enrollments" component={ProgramEnrollments} />
       <Route path="/programs/new" component={ManageProgram} />
       <Route path="/programs/:id/edit" component={ManageProgram} />
       <Route path="/programs/:id" component={ProgramOverview} />
-      <Route path="/programs/enrollments" component={ProgramEnrollments} />
       <Route path="/programs" component={Programs} />
       <Route path="/people/new" component={ManagePerson} />
       <Route path="/people/:id/edit" component={ManagePerson} />
