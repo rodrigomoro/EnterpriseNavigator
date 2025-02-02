@@ -10,6 +10,7 @@ import UserAvatar from '@/components/UserAvatar'
 import PageTransition from '@/components/PageTransition'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { EnrollmentManager } from '@/components/EnrollmentManager'
 
 export const ProgramEnrollments = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,9 +81,7 @@ export const ProgramEnrollments = () => {
                 </TabsContent>
 
                 <TabsContent value="enrollments" className="mt-4">
-                  <div className="py-8 text-center text-muted-foreground">
-                    Enrollment management will be implemented in the next phase
-                  </div>
+                  <EnrollmentManager />
                 </TabsContent>
               </Tabs>
             </Card>
