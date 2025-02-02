@@ -47,12 +47,10 @@ export function ConversionDialog({
   preRegistrations,
   onConvert,
 }: ConversionDialogProps) {
-  // Keep track of selected group for each student's module
   const [moduleAssignments, setModuleAssignments] = useState<
     Record<string, Record<string, string>>
   >({});
 
-  // Get all available groups for each module
   const getGroupsForModule = (moduleId: string) => {
     const groups: Array<{ id: string; name: string; capacity: number; enrolled: number }> = [];
 
@@ -76,7 +74,6 @@ export function ConversionDialog({
   };
 
   const handleConvert = () => {
-    // Validate all students have all their modules assigned to groups
     const isComplete = preRegistrations.every(preReg =>
       preReg.modules.every(moduleId => 
         moduleAssignments[preReg.id]?.[moduleId]
@@ -84,7 +81,6 @@ export function ConversionDialog({
     );
 
     if (!isComplete) {
-      // Show error using toast
       return;
     }
 
@@ -141,7 +137,7 @@ export function ConversionDialog({
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   {preReg.modules.map((moduleId) => {
                     const groups = getGroupsForModule(moduleId);
                     const selectedGroupId = moduleAssignments[preReg.id]?.[moduleId];
@@ -149,10 +145,12 @@ export function ConversionDialog({
                     return (
                       <div key={moduleId} className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Badge variant="outline">{moduleId}</Badge>
+                          <Badge variant="outline" className="truncate">
+                            {moduleId}
+                          </Badge>
                           {selectedGroupId && (
-                            <Badge variant="secondary" className="ml-2">
-                              Group Selected
+                            <Badge variant="secondary" className="ml-2 shrink-0">
+                              Selected
                             </Badge>
                           )}
                         </div>
@@ -162,7 +160,7 @@ export function ConversionDialog({
                             handleGroupSelect(preReg.id, moduleId, value)
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a group" />
                           </SelectTrigger>
                           <SelectContent>
@@ -172,7 +170,9 @@ export function ConversionDialog({
                                 value={group.id}
                                 disabled={group.enrolled >= group.capacity}
                               >
-                                {group.name} ({group.enrolled}/{group.capacity})
+                                <div className="truncate">
+                                  {group.name} ({group.enrolled}/{group.capacity})
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
