@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -43,7 +43,7 @@ const preRegistrationSchema = z.object({
 type PreRegistrationFormValues = z.infer<typeof preRegistrationSchema>;
 
 interface PreRegistrationFormDialogProps {
-  onPreRegister: (data: PreRegistrationFormValues) => void;
+  onPreRegister: (data: PreRegistrationFormValues & { timestamp: string }) => void;
   trigger?: React.ReactNode;
 }
 
@@ -61,13 +61,19 @@ export function PreRegistrationFormDialog({
     },
   });
 
-  const onSubmit = (data: PreRegistrationFormValues) => {
+  useEffect(() => {
+    if (!open) {
+      // Only reset the form when the dialog is fully closed
+      form.reset();
+    }
+  }, [open, form]);
+
+  const onSubmit = async (data: PreRegistrationFormValues) => {
     onPreRegister({
       ...data,
       timestamp: new Date().toISOString(),
     });
     setOpen(false);
-    form.reset();
   };
 
   return (
