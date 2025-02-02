@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Sidebar from '@/components/Sidebar'
-import { Search } from 'lucide-react'
+import { Search, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import UserAvatar from '@/components/UserAvatar'
 import PageTransition from '@/components/PageTransition'
@@ -13,7 +13,8 @@ import { useToast } from '@/hooks/use-toast'
 
 export const ProgramEnrollments = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { toast } = useToast()
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const handlePreRegister = (data: any) => {
     console.log('Creating pre-registration:', data)
@@ -21,6 +22,7 @@ export const ProgramEnrollments = () => {
       title: "Pre-registration created",
       description: "The pre-registration has been created successfully.",
     })
+    setDialogOpen(false);
   }
 
   return (
@@ -32,7 +34,7 @@ export const ProgramEnrollments = () => {
           <header>
             <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
               <div className="min-w-60">
-                <h1 className="text-3xl font-bold">Program Enrollments</h1>
+                <h1 className="text-2xl font-bold">Program Enrollments</h1>
                 <p className="text-muted-foreground">Manage pre-registrations and enrollments</p>
               </div>
 
@@ -49,7 +51,17 @@ export const ProgramEnrollments = () => {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <PreRegistrationFormDialog onPreRegister={handlePreRegister} />
+                <PreRegistrationFormDialog 
+                  open={dialogOpen} 
+                  onOpenChange={setDialogOpen}
+                  onPreRegister={handlePreRegister}
+                  trigger={
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Pre-registration
+                    </Button>
+                  }
+                />
                 <UserAvatar />
               </div>
             </div>

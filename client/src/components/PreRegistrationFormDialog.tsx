@@ -43,15 +43,18 @@ const preRegistrationSchema = z.object({
 type PreRegistrationFormValues = z.infer<typeof preRegistrationSchema>;
 
 interface PreRegistrationFormDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onPreRegister: (data: PreRegistrationFormValues & { timestamp: string }) => void;
   trigger?: React.ReactNode;
 }
 
 export function PreRegistrationFormDialog({ 
+  open,
+  onOpenChange,
   onPreRegister,
   trigger 
 }: PreRegistrationFormDialogProps) {
-  const [open, setOpen] = useState(false);
   const form = useForm<PreRegistrationFormValues>({
     resolver: zodResolver(preRegistrationSchema),
     defaultValues: {
@@ -63,7 +66,6 @@ export function PreRegistrationFormDialog({
 
   useEffect(() => {
     if (!open) {
-      // Only reset the form when the dialog is fully closed
       form.reset();
     }
   }, [open, form]);
@@ -73,11 +75,10 @@ export function PreRegistrationFormDialog({
       ...data,
       timestamp: new Date().toISOString(),
     });
-    setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button>
