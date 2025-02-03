@@ -118,7 +118,14 @@ function getFullModulesFromIDs(moduleIds: string[]) {
   });
 }
 
-// Module Schema and Components
+// Add moduleConfig interface
+interface ModuleConfig {
+  moduleId: string;
+  syncHours: number;
+  asyncHours: number;
+  credits: number;
+}
+
 const moduleSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Module name is required"),
@@ -687,7 +694,13 @@ const formSchema = z.object({
   whyChoose: z.string(),
   careerOpportunities: z.string(),
   certifications: z.string(),
-  modules: z.array(moduleSchema.omit({ teacherIds: true })).min(1, "At least one module is required"),
+  modules: z.array(moduleSchema),
+  moduleConfigs: z.array(z.object({
+    moduleId: z.string(),
+    syncHours: z.number(),
+    asyncHours: z.number(),
+    credits: z.number()
+  })),
   intakes: z.array(z.object({
     name: z.string(),
     modality: z.string().min(1, "Modality is required"),
@@ -714,8 +727,6 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Group Module-Teacher Mapping Component
-
 export default function ManageProgram() {
   const [teachers] = useState(mockTeamMembers.filter((member) => member.role === "Teacher"));
   const [, params] = useRoute("/programs/:id/edit");
@@ -733,29 +744,37 @@ export default function ManageProgram() {
   const toggleIntake = () => setIsIntakeExpanded(!isIntakeExpanded);
   const toggleGroup = () => setIsGroupExpanded(!isGroupExpanded);
 
-    // Calculate total duration from modules considering both sync and async hours
-    const calculateTotalDuration = (modules: any[]) => {
-      return modules?.reduce((total, module) => total + (module.syncHours || 0) + (module.asyncHours || 0), 0) || 0;
+  // Calculate total duration from modules considering both sync and async hours
+  const calculateTotalDuration = (modules: any[]) => {
+    return modules?.reduce((total, module) => total + (module.syncHours || 0) + (module.asyncHours || 0), 0) || 0;
+  };
+
+  // Initialize new module with default values
+  const addModule = () => {
+    const currentModules = form.getValues("modules") || [];
+    const newModule = {
+      name: "",
+      description: "",
+      competencies: "",
+      tools: "",
+      syllabus: "",
+      syncHours: 0,
+      asyncHours: 0,
+      credits: 0,
+      costPerCredit: 0,
     };
 
-    // Initialize new module with default values
-    const addModule = () => {
-      const currentModules = form.getValues("modules") || [];
-      form.setValue("modules", [
-        ...currentModules,
-        {
-          name: "",
-          description: "",
-          competencies: "",
-          tools: "",
-          syllabus: "",
-          syncHours: 0,
-          asyncHours: 0,
-          credits: 0,
-          costPerCredit: 0,
-        }
-      ]);
-    };
+    form.setValue("modules", [...currentModules, newModule]);
+
+    // Also add a corresponding moduleConfig
+    const currentConfigs = form.getValues("moduleConfigs") || [];
+    form.setValue("moduleConfigs", [...currentConfigs, {
+      moduleId: "", // Will be set when the form is submitted
+      syncHours: 0,
+      asyncHours: 0,
+      credits: 0
+    }]);
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -792,6 +811,7 @@ export default function ManageProgram() {
               costPerCredit: 0
             }
           ],
+      moduleConfigs: program?.moduleConfigs ?? [],
       intakes: program?.intakes ?? [{
         name: "",
         modality: "",
@@ -808,15 +828,16 @@ export default function ManageProgram() {
     }
   });
 
-
   const removeModule = (index: number) => {
     const currentModules = form.getValues("modules");
     form.setValue("modules", currentModules.filter((_, i) => i !== index));
+
+    // Also remove the corresponding moduleConfig
+    const currentConfigs = form.getValues("moduleConfigs");
+    form.setValue("moduleConfigs", currentConfigs.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data: FormValues) => {
-    console.log("Form submitted:", data);
-
     // Convert modules (with full details) back to an array of IDs and configurations
     const moduleIds = data.modules.map(mod => {
       if (!mod.id) {
@@ -826,8 +847,8 @@ export default function ManageProgram() {
     });
 
     // Create module configurations array
-    const moduleConfigs = data.modules.map(mod => ({
-      moduleId: mod.id!,
+    const moduleConfigs = data.modules.map((mod, index) => ({
+      moduleId: mod.id || moduleIds[index],
       syncHours: mod.syncHours,
       asyncHours: mod.asyncHours,
       credits: mod.credits
@@ -836,9 +857,17 @@ export default function ManageProgram() {
     // Make an updated program object
     const updatedProgram = {
       ...program,
+      id: program?.id || `program-${Math.random().toString(36).slice(2)}`,
       name: data.name,
       area: data.area,
       type: data.type,
+      description: data.description,
+      prerequisites: data.prerequisites,
+      targetAudience: data.targetAudience,
+      objectives: data.objectives,
+      whyChoose: data.whyChoose,
+      careerOpportunities: data.careerOpportunities,
+      certifications: data.certifications,
       modules: moduleIds,
       moduleConfigs: moduleConfigs,
       intakes: data.intakes,
@@ -849,9 +878,9 @@ export default function ManageProgram() {
       description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
     });
 
-    navigate("/programs/" + (program?.id || "new"));
+    navigate("/programs/" + updatedProgram.id);
   };
-  
+
 
   const directors = mockTeamMembers.filter(
     (member) => member.role === "Program Director",
@@ -904,7 +933,7 @@ export default function ManageProgram() {
     form.setValue("intakes", intakes);
   };
 
-    const totalDuration = calculateTotalDuration(form.watch("modules"));
+  const totalDuration = calculateTotalDuration(form.watch("modules"));
 
 
   return (
