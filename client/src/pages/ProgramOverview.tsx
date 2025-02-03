@@ -33,9 +33,32 @@ interface ModuleConfig {
   credits: number;
 }
 
+interface Program {
+    id: string;
+    name: string;
+    area: string;
+    type: string;
+    totalHours: number;
+    directors?: {
+        id: string;
+        name: string;
+        avatar: string;
+    }[];
+    studentCount: number;
+    avgScore: number;
+    progress: number;
+    objectives: string;
+    whyChoose: string;
+    careerOpportunities: string;
+    certifications: string;
+    modules?: string[];
+    intakes?: any[];
+    moduleConfigs?: ModuleConfig[];
+}
+
 export default function ProgramOverview() {
   const [, params] = useRoute("/programs/:id");
-  const program = mockPrograms.find((p) => p.id === params?.id);
+  const program = mockPrograms.find((p) => p.id === params?.id) as Program;
   const [openSections, setOpenSections] = useState({
     modules: true,
     intakes: true,
@@ -247,12 +270,14 @@ export default function ProgramOverview() {
                         <div className="space-y-4">
                           {program.modules?.map((moduleId, index) => {
                             const module = mockModuleCatalog.find((m) => m.id === moduleId);
-                             const moduleConfig = program.moduleConfigs?.find(
-                              (config) => config.moduleId === moduleId
-                            ) || { syncHours: 0, asyncHours: 0, credits: 0 };
+                            const moduleConfig = program.moduleConfigs?.find(
+                              (config: ModuleConfig) => config.moduleId === moduleId
+                            );
 
-                            return module ? (
-                              <div key={index} className="border rounded-lg p-4">
+                            if (!module) return null;
+
+                            return (
+                              <div key={moduleId} className="border rounded-lg p-4">
                                 <div className="flex justify-between items-start mb-3">
                                   <div>
                                     <h4 className="font-medium">{module.name}</h4>
@@ -266,7 +291,7 @@ export default function ProgramOverview() {
                                         Sync Hours
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig.syncHours}
+                                        {moduleConfig?.syncHours ?? 0}
                                       </p>
                                     </div>
                                     <div className="text-right">
@@ -274,7 +299,7 @@ export default function ProgramOverview() {
                                         Async Hours
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig.asyncHours}
+                                        {moduleConfig?.asyncHours ?? 0}
                                       </p>
                                     </div>
                                     <div className="text-right">
@@ -282,11 +307,12 @@ export default function ProgramOverview() {
                                         Credits
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig.credits}
+                                        {moduleConfig?.credits ?? 0}
                                       </p>
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="grid grid-cols-2 gap-4 mt-4">
                                   <div>
                                     <p className="text-sm font-medium mb-1">
@@ -306,7 +332,7 @@ export default function ProgramOverview() {
                                   </div>
                                 </div>
                               </div>
-                            ) : null;
+                            );
                           })}
                         </div>
                       </ScrollArea>
