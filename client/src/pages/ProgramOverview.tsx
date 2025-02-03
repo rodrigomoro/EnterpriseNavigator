@@ -26,13 +26,6 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-interface ModuleConfig {
-  moduleId: string;
-  syncHours: number;
-  asyncHours: number;
-  credits: number;
-}
-
 interface Program {
     id: string;
     name: string;
@@ -53,7 +46,6 @@ interface Program {
     certifications: string;
     modules?: string[];
     intakes?: any[];
-    moduleConfigs?: ModuleConfig[];
 }
 
 export default function ProgramOverview() {
@@ -270,10 +262,7 @@ export default function ProgramOverview() {
                         <div className="space-y-4">
                           {program.modules?.map((moduleId, index) => {
                             const module = mockModuleCatalog.find((m) => m.id === moduleId);
-                            const moduleConfig = program.moduleConfigs?.find(
-                              (config: ModuleConfig) => config.moduleId === moduleId
-                            );
-
+                            
                             if (!module) return null;
 
                             return (
@@ -291,7 +280,7 @@ export default function ProgramOverview() {
                                         Sync Hours
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig?.syncHours ?? 0}
+                                        {module.syncHours ?? 0}
                                       </p>
                                     </div>
                                     <div className="text-right">
@@ -299,7 +288,7 @@ export default function ProgramOverview() {
                                         Async Hours
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig?.asyncHours ?? 0}
+                                        {module.asyncHours ?? 0}
                                       </p>
                                     </div>
                                     <div className="text-right">
@@ -307,7 +296,7 @@ export default function ProgramOverview() {
                                         Credits
                                       </p>
                                       <p className="font-medium">
-                                        {moduleConfig?.credits ?? 0}
+                                        {module.credits ?? 0}
                                       </p>
                                     </div>
                                   </div>
