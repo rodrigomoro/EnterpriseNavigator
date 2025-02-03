@@ -921,7 +921,7 @@ export default function ManageProgram() {
                 Total Duration: {totalDuration} hours
               </p>
             </div>
-            <Link href={`/programs/${params?.id}`}>
+            <Link href={isEdit ? "/programs/" + params?.id : "/programs"}>
               <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
@@ -1307,7 +1307,7 @@ export default function ManageProgram() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => navigate("/programs/" + params?.id)}
+                  onClick={() => navigate(isEdit ? "/programs/" + params?.id : "/programs")}
                 >
                   Cancel
                 </Button>
