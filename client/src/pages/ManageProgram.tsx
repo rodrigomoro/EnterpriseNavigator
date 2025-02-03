@@ -92,28 +92,33 @@ const GROUP_STATUS = [
   { value: "cancelled", label: "Cancelled" },
 ] as const;
 
-function getFullModulesFromIDs(moduleIds: string[]) {
+// Update getFullModulesFromIDs to properly handle moduleConfigs
+function getFullModulesFromIDs(moduleIds: string[], moduleConfigs?: ModuleConfig[]) {
   return moduleIds.map((moduleId) => {
     const catalogEntry = mockModuleCatalog.find((m) => m.id === moduleId);
+    const moduleConfig = moduleConfigs?.find(mc => mc.moduleId === moduleId);
+
     if (!catalogEntry) {
-      // If the ID isn't found, decide how to handle it.
-      // We'll create a placeholder object or skip it. For now:
       return {
-        id: moduleId, // at least store the original ID
+        id: moduleId,
         name: "",
         description: "",
         competencies: "",
         tools: "",
         syllabus: "",
-        syncHours: 0,
-        asyncHours: 0,
-        credits: 0,
+        syncHours: moduleConfig?.syncHours || 0,
+        asyncHours: moduleConfig?.asyncHours || 0,
+        credits: moduleConfig?.credits || 0,
         costPerCredit: 0,
       };
     }
-    // Return the full catalog data, which matches your schema
+
+    // Merge catalog data with config data
     return {
       ...catalogEntry,
+      syncHours: moduleConfig?.syncHours || catalogEntry.syncHours || 0,
+      asyncHours: moduleConfig?.asyncHours || catalogEntry.asyncHours || 0,
+      credits: moduleConfig?.credits || catalogEntry.credits || 0,
     };
   });
 }
@@ -791,12 +796,7 @@ export default function ManageProgram() {
       careerOpportunities: program?.careerOpportunities ?? "",
       certifications: program?.certifications ?? "",
       modules: program
-        ? getFullModulesFromIDs(program.modules).map(module => ({
-            ...module,
-            syncHours: program.moduleConfigs?.find(c => c.moduleId === module.id)?.syncHours || 0,
-            asyncHours: program.moduleConfigs?.find(c => c.moduleId === module.id)?.asyncHours || 0,
-            credits: program.moduleConfigs?.find(c => c.moduleId === module.id)?.credits || 0
-          }))
+        ? getFullModulesFromIDs(program.modules, program.moduleConfigs)
         : [
             {
               id: undefined,
@@ -969,7 +969,7 @@ export default function ManageProgram() {
                         <Button variant="outline" size="sm" className="gap-2">
                           <Pencil className="h-4 w-4" />
                           Career & Certifications
-                        </Button>
+                                                </Button>
                       </DialogTrigger>
                       <ProgramDetailsDialog form={form} />
                     </Dialog>
