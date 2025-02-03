@@ -1307,7 +1307,8 @@ export const mockModuleCatalog = [
     description: "Basics of IT and Cloud value.",
     credits: 3,
     costPerCredit: 100,
-    hours: 6,
+    syncHours: 6,
+    asyncHours: 0,
     competencies:
       "Cloud Computing, DevOps, IT, Cloud Computing, DevOps, IT, Cloud Computing, DevOps,",
     tools: "None",
@@ -1325,7 +1326,8 @@ export const mockModuleCatalog = [
     description: "Introduction to PowerShell and its usage.",
     credits: 4,
     costPerCredit: 100,
-    hours: 27,
+    syncHours: 15,
+    asyncHours: 12,
     competencies: "Problem Solving, Coding, Automation, CLI",
     tools: "CLI, PowerShell",
     syllabus: `
@@ -1343,7 +1345,8 @@ export const mockModuleCatalog = [
     description: "Introduction to Azure and its usage.",
     credits: 4,
     costPerCredit: 100,
-    hours: 99,
+    syncHours: 60,
+    asyncHours: 39,
     competencies: "Cloud Services and Administration",
     tools: "Azure Portal, DrawIO",
     syllabus: `
@@ -1361,7 +1364,8 @@ export const mockModuleCatalog = [
     description: "Introduction to AWS and its usage.",
     credits: 4,
     costPerCredit: 100,
-    hours: 69,
+    syncHours: 45,
+    asyncHours: 24,
     competencies: "Cloud Services and Architecture",
     tools: "AWS Console, AWS Academy",
     syllabus: `
@@ -1379,7 +1383,8 @@ export const mockModuleCatalog = [
     description: "Introduction to GCP and its usage.",
     credits: 4,
     costPerCredit: 100,
-    hours: 51,
+    syncHours: 30,
+    asyncHours: 21,
     competencies: "Cloud Services and Administration",
     tools: "GCP Console, DrawIO",
     syllabus: `
@@ -1397,7 +1402,8 @@ export const mockModuleCatalog = [
     description: "Introduction to DevOps.",
     credits: 4,
     costPerCredit: 100,
-    hours: 60,
+    syncHours: 40,
+    asyncHours: 20,
     competencies: "Code and release management",
     tools: "Azure DevOps, PowerShell",
     syllabus: `
@@ -1415,7 +1421,8 @@ export const mockModuleCatalog = [
     description: "Final program.",
     credits: 4,
     costPerCredit: 100,
-    hours: 33,
+    syncHours: 33,
+    asyncHours: 0,
     competencies: "Team work and program development",
     tools: "",
     syllabus: `
@@ -1432,7 +1439,8 @@ export const mockModuleCatalog = [
     description: "Conceptos básicos, amenazas y vulnerabilidades.",
     credits: 4,
     costPerCredit: 100,
-    hours: 40,
+    syncHours: 25,
+    asyncHours: 15,
     competencies: "Fundamentals, Networking, Attack Vectors",
     tools: "Wireshark, Linux CLI",
     syllabus: `
@@ -1449,7 +1457,8 @@ export const mockModuleCatalog = [
     description: "Metodologías de pruebas de penetración.",
     credits: 5,
     costPerCredit: 100,
-    hours: 50,
+    syncHours: 35,
+    asyncHours: 15,
     competencies: "PenTesting, Ethical Hacking, Vulnerability Scans",
     tools: "Kali Linux, Metasploit",
     syllabus: `
@@ -1466,7 +1475,8 @@ export const mockModuleCatalog = [
     description: "Arquitectura de redes, firewalls y sistemas seguros.",
     credits: 4,
     costPerCredit: 100,
-    hours: 35,
+    syncHours: 25,
+    asyncHours: 10,
     competencies: "Network Security, Hardening, Firewalls",
     tools: "Cisco Packet Tracer, pfSense",
     syllabus: `
@@ -1483,7 +1493,8 @@ export const mockModuleCatalog = [
     description: "Conceptos de cifrado, SSL/TLS, PKI y mejores prácticas.",
     credits: 3,
     costPerCredit: 100,
-    hours: 20,
+    syncHours: 20,
+    asyncHours: 0,
     competencies: "Cryptography, PKI, SSL, TLS",
     tools: "OpenSSL, GPG",
     syllabus: `
@@ -1501,7 +1512,8 @@ export const mockModuleCatalog = [
       "Proceso de diseño centrado en el usuario, research y prototipado rápido.",
     credits: 3,
     costPerCredit: 100,
-    hours: 25,
+    syncHours: 15,
+    asyncHours: 10,
     competencies: "User Research, Wireframing",
     tools: "Figma, Miro",
     syllabus: `
@@ -1519,7 +1531,8 @@ export const mockModuleCatalog = [
       "Diseño visual, tipografía, color y componentes de interacción.",
     credits: 4,
     costPerCredit: 100,
-    hours: 30,
+    syncHours: 20,
+    asyncHours: 10,
     competencies: "Visual Design, Layout, Branding",
     tools: "Sketch, Adobe XD",
     syllabus: `
@@ -1536,7 +1549,8 @@ export const mockModuleCatalog = [
     description: "Evaluación heurística y testing con usuarios.",
     credits: 3,
     costPerCredit: 100,
-    hours: 15,
+    syncHours: 15,
+    asyncHours: 0,
     competencies: "Usability Testing, Iteration",
     tools: "UserTesting, Maze",
     syllabus: `
@@ -1554,7 +1568,8 @@ export const mockModuleCatalog = [
       "Introducción a la recolección, limpieza y manipulación de datos.",
     credits: 4,
     costPerCredit: 100,
-    hours: 40,
+    syncHours: 25,
+    asyncHours: 15,
     competencies: "Data Wrangling, Python, Excel",
     tools: "Python, Jupyter, Excel",
     syllabus: `
@@ -1571,7 +1586,8 @@ export const mockModuleCatalog = [
     description: "Técnicas de reporting y dashboards.",
     credits: 3,
     costPerCredit: 100,
-    hours: 30,
+    syncHours: 20,
+    asyncHours: 10,
     competencies: "Data Viz, Tableau, Power BI",
     tools: "Tableau, Power BI",
     syllabus: `
@@ -1589,7 +1605,8 @@ export const mockModuleCatalog = [
       "Análisis estadístico, regresiones y algoritmos de Machine Learning básicos.",
     credits: 5,
     costPerCredit: 100,
-    hours: 50,
+    syncHours: 30,
+    asyncHours: 20,
     competencies: "Statistics, Regression, Intro ML",
     tools: "Python, scikit-learn",
     syllabus: `
@@ -1606,7 +1623,8 @@ export const mockModuleCatalog = [
     description: "HTML, CSS y JavaScript para crear interfaces de usuario.",
     credits: 4,
     costPerCredit: 100,
-    hours: 40,
+    syncHours: 30,
+    asyncHours: 10,
     competencies: "HTML, CSS, JavaScript",
     tools: "VSCode, Chrome DevTools",
     syllabus: `
@@ -1623,7 +1641,8 @@ export const mockModuleCatalog = [
     description: "Aprender React, Vue o Angular para aplicaciones SPA.",
     credits: 3,
     costPerCredit: 100,
-    hours: 30,
+    syncHours: 20,
+    asyncHours: 10,
     competencies: "SPA, React, Vue",
     tools: "Node, NPM",
     syllabus: `
@@ -1640,7 +1659,8 @@ export const mockModuleCatalog = [
     description: "APIs REST, bases de datos y autenticación.",
     credits: 5,
     costPerCredit: 100,
-    hours: 50,
+    syncHours: 35,
+    asyncHours: 15,
     competencies: "Node, Express, SQL/NoSQL",
     tools: "Postman, MongoDB, MySQL",
     syllabus: `
@@ -1657,7 +1677,8 @@ export const mockModuleCatalog = [
     description: "Historia de la IA, aprendizaje supervisado y no supervisado.",
     credits: 4,
     costPerCredit: 100,
-    hours: 40,
+    syncHours: 25,
+    asyncHours: 15,
     competencies: "ML Basics, Classification, Clustering",
     tools: "Python, scikit-learn",
     syllabus: `
@@ -1674,7 +1695,8 @@ export const mockModuleCatalog = [
     description: "Arquitecturas de redes, backpropagation y frameworks.",
     credits: 5,
     costPerCredit: 100,
-    hours: 60,
+    syncHours: 40,
+    asyncHours: 20,
     competencies: "Neural Networks, CNNs, RNNs",
     tools: "TensorFlow, Keras, PyTorch",
     syllabus: `
@@ -1691,7 +1713,8 @@ export const mockModuleCatalog = [
     description: "Text analytics, embeddings y chatbots.",
     credits: 3,
     costPerCredit: 100,
-    hours: 25,
+    syncHours: 15,
+    asyncHours: 10,
     competencies: "NLP, Word Embeddings, Transformers",
     tools: "NLTK, SpaCy, HuggingFace",
     syllabus: `
@@ -1708,7 +1731,8 @@ export const mockModuleCatalog = [
     description: "Procesamiento de imágenes y detección de objetos.",
     credits: 3,
     costPerCredit: 100,
-    hours: 20,
+    syncHours: 15,
+    asyncHours: 5,
     competencies: "OpenCV, Image Classification",
     tools: "OpenCV, TensorFlow",
     syllabus: `
@@ -1720,7 +1744,6 @@ export const mockModuleCatalog = [
       "This module introduces students to the principles of computer vision. By exploring image processing techniques and object detection methodologies, learners will be equipped to build systems that can interpret and classify visual data using tools like OpenCV and TensorFlow.",
   },
 ];
-
 
 export const mockPrograms = [
   {
