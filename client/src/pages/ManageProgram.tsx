@@ -110,6 +110,7 @@ function getFullModulesFromIDs(moduleIds: string[], moduleConfigs?: ModuleConfig
         asyncHours: moduleConfig?.asyncHours || 0,
         credits: moduleConfig?.credits || 0,
         costPerCredit: 0,
+        objectives: ""
       };
     }
 
@@ -131,10 +132,12 @@ interface ModuleConfig {
   credits: number;
 }
 
+// Update the moduleSchema to include objectives
 const moduleSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Module name is required"),
   description: z.string(),
+  objectives: z.string().min(1, "Module objectives are required"),
   competencies: z.string().min(1, "Competencies are required"),
   tools: z.string().min(1, "Tools are required"),
   syllabus: z.string().min(1, "Syllabus is required"),
@@ -153,6 +156,7 @@ interface ModulesSectionProps {
   teachers: any[];
 }
 
+// Update the ModuleDetailsDialog component to include objectives
 const ModuleDetailsDialog: React.FC<{
   module: ModuleType;
   moduleIndex: number;
@@ -181,6 +185,27 @@ const ModuleDetailsDialog: React.FC<{
                   placeholder="Module description"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`modules.${moduleIndex}.objectives`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Module Objectives</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm min-h-[120px]"
+                  placeholder="List the key learning objectives for this module"
+                />
+              </FormControl>
+              <FormDescription>
+                Specify what students will learn and be able to do after completing this module
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -754,12 +779,13 @@ export default function ManageProgram() {
     return modules?.reduce((total, module) => total + (module.syncHours || 0) + (module.asyncHours || 0), 0) || 0;
   };
 
-  // Initialize new module with default values
+  // Update addModule function to include objectives
   const addModule = () => {
     const currentModules = form.getValues("modules") || [];
     const newModule = {
       name: "",
       description: "",
+      objectives: "",
       competencies: "",
       tools: "",
       syllabus: "",
@@ -808,7 +834,8 @@ export default function ManageProgram() {
               syncHours: 0,
               asyncHours: 0,
               credits: 0,
-              costPerCredit: 0
+              costPerCredit: 0,
+              objectives: ""
             }
           ],
       moduleConfigs: program?.moduleConfigs ?? [],
@@ -950,7 +977,7 @@ export default function ManageProgram() {
                 Total Duration: {totalDuration} hours
               </p>
             </div>
-            <Link href={isEdit ? "/programs/" + params?.id : "/programs"}>
+            <Link href={isEdit ? "/programs/"+ params?.id : "/programs"}>
               <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
