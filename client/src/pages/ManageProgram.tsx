@@ -105,7 +105,8 @@ function getFullModulesFromIDs(moduleIds: string[]) {
         competencies: "",
         tools: "",
         syllabus: "",
-        hours: 0,
+        syncHours: 0,
+        asyncHours: 0,
         credits: 0,
         costPerCredit: 0,
       };
@@ -125,7 +126,8 @@ const moduleSchema = z.object({
   competencies: z.string().min(1, "Competencies are required"),
   tools: z.string().min(1, "Tools are required"),
   syllabus: z.string().min(1, "Syllabus is required"),
-  hours: z.number().min(1, "Hours must be at least 1"),
+  syncHours: z.number().min(0, "Sync hours must be non-negative"),
+  asyncHours: z.number().min(0, "Async hours must be non-negative"),
   credits: z.number().min(1, "Credits must be at least 1"),
   costPerCredit: z.number().min(0, "Cost per credit must be non-negative"),
 });
@@ -251,10 +253,11 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
 
           <div className="border rounded-md">
             <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
-              <div className="col-span-4">Module Name</div>
-              <div className="col-span-2">Hours</div>
+              <div className="col-span-3">Module Name</div>
+              <div className="col-span-2">Sync Hours</div>
+              <div className="col-span-2">Async Hours</div>
               <div className="col-span-2">Credits</div>
-              <div className="col-span-3">Cost/Credit</div>
+              <div className="col-span-2">Cost/Credit</div>
               <div className="col-span-1">Actions</div>
             </div>
 
@@ -262,7 +265,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
               <div className="divide-y">
                 {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                   <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.name`}
@@ -280,7 +283,27 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                     <div className="col-span-2">
                       <FormField
                         control={form.control}
-                        name={`modules.${moduleIndex}.hours`}
+                        name={`modules.${moduleIndex}.syncHours`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                className="bg-white"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-2">
+                      <FormField
+                        control={form.control}
+                        name={`modules.${moduleIndex}.asyncHours`}
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
@@ -317,7 +340,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                       />
                     </div>
 
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <FormField
                         control={form.control}
                         name={`modules.${moduleIndex}.costPerCredit`}
@@ -353,6 +376,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, remove
                           module={module}
                           moduleIndex={moduleIndex}
                           form={form}
+                          teachers={[]}
                         />
                       </Dialog>
                       <Button
@@ -709,10 +733,29 @@ export default function ManageProgram() {
   const toggleIntake = () => setIsIntakeExpanded(!isIntakeExpanded);
   const toggleGroup = () => setIsGroupExpanded(!isGroupExpanded);
 
-  // Calculate total duration from modules
-  const calculateTotalDuration = (modules: any[]) => {
-    return modules?.reduce((total, module) => total + (module.hours || 0), 0) || 0;
-  };
+    // Calculate total duration from modules considering both sync and async hours
+    const calculateTotalDuration = (modules: any[]) => {
+      return modules?.reduce((total, module) => total + (module.syncHours || 0) + (module.asyncHours || 0), 0) || 0;
+    };
+
+    // Initialize new module with default values
+    const addModule = () => {
+      const currentModules = form.getValues("modules") || [];
+      form.setValue("modules", [
+        ...currentModules,
+        {
+          name: "",
+          description: "",
+          competencies: "",
+          tools: "",
+          syllabus: "",
+          syncHours: 0,
+          asyncHours: 0,
+          credits: 0,
+          costPerCredit: 0,
+        }
+      ]);
+    };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -729,9 +772,13 @@ export default function ManageProgram() {
       careerOpportunities: program?.careerOpportunities ?? "",
       certifications: program?.certifications ?? "",
       modules: program
-        ? getFullModulesFromIDs(program.modules) 
+        ? getFullModulesFromIDs(program.modules).map(module => ({
+            ...module,
+            syncHours: program.moduleConfigs?.find(c => c.moduleId === module.id)?.syncHours || 0,
+            asyncHours: program.moduleConfigs?.find(c => c.moduleId === module.id)?.asyncHours || 0,
+            credits: program.moduleConfigs?.find(c => c.moduleId === module.id)?.credits || 0
+          }))
         : [
-            // if new program, let’s start with one empty module
             {
               id: undefined,
               name: "",
@@ -739,7 +786,8 @@ export default function ManageProgram() {
               competencies: "",
               tools: "",
               syllabus: "",
-              hours: 0,
+              syncHours: 0,
+              asyncHours: 0,
               credits: 0,
               costPerCredit: 0
             }
@@ -760,22 +808,6 @@ export default function ManageProgram() {
     }
   });
 
-  const addModule = () => {
-    const currentModules = form.getValues("modules") || [];
-    form.setValue("modules", [
-      ...currentModules,
-      {
-        name: "",
-        description: "",
-        competencies: "",
-        tools: "",
-        syllabus: "",
-        hours: 0,
-        credits: 0,
-        costPerCredit: 0,
-      }
-    ]);
-  };
 
   const removeModule = (index: number) => {
     const currentModules = form.getValues("modules");
@@ -784,42 +816,40 @@ export default function ManageProgram() {
 
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
-  
-    // Convert modules (with full details) back to an array of IDs
+
+    // Convert modules (with full details) back to an array of IDs and configurations
     const moduleIds = data.modules.map(mod => {
-      // If mod.id doesn't exist (for newly created modules),
-      // create a new ID or handle them accordingly.
-      // For example, let's generate a random ID:
       if (!mod.id) {
         mod.id = "module-" + Math.random().toString(36).slice(2);
-        // Possibly also push to mockModuleCatalog or handle new modules
-        // mockModuleCatalog.push(mod)
       }
       return mod.id;
     });
-  
+
+    // Create module configurations array
+    const moduleConfigs = data.modules.map(mod => ({
+      moduleId: mod.id!,
+      syncHours: mod.syncHours,
+      asyncHours: mod.asyncHours,
+      credits: mod.credits
+    }));
+
     // Make an updated program object
     const updatedProgram = {
-      ...program, // if there's an existing program
+      ...program,
       name: data.name,
       area: data.area,
       type: data.type,
-      // ...
-      modules: moduleIds, // Only store the array of IDs
+      modules: moduleIds,
+      moduleConfigs: moduleConfigs,
       intakes: data.intakes,
     };
-  
-    // Now you can save updatedProgram to your store / mock array / API
-    // e.g. if you keep them in an array:
-    // const idx = mockPrograms.findIndex((p) => p.id === updatedProgram.id)
-    // mockPrograms[idx] = updatedProgram;
-  
+
     toast({
       title: isEdit ? "Program Updated" : "Program Created",
       description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
     });
-  
-    navigate("/programs/" + updatedProgram.id);
+
+    navigate("/programs/" + (program?.id || "new"));
   };
   
 
@@ -874,7 +904,8 @@ export default function ManageProgram() {
     form.setValue("intakes", intakes);
   };
 
-  const totalDuration = calculateTotalDuration(form.watch("modules"));
+    const totalDuration = calculateTotalDuration(form.watch("modules"));
+
 
   return (
     <div className="flex min-h-screen bg-background">
