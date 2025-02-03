@@ -26,6 +26,13 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+interface ModuleConfig {
+  moduleId: string;
+  syncHours: number;
+  asyncHours: number;
+  credits: number;
+}
+
 export default function ProgramOverview() {
   const [, params] = useRoute("/programs/:id");
   const program = mockPrograms.find((p) => p.id === params?.id);
@@ -239,55 +246,67 @@ export default function ProgramOverview() {
                       <ScrollArea className="h-[408px] pr-4">
                         <div className="space-y-4">
                           {program.modules?.map((moduleId, index) => {
-                          const module = mockModuleCatalog.find((m) => m.id === moduleId);
-                          return module ? (
-                            <div key={index} className="border rounded-lg p-4">
-                            <div className="flex justify-between items-start mb-3">
-                              <div>
-                              <h4 className="font-medium">{module.name}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {module.description}
-                              </p>
+                            const module = mockModuleCatalog.find((m) => m.id === moduleId);
+                             const moduleConfig = program.moduleConfigs?.find(
+                              (config) => config.moduleId === moduleId
+                            ) || { syncHours: 0, asyncHours: 0, credits: 0 };
+
+                            return module ? (
+                              <div key={index} className="border rounded-lg p-4">
+                                <div className="flex justify-between items-start mb-3">
+                                  <div>
+                                    <h4 className="font-medium">{module.name}</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      {module.description}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-4">
+                                    <div className="text-right">
+                                      <p className="text-sm text-muted-foreground">
+                                        Sync Hours
+                                      </p>
+                                      <p className="font-medium">
+                                        {moduleConfig.syncHours}
+                                      </p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-sm text-muted-foreground">
+                                        Async Hours
+                                      </p>
+                                      <p className="font-medium">
+                                        {moduleConfig.asyncHours}
+                                      </p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-sm text-muted-foreground">
+                                        Credits
+                                      </p>
+                                      <p className="font-medium">
+                                        {moduleConfig.credits}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 mt-4">
+                                  <div>
+                                    <p className="text-sm font-medium mb-1">
+                                      Competencies
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {module.competencies}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium mb-1">
+                                      Tools
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {module.tools}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <p className="text-sm text-muted-foreground">
-                                Credits
-                                </p>
-                                <p className="font-medium">
-                                {module.credits}
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-sm text-muted-foreground">
-                                Hours
-                                </p>
-                                <p className="font-medium">
-                                {module.hours}
-                                </p>
-                              </div>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mt-4">
-                              <div>
-                              <p className="text-sm font-medium mb-1">
-                                Competencies
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {module.competencies}
-                              </p>
-                              </div>
-                              <div>
-                              <p className="text-sm font-medium mb-1">
-                                Tools
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {module.tools}
-                              </p>
-                              </div>
-                            </div>
-                            </div>
-                          ) : null;
+                            ) : null;
                           })}
                         </div>
                       </ScrollArea>
