@@ -11,6 +11,7 @@ import PersonOverview from "@/pages/PersonOverview";
 import ManagePerson from "@/pages/ManagePerson";
 import ManageProgram from "@/pages/ManageProgram";
 import ProgramEnrollments from "@/pages/ProgramEnrollments";
+import ModulesCatalog from "@/pages/ModulesCatalog";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
 import CreateEditInvoice from "@/pages/CreateEditInvoice";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/programs/:id/edit" component={ManageProgram} />
       <Route path="/programs/:id" component={ProgramOverview} />
       <Route path="/programs" component={Programs} />
+      <Route path="/modules" component={ModulesCatalog} />
       <Route path="/people/new" component={ManagePerson} />
       <Route path="/people/:id/edit" component={ManagePerson} />
       <Route path="/people/:id" component={PersonOverview} />
