@@ -51,6 +51,7 @@ export default function ManageModule() {
     defaultValues: {
       name: module?.name ?? "",
       description: module?.description ?? "",
+      objectives: module?.objectives ?? "",
       competencies: module?.competencies ?? "",
       tools: module?.tools ?? "",
       syllabus: module?.syllabus ?? "",
@@ -204,6 +205,25 @@ export default function ManageModule() {
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="objectives"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Objectives</FormLabel>
+                      <FormControl>
+                        <textarea
+                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          placeholder="List of objectives"
+                          rows={4}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

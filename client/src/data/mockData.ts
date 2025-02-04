@@ -1317,7 +1317,7 @@ export const mockModuleCatalog = [
       - Introduction to DevOps
       - Introduction to IT
     `,
-    objectves:
+    objectives:
       "This module lays the foundation for your journey by introducing essential IT concepts and cloud computing fundamentals. Students will gain a clear understanding of the technological landscape, preparing them for more advanced topics throughout the program.",
   },
   {
@@ -1336,7 +1336,7 @@ export const mockModuleCatalog = [
       - Functions and Scripting
       - Automation and Scripting
     `,
-    objectves:
+    objectives:
       "In this module, learners will master the fundamentals of PowerShell scripting to automate routine tasks. The focus is on developing problem-solving skills through coding, understanding variables, operators, and crafting reusable scripts to enhance productivity.",
   },
   {
@@ -1355,7 +1355,7 @@ export const mockModuleCatalog = [
       - Azure Administration
       - Azure Networking
     `,
-    objectves:
+    objectives:
       "This module introduces the Azure cloud platform with an emphasis on practical administration. Students will learn to deploy, manage, and secure cloud resources while gaining hands-on experience with the Azure portal and associated networking services.",
   },
   {
@@ -1374,7 +1374,7 @@ export const mockModuleCatalog = [
       - AWS Architecture
       - AWS Networking
     `,
-    objectves:
+    objectives:
       "This module is designed to build a strong foundation in AWS architecture. Students will explore core AWS services and learn best practices for designing scalable, secure cloud environments. The module emphasizes hands-on experience with the AWS Console to solidify architectural principles.",
   },
   {
@@ -1393,7 +1393,7 @@ export const mockModuleCatalog = [
       - GCP Administration
       - GCP Networking
     `,
-    objectves:
+    objectives:
       "Focusing on the Google Cloud Platform, this module provides essential insights into cloud infrastructure management. Students will gain the skills necessary to deploy, administer, and secure GCP services while understanding the fundamentals of cloud networking.",
   },
   {
@@ -1412,7 +1412,7 @@ export const mockModuleCatalog = [
       - Release Management
       - DevOps Tools
     `,
-    objectves:
+    objectives:
       "This module introduces the principles and practices of DevOps, emphasizing the integration of development and operations. Students will learn how to streamline the software delivery process by mastering code management, continuous integration, and deployment techniques using industry-standard tools.",
   },
   {
@@ -1430,7 +1430,7 @@ export const mockModuleCatalog = [
       - Program Development
       - Final Project
     `,
-    objectves:
+    objectives:
       "The Capstone module is the culmination of the learning experience. Students will work in teams to integrate and apply their acquired skills in a comprehensive project that simulates real-world challenges, reinforcing both technical and collaborative competencies.",
   },
   {
@@ -1448,7 +1448,7 @@ export const mockModuleCatalog = [
       - Amenazas y vulnerabilidades
       - Herramientas de seguridad
     `,
-    objectves:
+    objectives:
       "Este módulo introduce los conceptos fundamentales de la ciberseguridad, explorando las amenazas, vulnerabilidades y técnicas de mitigación. Los estudiantes aprenderán a identificar riesgos y utilizar herramientas básicas para proteger infraestructuras y datos críticos.",
   },
   {
@@ -1466,7 +1466,7 @@ export const mockModuleCatalog = [
       - Herramientas de hacking ético
       - Escaneo de vulnerabilidades
     `,
-    objectves:
+    objectives:
       "This module empowers students to think like ethical hackers. It covers penetration testing methodologies and the practical use of tools such as Kali Linux and Metasploit to identify vulnerabilities, thereby preparing students to conduct systematic and ethical security assessments.",
   },
   {
@@ -1484,7 +1484,7 @@ export const mockModuleCatalog = [
       - Hardening de sistemas
       - Firewalls y seguridad perimetral
     `,
-    objectves:
+    objectives:
       "Designed to enhance understanding of secure network and system architectures, this module focuses on the implementation of firewalls and system hardening techniques. Students will learn to design robust security frameworks to protect digital assets and critical infrastructures.",
   },
   {
@@ -1502,7 +1502,7 @@ export const mockModuleCatalog = [
       - SSL/TLS y PKI
       - Mejores prácticas de seguridad
     `,
-    objectves:
+    objectives:
       "This module delves into the world of cryptography and secure communications. Students will explore encryption techniques, understand the role of SSL/TLS and PKI in data security, and learn best practices for implementing robust security protocols.",
   },
   {
@@ -1521,7 +1521,7 @@ export const mockModuleCatalog = [
       - Investigación de usuarios
       - Prototipado rápido
     `,
-    objectves:
+    objectives:
       "En este módulo se establecen las bases del diseño de experiencia de usuario (UX). Los estudiantes aprenderán a realizar investigaciones con usuarios, crear wireframes y prototipos, y a iterar en diseños para asegurar soluciones intuitivas y centradas en el usuario.",
   },
   {
@@ -1540,7 +1540,7 @@ export const mockModuleCatalog = [
       - Tipografía y color
       - Componentes de interacción
     `,
-    objectves:
+    objectives:
       "Focusing on the visual side of design, this module explores key aspects of UI including layout, typography, color theory, and interactive components. Students will develop the skills necessary to create aesthetically pleasing and functional interfaces that align with modern design trends.",
   },
   {
@@ -1558,7 +1558,7 @@ export const mockModuleCatalog = [
       - Testing con usuarios
       - Iteración y mejora continua
     `,
-    objectves:
+    objectives:
       "This module emphasizes the importance of usability in design. Students will learn how to conduct heuristic evaluations and user tests, using the insights gained to iterate and refine interfaces to maximize user satisfaction and efficiency.",
   },
   {
@@ -1577,7 +1577,7 @@ export const mockModuleCatalog = [
       - Recolección y limpieza de datos
       - Manipulación de datos
     `,
-    objectves:
+    objectives:
       "This module introduces the core principles of data analysis. Learners will understand how to collect, clean, and manipulate data using popular tools and programming languages, laying the groundwork for more advanced analytical techniques.",
   },
   {
@@ -1595,7 +1595,7 @@ export const mockModuleCatalog = [
       - Dashboards interactivos
       - Business Intelligence
     `,
-    objectves:
+    objectives:
       "Focusing on the transformation of data into insights, this module teaches students how to create effective data visualizations and interactive dashboards. The course covers the use of industry-standard BI tools to support decision-making processes.",
   },
   {
@@ -1614,7 +1614,7 @@ export const mockModuleCatalog = [
       - Regresiones
       - Modelos predictivos básicos
     `,
-    objectves:
+    objectives:
       "This module covers the essentials of statistical analysis and predictive modeling. Students will learn how to apply regression techniques and basic machine learning algorithms to forecast trends, interpret data patterns, and make data-driven predictions.",
   },
   {
@@ -1632,7 +1632,7 @@ export const mockModuleCatalog = [
       - JavaScript básico
       - DOM y eventos
     `,
-    objectves:
+    objectives:
       "This module establishes the basics of front-end web development. Students will learn to build responsive and interactive interfaces using HTML, CSS, and JavaScript, gaining an understanding of the Document Object Model (DOM) and event-driven programming.",
   },
   {
@@ -1650,7 +1650,7 @@ export const mockModuleCatalog = [
       - Componentes y props
       - Routing y state management
     `,
-    objectves:
+    objectives:
       "Building on frontend fundamentals, this module introduces modern frameworks like React, Vue, or Angular. Students will learn about component-based architecture, state management, and routing to create dynamic single-page applications (SPAs) with ease.",
   },
   {
@@ -1668,7 +1668,7 @@ export const mockModuleCatalog = [
       - Bases de datos
       - Autenticación y autorización
     `,
-    objectves:
+    objectives:
       "This module provides an in-depth look at backend development using Node.js and Express. Students will learn how to build RESTful APIs, integrate various databases (both SQL and NoSQL), and implement robust authentication mechanisms to secure their applications.",
   },
   {
@@ -1686,7 +1686,7 @@ export const mockModuleCatalog = [
       - Aprendizaje supervisado
       - Aprendizaje no supervisado
     `,
-    objectves:
+    objectives:
       "Introducing the world of artificial intelligence, this module covers the historical context and fundamental concepts of AI and machine learning. Students will explore both supervised and unsupervised learning techniques, setting the stage for more advanced AI studies.",
   },
   {
@@ -1704,7 +1704,7 @@ export const mockModuleCatalog = [
       - Convolutional NNs
       - Recurrent NNs
     `,
-    objectves:
+    objectives:
       "Delving into the advanced realm of deep learning, this module covers the design and training of neural networks. Students will learn about various architectures, including CNNs and RNNs, and gain hands-on experience with frameworks such as TensorFlow, Keras, and PyTorch.",
   },
   {
@@ -1722,7 +1722,7 @@ export const mockModuleCatalog = [
       - Word embeddings
       - Chatbots y asistentes virtuales
     `,
-    objectves:
+    objectives:
       "This module explores the fundamentals of Natural Language Processing (NLP). Students will learn techniques for text analytics, understand how word embeddings and transformer models work, and develop applications like chatbots and virtual assistants using cutting-edge tools.",
   },
   {
@@ -1740,7 +1740,7 @@ export const mockModuleCatalog = [
       - Detección de objetos
       - Clasificación de imágenes
     `,
-    objectves:
+    objectives:
       "This module introduces students to the principles of computer vision. By exploring image processing techniques and object detection methodologies, learners will be equipped to build systems that can interpret and classify visual data using tools like OpenCV and TensorFlow.",
   },
 ];
