@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Plus, Search, Pencil, Trash2, LayoutGrid, Table } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Search, Pencil, Trash2, LayoutGrid, Filter, List } from "lucide-react";
 import { mockModuleCatalog } from "@/data/mockData";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,201 +21,314 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { UserNav } from "@/components/UserNav";
+import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
+import { AnimatePresence, motion } from "framer-motion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import PageTransition from "@/components/PageTransition";
+import UserAvatar from "@/components/UserAvatar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 export default function ModulesCatalog() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewType, setViewType] = useState<"grid" | "table">("grid");
-  const [filterCredits, setFilterCredits] = useState<string>("all");
+  const [deletingModuleId, setDeletingModuleId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCredits, setSelectedCredits] = useState('All');
+  const [selectedHours, setSelectedHours] = useState('All');
+  const [, navigate] = useLocation();
   const { toast } = useToast();
 
-  const handleDelete = (moduleId: string) => {
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => { });
+        resizeObserver.disconnect();
+      }
+    };
+  }, []);
+
+  const handleDeleteModule = () => {
+    if (!deletingModuleId) return;
+    console.log('Deleting Module:', deletingModuleId);
+    setDeletingModuleId(null);
     toast({
-      title: "Not implemented",
-      description: "Delete functionality is not yet implemented",
+      title: "Module removed",
+      description: "The team member has been removed successfully.",
+      variant: "destructive",
     });
   };
 
+  const handleCardClick = (id: string) => {
+    navigate(`/modules/${id}`);
+  };
+
+  const handleEditClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    navigate(`/modules/${id}/edit`);
+  };
+
+  const credits = ["All", "1-3", "4-6", "7+"];
+  const hours = ["All", "1-10", "11-30", "31-60", "61+"];
+
   const filteredModules = mockModuleCatalog.filter(module => {
-    const matchesSearch = 
+    const matchesSearch =
       module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       module.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCredits = 
-      filterCredits === "all" || 
-      (filterCredits === "1-3" && module.credits >= 1 && module.credits <= 3) ||
-      (filterCredits === "4-6" && module.credits >= 4 && module.credits <= 6) ||
-      (filterCredits === "7+" && module.credits >= 7);
+    const matchesCredits =
+      selectedCredits === "All" ||
+      (selectedCredits === "1-3" && module.credits >= 1 && module.credits <= 3) ||
+      (selectedCredits === "4-6" && module.credits >= 4 && module.credits <= 6) ||
+      (selectedCredits === "7+" && module.credits >= 7);
 
-    return matchesSearch && matchesCredits;
+    const matchesHours =
+      selectedHours === "All" ||
+      (selectedHours === "1-10" && module.syncHours + module.asyncHours >= 1 && module.syncHours + module.asyncHours <= 10) ||
+      (selectedHours === "11-30" && module.syncHours + module.asyncHours >= 11 && module.syncHours + module.asyncHours <= 30) ||
+      (selectedHours === "31-60" && module.syncHours + module.asyncHours >= 31 && module.syncHours + module.asyncHours <= 60) ||
+      (selectedHours === "61+" && module.syncHours + module.asyncHours >= 61);
+
+    return matchesSearch && matchesCredits && matchesHours;
   });
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  const GridView = () => (
+    <motion.div
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {filteredModules.map((module) => (
+        <Card key={module.id}>
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <CardTitle className="text-xl">{module.name}</CardTitle>
+              <div className="flex gap-2">
+                <Link href={`/modules/${module.id}/edit`}>
+                  <Button variant="ghost" size="icon">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive"
+                  onClick={() => handleCardClick(module.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <CardDescription>{module.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-muted-foreground">Hours</span>
+                  <div className="space-x-2">
+                    <Badge variant="secondary">Sync: {module.syncHours}h</Badge>
+                    <Badge variant="secondary">Async: {module.asyncHours}h</Badge>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Credits</span>
+                  <Badge>{module.credits} credits</Badge>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-sm text-muted-foreground">Cost per Credit</span>
+                  <Badge variant="outline">${module.costPerCredit}</Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </motion.div>
+  );
+
+  const ListView = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Sync Hours</TableHead>
+          <TableHead>Async Hours</TableHead>
+          <TableHead>Credits</TableHead>
+          <TableHead>Cost/Credit</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {filteredModules.map((module) => (
+          <TableRow
+            key={module.id}
+            className="cursor-pointer hover:bg-muted/50"
+            onClick={() => handleCardClick(module.id)}
+          >
+            <TableCell className="font-medium">
+              <div className="flex items-center gap-3">
+                {module.name}
+              </div>
+            </TableCell>
+            <TableCell>{module.syncHours}h</TableCell>
+            <TableCell>{module.asyncHours}h</TableCell>
+            <TableCell>{module.credits}</TableCell>
+            <TableCell>${module.costPerCredit}</TableCell>
+            <TableCell className="text-right">
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={(e) => handleEditClick(e, module.id)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletingModuleId(module.id);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
 
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1">
-        <div className="border-b">
-          <div className="flex h-16 items-center px-4">
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold">Modules Catalog</h2>
-              <p className="text-sm text-muted-foreground">
-                Manage your educational modules
-              </p>
-            </div>
-            <UserNav />
-          </div>
-        </div>
-
-        <main className="p-8">
-          <div className="flex items-center justify-between space-x-2 mb-4">
-            <div className="flex flex-1 items-center space-x-2">
-              <div className="relative w-80">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search modules..."
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+        <PageTransition>
+          <header>
+            <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
+              <div>
+                <h1 className="text-2xl font-bold">Modules Catalog</h1>
+                <p className="text-muted-foreground">View and manage all modules</p>
               </div>
-              <Select
-                value={filterCredits}
-                onValueChange={setFilterCredits}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by credits" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Credits</SelectItem>
-                  <SelectItem value="1-3">1-3 Credits</SelectItem>
-                  <SelectItem value="4-6">4-6 Credits</SelectItem>
-                  <SelectItem value="7+">7+ Credits</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setViewType(viewType === "grid" ? "table" : "grid")}
-              >
-                {viewType === "grid" ? (
-                  <Table className="h-4 w-4" />
-                ) : (
-                  <LayoutGrid className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            <Link href="/modules/new">
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Module
-              </Button>
-            </Link>
-          </div>
 
-          {viewType === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredModules.map((module) => (
-                <Card key={module.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{module.name}</CardTitle>
-                      <div className="flex gap-2">
-                        <Link href={`/modules/${module.id}/edit`}>
-                          <Button variant="ghost" size="icon">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive"
-                          onClick={() => handleDelete(module.id)}
+              <div className="flex-1 flex justify-center max-w-xl">
+                <div className="relative w-full">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search module..."
+                    className="pl-8 w-full"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="min-w-[400px] flex justify-end items-center gap-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Credits</h4>
+                        <Select
+                          value={selectedCredits}
+                          onValueChange={setSelectedCredits}
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select credits" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {credits.map(credit => (
+                              <SelectItem key={credit} value={credit}>{credit}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Hours</h4>
+                        <Select
+                          value={selectedHours}
+                          onValueChange={setSelectedHours}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select hours" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {hours.map(hour => (
+                              <SelectItem key={hour} value={hour}>{hour}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                     </div>
-                    <CardDescription>{module.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm text-muted-foreground">Hours</span>
-                          <div className="space-x-2">
-                            <Badge variant="secondary">Sync: {module.syncHours}h</Badge>
-                            <Badge variant="secondary">Async: {module.asyncHours}h</Badge>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Credits</span>
-                          <Badge>{module.credits} credits</Badge>
-                        </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-sm text-muted-foreground">Cost per Credit</span>
-                          <Badge variant="outline">${module.costPerCredit}</Badge>
-                        </div>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-md border">
-              <div className="p-4">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left pb-4">Name</th>
-                      <th className="text-left pb-4">Sync Hours</th>
-                      <th className="text-left pb-4">Async Hours</th>
-                      <th className="text-left pb-4">Credits</th>
-                      <th className="text-left pb-4">Cost/Credit</th>
-                      <th className="text-right pb-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredModules.map((module) => (
-                      <tr key={module.id} className="border-b last:border-0">
-                        <td className="py-4">
-                          <div>
-                            <div className="font-medium">{module.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {module.description}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4">{module.syncHours}h</td>
-                        <td className="py-4">{module.asyncHours}h</td>
-                        <td className="py-4">{module.credits}</td>
-                        <td className="py-4">${module.costPerCredit}</td>
-                        <td className="py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Link href={`/modules/${module.id}/edit`}>
-                              <Button variant="ghost" size="icon">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive"
-                              onClick={() => handleDelete(module.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  </PopoverContent>
+                </Popover>
+
+                <div className="flex items-center border rounded-lg">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="icon"
+                    onClick={() => setViewMode('grid')}
+                    className="rounded-r-none"
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="icon"
+                    onClick={() => setViewMode('list')}
+                    className="rounded-l-none"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button onClick={() => navigate("/modules/new")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Module
+                </Button>
+                <UserAvatar />
               </div>
             </div>
-          )}
-        </main>
+          </header>
+
+          <main className="p-6">
+            <AnimatePresence>
+              {viewMode === 'grid' ? <GridView /> : <ListView />}
+            </AnimatePresence>
+          </main>
+        </PageTransition>
       </div>
+
+      <DeleteConfirmationDialog
+        open={deletingModuleId !== null}
+        onOpenChange={(open) => !open && setDeletingModuleId(null)}
+        onConfirm={handleDeleteModule}
+        title="Delete Module"
+        description="Are you sure you want to remove this module? This action cannot be undone."
+      />
     </div>
   );
 }

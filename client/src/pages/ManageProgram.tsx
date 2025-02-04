@@ -11,13 +11,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { mockTeamMembers, mockPrograms, mockModuleCatalog } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, X, ArrowLeft, Pencil, Copy, Clipboard, ChevronDown, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -798,19 +797,19 @@ export default function ManageProgram() {
       modules: program
         ? getFullModulesFromIDs(program.modules, program.moduleConfigs)
         : [
-            {
-              id: undefined,
-              name: "",
-              description: "",
-              competencies: "",
-              tools: "",
-              syllabus: "",
-              syncHours: 0,
-              asyncHours: 0,
-              credits: 0,
-              costPerCredit: 0
-            }
-          ],
+          {
+            id: undefined,
+            name: "",
+            description: "",
+            competencies: "",
+            tools: "",
+            syllabus: "",
+            syncHours: 0,
+            asyncHours: 0,
+            credits: 0,
+            costPerCredit: 0
+          }
+        ],
       moduleConfigs: program?.moduleConfigs ?? [],
       intakes: program?.intakes ?? [{
         name: "",
@@ -952,8 +951,8 @@ export default function ManageProgram() {
             </div>
             <Link href={isEdit ? "/programs/" + params?.id : "/programs"}>
               <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
               </Button>
             </Link>
           </div>
@@ -969,7 +968,7 @@ export default function ManageProgram() {
                         <Button variant="outline" size="sm" className="gap-2">
                           <Pencil className="h-4 w-4" />
                           Career & Certifications
-                                                </Button>
+                        </Button>
                       </DialogTrigger>
                       <ProgramDetailsDialog form={form} />
                     </Dialog>
