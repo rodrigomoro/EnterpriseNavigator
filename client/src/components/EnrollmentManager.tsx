@@ -15,6 +15,7 @@ import { useState } from 'react';
 
 // Import mock data (in a real app, this would come from an API)
 import { mockModuleCatalog } from '@/data/mockModules';
+import { Checkbox } from './ui/checkbox';
 
 export const EnrollmentManager = () => {
   const { toast } = useToast();
@@ -271,11 +272,9 @@ export const EnrollmentManager = () => {
                 <Card key={enrollment.id} className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
+                      <Checkbox 
                         checked={selectedEnrollments.includes(enrollment.id)}
-                        onChange={() => toggleEnrollmentSelection(enrollment.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        onCheckedChange={() => toggleEnrollmentSelection(enrollment.id)}
                       />
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
