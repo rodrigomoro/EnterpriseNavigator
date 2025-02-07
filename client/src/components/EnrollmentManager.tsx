@@ -201,36 +201,31 @@ export const EnrollmentManager = () => {
           </PopoverContent>
         </Popover>
       </div>
-
-      <ScrollArea className="h-[600px] pr-4">
-        <Card className="p-4">
-          {/* Bulk Actions Header */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Enrollments</h2>
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={handleBulkDownload}
-                disabled={selectedEnrollments.length === 0}
-              >
-                <Download className="h-4 w-4" />
-                Download All Receipts
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={handleBulkEmail}
-                disabled={selectedEnrollments.length === 0}
-              >
-                <Mail className="h-4 w-4" />
-                Email All Receipts
-              </Button>
-            </div>
+      <div className="flex gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleBulkDownload}
+              disabled={selectedEnrollments.length === 0}
+            >
+              <Download className="h-4 w-4" />
+              Download All Receipts
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleBulkEmail}
+              disabled={selectedEnrollments.length === 0}
+            >
+              <Mail className="h-4 w-4" />
+              Email All Receipts
+            </Button>
           </div>
 
+      <ScrollArea className="h-[600px]">
+        <Card className="p-4">
           <div className="grid grid-cols-1 gap-4">
             {filteredEnrollments.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
