@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ReceiptPreviewDialog } from './ReceiptPreviewDialog';
+import { ReceiptFormDialog } from './ReceiptFormDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +13,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { CalendarIcon, Search, Download, Mail } from 'lucide-react';
 import { format } from 'date-fns';
-import { useState } from 'react';
 
 // Import mock data (in a real app, this would come from an API)
 import { mockModuleCatalog } from '@/data/mockModules';
@@ -23,6 +24,9 @@ export const EnrollmentManager = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState<Date>();
   const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
+  const [paymentFormOpen, setPaymentFormOpen] = useState(false);
+  const [selectedEnrollment, setSelectedEnrollment] = useState<any>(null);
+  const [isBulkAction, setIsBulkAction] = useState(false);
 
   // Mock data for enrollments (in a real app, this would come from an API)
   const enrollments = [
@@ -114,7 +118,7 @@ export const EnrollmentManager = () => {
         { moduleId: "module-5", groupId: "GRP5" }
       ]
     },
-    
+
   ];
 
   // Mock function to get group info (in a real app, this would come from an API)
@@ -129,58 +133,48 @@ export const EnrollmentManager = () => {
     return groupInfoMap[groupId] || { programName: "Unknown", intakeName: "Unknown", groupName: "Unknown" };
   };
 
+  const handlePaymentSubmit = (data: any) => {
+    if (isBulkAction) {
+      toast({
+        title: "Bulk receipt generation started",
+        description: `Generating receipts for ${selectedEnrollments.length} enrollments...`,
+      });
+      // In a real app, we would process bulk receipts here
+    } else {
+      toast({
+        title: "Receipt generated",
+        description: "The receipt has been generated successfully.",
+      });
+    }
+    setPaymentFormOpen(false);
+  };
+
+  const handleSingleReceiptAction = (enrollment: any, action: 'download' | 'email') => {
+    setSelectedEnrollment(enrollment);
+    setIsBulkAction(false);
+    setPaymentFormOpen(true);
+  };
+
+  const handleBulkAction = (action: 'download' | 'email') => {
+    if (selectedEnrollments.length === 0) {
+      toast({
+        title: "No enrollments selected",
+        description: `Please select at least one enrollment to ${action} receipts.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsBulkAction(true);
+    setPaymentFormOpen(true);
+  };
+
   const toggleSelectAll = () => {
     if (selectedEnrollments.length === filteredEnrollments.length) {
       setSelectedEnrollments([]);
     } else {
       setSelectedEnrollments(filteredEnrollments.map(e => e.id));
     }
-  };
-
-  const handleDownloadReceipt = () => {
-    toast({
-      title: "Receipt downloaded",
-      description: "The receipt has been downloaded successfully.",
-    });
-  };
-
-  const handleEmailReceipt = () => {
-    toast({
-      title: "Receipt sent",
-      description: "The receipt has been sent to the student's email.",
-    });
-  };
-
-  const handleBulkDownload = () => {
-    if (selectedEnrollments.length === 0) {
-      toast({
-        title: "No enrollments selected",
-        description: "Please select at least one enrollment to download receipts.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Bulk download started",
-      description: `Downloading ${selectedEnrollments.length} receipts...`,
-    });
-  };
-
-  const handleBulkEmail = () => {
-    if (selectedEnrollments.length === 0) {
-      toast({
-        title: "No enrollments selected",
-        description: "Please select at least one enrollment to email receipts.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Bulk email started",
-      description: `Sending ${selectedEnrollments.length} receipts...`,
-    });
   };
 
   // Filter enrollments based on search query, status, and date
@@ -244,6 +238,7 @@ export const EnrollmentManager = () => {
           </PopoverContent>
         </Popover>
       </div>
+
       <div className="flex gap-4">
         <div className="flex items-center gap-2">
           <Checkbox 
@@ -253,92 +248,106 @@ export const EnrollmentManager = () => {
           />
           <span className="text-sm text-muted-foreground">Select All</span>
         </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={handleBulkDownload}
-              disabled={selectedEnrollments.length === 0}
-            >
-              <Download className="h-4 w-4" />
-              Download All Receipts
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={handleBulkEmail}
-              disabled={selectedEnrollments.length === 0}
-            >
-              <Mail className="h-4 w-4" />
-              Email All Receipts
-            </Button>
-          </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => handleBulkAction('download')}
+          disabled={selectedEnrollments.length === 0}
+        >
+          <Download className="h-4 w-4" />
+          Download All Receipts
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => handleBulkAction('email')}
+          disabled={selectedEnrollments.length === 0}
+        >
+          <Mail className="h-4 w-4" />
+          Email All Receipts
+        </Button>
+      </div>
 
       <ScrollArea className="h-[600px]">
         <div className="grid grid-cols-1 gap-4">
-            {filteredEnrollments.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {enrollments.length === 0 
-                  ? "No enrollments yet. Convert pre-registrations to see them here."
-                  : "No enrollments match your search criteria."}
-              </div>
-            ) : (
-              filteredEnrollments.map((enrollment) => (
-                <Card key={enrollment.id} className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <Checkbox 
-                        checked={selectedEnrollments.includes(enrollment.id)}
-                        onCheckedChange={() => toggleEnrollmentSelection(enrollment.id)}
-                      />
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
-                        <AvatarFallback>{enrollment.studentName.slice(0, 2)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h4 className="font-medium">{enrollment.studentName}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge variant={getStatusVariant(enrollment.status)}>
-                        {enrollment.status}
-                      </Badge>
-                      <ReceiptPreviewDialog
-                        enrollment={enrollment}
-                        modules={mockModuleCatalog}
-                        getGroupInfo={getGroupInfo}
-                        onDownload={handleDownloadReceipt}
-                        onEmail={handleEmailReceipt}
-                      />
+          {filteredEnrollments.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              {enrollments.length === 0 
+                ? "No enrollments yet. Convert pre-registrations to see them here."
+                : "No enrollments match your search criteria."}
+            </div>
+          ) : (
+            filteredEnrollments.map((enrollment) => (
+              <Card key={enrollment.id} className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Checkbox 
+                      checked={selectedEnrollments.includes(enrollment.id)}
+                      onCheckedChange={() => toggleEnrollmentSelection(enrollment.id)}
+                    />
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
+                      <AvatarFallback>{enrollment.studentName.slice(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-medium">{enrollment.studentName}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
+                  <div className="flex items-center gap-4">
+                    <Badge variant={getStatusVariant(enrollment.status)}>
+                      {enrollment.status}
+                    </Badge>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleSingleReceiptAction(enrollment, 'download')}
+                    >
+                      Generate Receipt
+                    </Button>
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    {enrollment.moduleAssignments.map((assignment) => {
-                      const module = mockModuleCatalog.find(m => m.id === assignment.moduleId);
-                      const groupInfo = getGroupInfo(assignment.groupId);
+                <div className="grid grid-cols-2 gap-4">
+                  {enrollment.moduleAssignments.map((assignment) => {
+                    const module = mockModuleCatalog.find(m => m.id === assignment.moduleId);
+                    const groupInfo = getGroupInfo(assignment.groupId);
 
-                      return (
-                        <div key={`${enrollment.id}-${assignment.moduleId}`} className="space-y-2">
-                          <Badge variant="outline" className="truncate">
-                            {module?.name}
-                          </Badge>
-                          <div className="text-sm text-muted-foreground">
-                            {groupInfo.programName} - {groupInfo.intakeName} - {groupInfo.groupName}
-                          </div>
+                    return (
+                      <div key={`${enrollment.id}-${assignment.moduleId}`} className="space-y-2">
+                        <Badge variant="outline" className="truncate">
+                          {module?.name}
+                        </Badge>
+                        <div className="text-sm text-muted-foreground">
+                          {groupInfo.programName} - {groupInfo.intakeName} - {groupInfo.groupName}
                         </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              ))
-            )}
-          </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
       </ScrollArea>
+
+      {/* Payment Form Dialog */}
+      {paymentFormOpen && (
+        <ReceiptFormDialog
+          open={paymentFormOpen}
+          onOpenChange={setPaymentFormOpen}
+          onSubmit={handlePaymentSubmit}
+          studentName={selectedEnrollment?.studentName}
+          moduleAssignments={selectedEnrollment?.moduleAssignments}
+          isBulkAction={isBulkAction}
+          selectedEnrollments={isBulkAction? selectedEnrollments : null}
+        />
+      )}
+
     </div>
   );
 };
