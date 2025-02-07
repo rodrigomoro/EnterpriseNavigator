@@ -1,4 +1,3 @@
-// Imports for UI components
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Search } from 'lucide-react';
+import { CalendarIcon, Search, Download, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 
@@ -22,6 +21,7 @@ export const EnrollmentManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState<Date>();
+  const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
 
   // Mock data for enrollments (in a real app, this would come from an API)
   const enrollments = [
@@ -32,8 +32,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-07T10:00:00Z",
       status: "Active",
       moduleAssignments: [
-        { moduleId: "MOD1", groupId: "GRP1" },
-        { moduleId: "MOD2", groupId: "GRP2" }
+        { moduleId: "module-1", groupId: "GRP1" },
+        { moduleId: "module-2", groupId: "GRP2" }
       ]
     },
     {
@@ -41,10 +41,10 @@ export const EnrollmentManager = () => {
       studentId: "ST002",
       studentName: "Jane Smith",
       enrolledAt: "2024-02-06T14:30:00Z",
-      status: "Active",
+      status: "Completed",
       moduleAssignments: [
-        { moduleId: "MOD3", groupId: "GRP3" },
-        { moduleId: "MOD4", groupId: "GRP4" }
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-4", groupId: "GRP4" }
       ]
     },
     {
@@ -54,8 +54,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-05T09:15:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "MOD1", groupId: "GRP1" },
-        { moduleId: "MOD5", groupId: "GRP5" }
+        { moduleId: "module-1", groupId: "GRP1" },
+        { moduleId: "module-5", groupId: "GRP5" }
       ]
     },
     {
@@ -65,8 +65,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-04T16:45:00Z",
       status: "Completed",
       moduleAssignments: [
-        { moduleId: "MOD2", groupId: "GRP2" },
-        { moduleId: "MOD4", groupId: "GRP4" }
+        { moduleId: "module-2", groupId: "GRP2" },
+        { moduleId: "module-4", groupId: "GRP4" }
       ]
     },
     {
@@ -76,8 +76,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-03T11:20:00Z",
       status: "Active",
       moduleAssignments: [
-        { moduleId: "MOD3", groupId: "GRP3" },
-        { moduleId: "MOD5", groupId: "GRP5" }
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
       ]
     }
   ];
@@ -108,6 +108,38 @@ export const EnrollmentManager = () => {
     });
   };
 
+  const handleBulkDownload = () => {
+    if (selectedEnrollments.length === 0) {
+      toast({
+        title: "No enrollments selected",
+        description: "Please select at least one enrollment to download receipts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Bulk download started",
+      description: `Downloading ${selectedEnrollments.length} receipts...`,
+    });
+  };
+
+  const handleBulkEmail = () => {
+    if (selectedEnrollments.length === 0) {
+      toast({
+        title: "No enrollments selected",
+        description: "Please select at least one enrollment to email receipts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Bulk email started",
+      description: `Sending ${selectedEnrollments.length} receipts...`,
+    });
+  };
+
   // Filter enrollments based on search query, status, and date
   const filteredEnrollments = enrollments.filter(enrollment => {
     const matchesSearch = enrollment.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -117,6 +149,27 @@ export const EnrollmentManager = () => {
 
     return matchesSearch && matchesStatus && matchesDate;
   });
+
+  const toggleEnrollmentSelection = (enrollmentId: string) => {
+    setSelectedEnrollments(prev => 
+      prev.includes(enrollmentId) 
+        ? prev.filter(id => id !== enrollmentId)
+        : [...prev, enrollmentId]
+    );
+  };
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return 'default';
+      case 'Pending':
+        return 'secondary';
+      case 'Completed':
+        return 'outline';
+      default:
+        return 'default';
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -159,6 +212,33 @@ export const EnrollmentManager = () => {
         </Popover>
       </div>
 
+      {/* Bulk Actions */}
+      {selectedEnrollments.length > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+          <span className="text-sm text-muted-foreground">
+            {selectedEnrollments.length} enrollment(s) selected
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleBulkDownload}
+          >
+            <Download className="h-4 w-4" />
+            Download All Receipts
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleBulkEmail}
+          >
+            <Mail className="h-4 w-4" />
+            Email All Receipts
+          </Button>
+        </div>
+      )}
+
       <ScrollArea className="h-[600px] pr-4">
         <div className="grid grid-cols-1 gap-4">
           {filteredEnrollments.length === 0 ? (
@@ -172,6 +252,12 @@ export const EnrollmentManager = () => {
               <Card key={enrollment.id} className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedEnrollments.includes(enrollment.id)}
+                      onChange={() => toggleEnrollmentSelection(enrollment.id)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
                       <AvatarFallback>{enrollment.studentName.slice(0, 2)}</AvatarFallback>
@@ -184,20 +270,18 @@ export const EnrollmentManager = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge variant={
-                      enrollment.status === 'Active' ? 'default' :
-                      enrollment.status === 'Pending' ? 'secondary' :
-                      'outline'
-                    }>
+                    <Badge variant={getStatusVariant(enrollment.status)}>
                       {enrollment.status}
                     </Badge>
-                    <ReceiptPreviewDialog
-                      enrollment={enrollment}
-                      modules={mockModuleCatalog}
-                      getGroupInfo={getGroupInfo}
-                      onDownload={handleDownloadReceipt}
-                      onEmail={handleEmailReceipt}
-                    />
+                    {enrollment.status !== 'Pending' && (
+                      <ReceiptPreviewDialog
+                        enrollment={enrollment}
+                        modules={mockModuleCatalog}
+                        getGroupInfo={getGroupInfo}
+                        onDownload={handleDownloadReceipt}
+                        onEmail={handleEmailReceipt}
+                      />
+                    )}
                   </div>
                 </div>
 
