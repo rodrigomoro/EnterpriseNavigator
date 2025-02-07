@@ -79,7 +79,41 @@ export const EnrollmentManager = () => {
         { moduleId: "module-3", groupId: "GRP3" },
         { moduleId: "module-5", groupId: "GRP5" }
       ]
-    }
+    },
+    {
+      id: "6",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    {
+      id: "7",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    {
+      id: "8",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    
   ];
 
   // Mock function to get group info (in a real app, this would come from an API)
@@ -225,8 +259,7 @@ export const EnrollmentManager = () => {
           </div>
 
       <ScrollArea className="h-[600px]">
-        <Card className="p-4">
-          <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4">
             {filteredEnrollments.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {enrollments.length === 0 
@@ -290,7 +323,6 @@ export const EnrollmentManager = () => {
               ))
             )}
           </div>
-        </Card>
       </ScrollArea>
     </div>
   );
