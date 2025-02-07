@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { mockPrograms, mockTeamMembers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'wouter';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { mockPeople } from '@/data/mockPeople';
+import { mockPrograms } from '@/data/mockPrograms';
 
 export default function ProgramDirectory() {
   const [showAll, setShowAll] = useState(false);
-  const displayMembers = showAll ? mockPrograms : mockPrograms.slice(0, 3);
-  const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
+  const displayPeople = showAll ? mockPrograms : mockPrograms.slice(0, 3);
+  const teachers = mockPeople.filter((m) => m.role === "Teacher");
 
   return (
     <div>
@@ -20,7 +21,7 @@ export default function ProgramDirectory() {
       </div>
 
       <div className="space-y-4">
-        {displayMembers.map((program) => (
+        {displayPeople.map((program) => (
           <Link key={program.id} href={`/program/${program.id}`}>
             <a className="flex items-center justify-between py-2 hover:bg-muted/50 px-2 rounded-md cursor-pointer">
               <div className="flex items-center gap-3">

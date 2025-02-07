@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { mockTasks } from '@/data/mockData';
+import { mockTasks } from '@/data/mockTasks';
 import { useState } from 'react';
 
 const priorityColors: Record<string, string> = {

@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
-import type { Invoice } from "@/data/mockData";
+import { Invoice } from "@/data/mockInvoices";
 
 interface QRCodeTrackerProps {
   invoice: Invoice;

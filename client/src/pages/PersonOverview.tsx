@@ -1,6 +1,5 @@
 import { ArrowLeft, Edit, RefreshCw, Globe, Database, GraduationCap, Award, BookOpen } from "lucide-react";
 import { Link, useRoute } from 'wouter';
-import { mockTeamMembers } from '@/data/mockData';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
@@ -10,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { mockPeople } from "@/data/mockPeople";
 
 // Mock student data (in a real app, this would come from your LMS/CRM integration)
 const mockStudentData = {
@@ -84,7 +84,7 @@ const mockTeacherData = {
 
 export default function PersonOverview() {
   const [, params] = useRoute('/people/:id');
-  const person = mockTeamMembers.find(m => m.id === params?.id);
+  const person = mockPeople.find(m => m.id === params?.id);
 
   if (!person) {
     return <div>Person not found</div>;

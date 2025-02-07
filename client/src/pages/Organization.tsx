@@ -2,12 +2,12 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
+import { mockPeople } from "@/data/mockPeople";
 
 // Only include relevant roles for the org chart
 const INCLUDED_ROLES = [
@@ -29,9 +29,9 @@ const INCLUDED_ROLES = [
 
 // Get unique departments for filter buttons
 const departments = Array.from(new Set(
-  mockTeamMembers
-    .filter(member => INCLUDED_ROLES.includes(member.role))
-    .map(member => member.department)
+  mockPeople
+    .filter(person => INCLUDED_ROLES.includes(person.role))
+    .map(person => person.department)
 ));
 
 // Simulate logged in user (in a real app, this would come from auth context)
@@ -42,38 +42,38 @@ export default function Organization() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['1', 'cao-1']));
 
-  // Filter members based on department, search query, and included roles
-  const filteredMembers = useMemo(() => {
-    return mockTeamMembers.filter(member => {
+  // Filter people based on department, search query, and included roles
+  const filteredPeople = useMemo(() => {
+    return mockPeople.filter(person => {
       const matchesRole = INCLUDED_ROLES.some(included => 
         // This will match "Program Director: Science Program"
         // since it starts with "Program Director"
-        member.role.toLowerCase().startsWith(included.toLowerCase())
-      ) || member.id === '1';
+        person.role.toLowerCase().startsWith(included.toLowerCase())
+      ) || person.id === '1';
 
       // Department + search remain the same
-      const matchesDepartment = selectedDepartment === "All" || member.department === selectedDepartment;
+      const matchesDepartment = selectedDepartment === "All" || person.department === selectedDepartment;
       const matchesSearch = (
-        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.role.toLowerCase().includes(searchQuery.toLowerCase())
+        person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        person.role.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       return matchesRole && matchesDepartment && matchesSearch;
     });
   }, [selectedDepartment, searchQuery]);
 
-  // Group members by their reporting structure
-  const membersByManager = useMemo(() => {
-    return filteredMembers.reduce((acc, member) => {
-      if (member.reportsTo) {
-        if (!acc[member.reportsTo]) {
-          acc[member.reportsTo] = [];
+  // Group people by their reporting structure
+  const peopleByManager = useMemo(() => {
+    return filteredPeople.reduce((acc, person) => {
+      if (person.reportsTo) {
+        if (!acc[person.reportsTo]) {
+          acc[person.reportsTo] = [];
         }
-        acc[member.reportsTo].push(member);
+        acc[person.reportsTo].push(person);
       }
       return acc;
-    }, {} as Record<string, typeof mockTeamMembers>);
-  }, [filteredMembers]);
+    }, {} as Record<string, typeof mockPeople>);
+  }, [filteredPeople]);
 
   const toggleExpand = (id: string) => {
     setExpandedNodes(prev => {
@@ -87,8 +87,8 @@ export default function Organization() {
     });
   };
 
-  const renderOrgNode = (employee: typeof mockTeamMembers[0], level: number = 0) => {
-    const hasChildren = membersByManager[employee.id]?.length > 0;
+  const renderOrgNode = (employee: typeof mockPeople[0], level: number = 0) => {
+    const hasChildren = peopleByManager[employee.id]?.length > 0;
     const isExpanded = expandedNodes.has(employee.id);
 
     return (
@@ -119,7 +119,7 @@ export default function Organization() {
               <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-border"></div>
               <div className="absolute top-8 left-0 right-0 h-px bg-border"></div>
               <div className="pt-8 flex gap-8">
-                {membersByManager[employee.id].map((child, index) => (
+                {peopleByManager[employee.id].map((child, index) => (
                   <div key={child.id} className="relative">
                     <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-border"></div>
                     {renderOrgNode(child, level + 1)}
@@ -134,7 +134,7 @@ export default function Organization() {
   };
 
   // Find the top-level manager (CEO)
-  const ceo = filteredMembers.find(m => !m.reportsTo);
+  const ceo = filteredPeople.find(m => !m.reportsTo);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -199,7 +199,7 @@ export default function Organization() {
 }
 
 interface EmployeeCardProps {
-  employee: typeof mockTeamMembers[0];
+  employee: typeof mockPeople[0];
   isCurrentUser: boolean;
 }
 

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { mockTeamMembers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { mockPeople } from '@/data/mockPeople';
 
 export default function PeopleDirectory() {
   const [showAll, setShowAll] = useState(false);
-  const displayMembers = showAll ? mockTeamMembers : mockTeamMembers.slice(0, 5);
+  const displayPeople = showAll ? mockPeople : mockPeople.slice(0, 5);
 
   return (
     <div>
@@ -19,24 +19,24 @@ export default function PeopleDirectory() {
       </div>
 
       <div className="space-y-4">
-        {displayMembers.map((member) => (
-          <Link key={member.id} href={`/people/${member.id}`}>
+        {displayPeople.map((person) => (
+          <Link key={person.id} href={`/people/${person.id}`}>
             <a className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg">
               <Avatar>
-                <AvatarImage src={member.avatar} alt={member.name} />
-                <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                <AvatarImage src={person.avatar} alt={person.name} />
+                <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
               </Avatar>
 
               <div>
-                <p className="font-medium">{member.name}</p>
-                <p className="text-sm text-muted-foreground">{member.role}</p>
+                <p className="font-medium">{person.name}</p>
+                <p className="text-sm text-muted-foreground">{person.role}</p>
               </div>
             </a>
           </Link>
         ))}
       </div>
 
-      {mockTeamMembers.length > 5 && (
+      {mockPeople.length > 5 && (
         <div className="mt-4 flex justify-center">
           <Button
             variant="ghost"

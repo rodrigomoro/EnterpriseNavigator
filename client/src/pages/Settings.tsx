@@ -685,7 +685,7 @@ export default function Settings() {
                             <div>
                               <p className="font-medium">People Changes</p>
                               <p className="text-sm text-muted-foreground">
-                                Updates to team members and roles
+                                Updates to people and roles
                               </p>
                             </div>
                             <Switch defaultChecked />

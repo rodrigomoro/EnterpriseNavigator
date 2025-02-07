@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockInvoices } from "@/data/mockData";
 import { useState, useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';
 import { sma } from 'moving-averages';
+import { mockInvoices } from "@/data/mockInvoices";
 
 interface DataPoint {
   date: string;

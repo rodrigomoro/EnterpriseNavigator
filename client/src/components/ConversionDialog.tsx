@@ -16,10 +16,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockModuleCatalog, mockPrograms } from '@/data/mockData';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { mockModuleCatalog } from '@/data/mockModules';
+import { mockPrograms } from '@/data/mockPrograms';
 
 interface ConversionDialogProps {
   open: boolean;

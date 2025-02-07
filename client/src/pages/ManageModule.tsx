@@ -20,9 +20,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { mockModuleCatalog } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
+import { mockModuleCatalog } from "@/data/mockModules";
 
 const formSchema = z.object({
   name: z.string().min(1, "Module name is required"),

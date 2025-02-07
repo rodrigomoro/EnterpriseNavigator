@@ -1,5 +1,4 @@
 import { useRoute } from "wouter";
-import { mockInvoices } from "@/data/mockData";
 import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import Sidebar from "@/components/Sidebar";
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import InvoiceApprovalWorkflow from "@/components/InvoiceApprovalWorkflow";
 import { useToast } from "@/hooks/use-toast";
+import { mockInvoices } from "@/data/mockInvoices";
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',

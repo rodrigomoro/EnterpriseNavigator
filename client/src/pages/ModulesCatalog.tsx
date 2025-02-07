@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, Pencil, Trash2, LayoutGrid, Filter, List } from "lucide-react";
-import { mockModuleCatalog } from "@/data/mockData";
 import { Link, useLocation } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -27,6 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { mockModuleCatalog } from "@/data/mockModules";
 
 export default function ModulesCatalog() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +53,7 @@ export default function ModulesCatalog() {
     setDeletingModuleId(null);
     toast({
       title: "Module removed",
-      description: "The team member has been removed successfully.",
+      description: "The person has been removed successfully.",
       variant: "destructive",
     });
   };

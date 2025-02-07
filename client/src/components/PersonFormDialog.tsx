@@ -19,9 +19,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockPrograms } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
+import { mockPeople } from "@/data/mockPeople";
+import { mockPrograms } from "@/data/mockPrograms";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -69,8 +70,8 @@ export default function PersonFormDialog({ open, onOpenChange, onSubmit, initial
     },
   });
 
-  const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
-  const potentialManagers = mockTeamMembers.filter(member => member.isDirector);
+  const departments = Array.from(new Set(mockPeople.map(person => person.department)));
+  const potentialManagers = mockPeople.filter(person => person.isDirector);
   const watchIsDirector = form.watch("isDirector");
   const watchIsTeacher = form.watch("isTeacher");
   const watchIsStudent = form.watch("isStudent");

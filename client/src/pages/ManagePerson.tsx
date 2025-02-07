@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useLocation, useParams } from 'wouter';
+import { useLocation, useParams } from 'wouter';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,10 +14,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockPrograms } from "@/data/mockData";
-import { FormSection } from "@/components/ui/FormSection";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Globe, AlertCircle, Database } from "lucide-react";
+import { ArrowLeft, Globe, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -26,8 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -35,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import PeoplePicker from "@/components/ui/PeoplePicker";
+import { mockPeople } from '@/data/mockPeople';
 
 // Status descriptions for each role type
 const statusDescriptions: Record<string, Record<string, string>> = {
@@ -158,10 +153,10 @@ export default function ManagePerson() {
 
   // Find person data if in edit mode
   const personData = isEdit
-    ? mockTeamMembers.find((m) => m.id === params?.id)
+    ? mockPeople.find((m) => m.id === params?.id)
     : null;
   const departments = Array.from(
-    new Set(mockTeamMembers.map((member) => member.department))
+    new Set(mockPeople.map((person) => person.department))
   );
 
   const form = useForm<FormValues>({
@@ -174,9 +169,9 @@ export default function ManagePerson() {
       phone: personData?.phone ?? "",
       bio: personData?.bio ?? "",
       reportsTo: personData?.reportsTo ?? "",
-      programIds: personData?.programIds ?? [],
+      programIds: personData?.programs ?? [],
       location: personData?.location ?? "",
-      officeLocation: personData?.officeLocation ?? "",
+      officeLocation: personData?.location ?? "",
       notes: personData?.notes ?? "",
       startDate: personData?.startDate ?? "",
       birthDate: personData?.birthDate ?? "",

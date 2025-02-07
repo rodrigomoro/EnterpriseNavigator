@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import Sidebar from '@/components/Sidebar';
-import { mockInvoices } from '@/data/mockData';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { mockInvoices } from '@/data/mockInvoices';
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',

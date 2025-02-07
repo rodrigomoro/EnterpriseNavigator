@@ -1,5 +1,5 @@
 import { Progress } from '@/components/ui/progress';
-import { mockPrograms } from '@/data/mockData';
+import { mockPrograms } from '@/data/mockPrograms';
 
 export default function ProgramProgress() {
   return (
@@ -15,13 +15,13 @@ export default function ProgramProgress() {
             </div>
             <Progress value={program.progress} className="h-2" />
             <div className="flex gap-2 mt-2">
-              {program.team.map((member) => (
+              {program.team.map((person) => (
                 <div
-                  key={member.id}
+                  key={person.id}
                   className="w-6 h-6 rounded-full overflow-hidden border-2 border-background"
                   style={{ marginLeft: '-0.5rem' }}
                 >
-                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={person.avatar} alt={person.name} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { mockTeamMembers } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
+import { mockPeople } from '@/data/mockPeople';
 
 type TaskStatus = 'Not started' | 'In progress' | 'Paused';
 type TaskPriority = 'High' | 'Medium' | 'Low';
@@ -24,7 +24,7 @@ const userTasks: UserTasks[] = [
   {
     userId: '1',
     name: 'Dana\'s responsibilities',
-    avatar: mockTeamMembers[0].avatar,
+    avatar: mockPeople[0].avatar,
     tasks: [
       {
         id: '1',
@@ -52,7 +52,7 @@ const userTasks: UserTasks[] = [
   {
     userId: '2',
     name: 'Elon\'s responsibilities',
-    avatar: mockTeamMembers[1].avatar,
+    avatar: mockPeople[1].avatar,
     tasks: [
       {
         id: '4',

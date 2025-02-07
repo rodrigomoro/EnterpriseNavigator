@@ -1,6 +1,8 @@
-import { mockTeamMembers, mockPrograms, mockModuleCatalog } from './mockData';
+import { mockModuleCatalog } from "./mockModules";
+import { mockPeople } from "./mockPeople";
+import { mockPrograms } from "./mockPrograms";
 
-export const mockStudents = mockTeamMembers.filter(member => member.role === 'Student');
+export const mockStudents = mockPeople.filter(person => person.role === 'Student');
 
 export const mockModules = mockPrograms.flatMap(program =>
   program.intakes.flatMap(intake =>

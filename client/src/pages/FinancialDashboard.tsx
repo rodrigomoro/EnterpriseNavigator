@@ -1,12 +1,11 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockInvoices } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import FinancialTrendChart from "@/components/FinancialTrendChart";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Euro } from 'lucide-react';
+import { mockInvoices } from "@/data/mockInvoices";
 
 // Calculate total revenue
 const totalRevenue = mockInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);

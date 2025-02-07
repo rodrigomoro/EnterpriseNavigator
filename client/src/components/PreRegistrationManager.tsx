@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 import { ConversionDialog } from './ConversionDialog';
-import { mockModuleCatalog } from '@/data/mockData';
+import { mockModuleCatalog } from '@/data/mockModules';
 
 interface PreRegistration {
   id: string;

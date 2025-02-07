@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { mockPrograms, mockTeamMembers } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,8 @@ import UserAvatar from '@/components/UserAvatar';
 import { Input } from '@/components/ui/input';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
+import { mockPeople } from '@/data/mockPeople';
+import { mockPrograms } from '@/data/mockPrograms';
 
 const container = {
   hidden: { opacity: 0 },
@@ -46,7 +47,7 @@ export default function Programs() {
     });
   };
 
-  const teachers = mockTeamMembers.filter(member => member.role === 'Teacher');
+  const teachers = mockPeople.filter(person => person.role === 'Teacher');
 
   return (
     <div className="flex min-h-screen bg-background">

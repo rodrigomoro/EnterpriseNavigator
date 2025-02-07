@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockPrograms, mockStudents, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import { Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
 import { Users, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
+import { mockPeople } from '@/data/mockPeople';
+import { mockStudents, mockPrograms } from '@/data/mockPrograms';
 
 // Calculate program performance metrics
 const programMetrics = {
@@ -15,7 +16,7 @@ const programMetrics = {
   averageProgress: Math.round(
     mockPrograms.reduce((acc, proj) => acc + proj.progress, 0) / mockPrograms.length
   ),
-  activeStaff: mockTeamMembers.length
+  activeStaff: mockPeople.length
 };
 
 // Calculate program distribution data
@@ -24,7 +25,7 @@ const programDistributionData = mockPrograms.map(program => {
     program.intakes.flatMap(intake => 
       intake.groups.flatMap(group => 
         group.moduleTeachers
-          .filter(mt => mt.moduleId === module.id)
+          .filter(mt => mt.moduleId === module)
           .flatMap(mt => mt.teacherIds)
       )
     )
@@ -54,8 +55,8 @@ export default function Analytics() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
 
-    const progressData = payload.find(p => p.dataKey === 'progress');
-    const studentData = payload.find(p => p.dataKey === 'studentCount');
+    const progressData = payload.find((p: { dataKey: string; }) => p.dataKey === 'progress');
+    const studentData = payload.find((p: { dataKey: string; }) => p.dataKey === 'studentCount');
 
     return (
       <div className="rounded-lg border bg-background p-2 shadow-sm">

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState } from "react";
-import { mockModuleCatalog, mockPrograms, mockTeamMembers } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageTransition from "@/components/PageTransition";
@@ -25,6 +24,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { mockModuleCatalog } from "@/data/mockModules";
+import { mockPeople } from "@/data/mockPeople";
+import { mockPrograms } from "@/data/mockPrograms";
 
 interface Program {
     id: string;
@@ -55,8 +57,8 @@ export default function ProgramOverview() {
     modules: true,
     intakes: true,
   });
-  const students = mockTeamMembers.filter((m) => m.role === "Student");
-  const teachers = mockTeamMembers.filter((m) => m.role === "Teacher");
+  const students = mockPeople.filter((m) => m.role === "Student");
+  const teachers = mockPeople.filter((m) => m.role === "Teacher");
 
   if (!program) return <div>Program not found</div>;
 

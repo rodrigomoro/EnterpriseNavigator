@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
 import Sidebar from '@/components/Sidebar';
-import { mockInvoices } from '@/data/mockData';
 import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import QRCodeTracker from '@/components/QRCodeTracker';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { mockInvoices } from '@/data/mockInvoices';
 
 export default function QRTrackingDashboard() {
   const [searchQuery, setSearchQuery] = useState('');

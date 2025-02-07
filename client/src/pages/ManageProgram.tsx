@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockPrograms, mockModuleCatalog } from "@/data/mockData";
 import PeoplePicker from "@/components/ui/PeoplePicker";
 import { FormSection } from "@/components/ui/FormSection";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,6 +42,9 @@ import {
 } from "@/components/ui/collapsible";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRoute } from 'wouter';
+import { mockModuleCatalog } from '@/data/mockModules';
+import { mockPeople } from '@/data/mockPeople';
+import { mockPrograms } from '@/data/mockPrograms';
 
 // Constants for schedule
 const WEEKDAYS = [
@@ -732,7 +734,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ManageProgram() {
-  const [teachers] = useState(mockTeamMembers.filter((member) => member.role === "Teacher"));
+  const [teachers] = useState(mockPeople.filter((person) => person.role === "Teacher"));
   const [, params] = useRoute("/programs/:id/edit");
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -881,8 +883,8 @@ export default function ManageProgram() {
   };
 
 
-  const directors = mockTeamMembers.filter(
-    (member) => member.role === "Program Director",
+  const directors = mockPeople.filter(
+    (person) => person.role === "Program Director",
   );
 
   const addIntake = () => {

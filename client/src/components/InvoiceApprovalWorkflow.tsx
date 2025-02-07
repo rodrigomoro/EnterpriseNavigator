@@ -1,11 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, XCircle, Clock, ArrowRight } from "lucide-react";
-import type { Invoice } from "@/data/mockData";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { Invoice } from "@/data/mockInvoices";
 
 interface ApprovalWorkflowProps {
   invoice: Invoice;

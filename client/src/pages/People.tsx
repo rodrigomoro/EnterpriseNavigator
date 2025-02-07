@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { mockTeamMembers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { Plus, Search, Pencil, Trash2, LayoutGrid, List, Filter } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,6 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { mockPeople } from '@/data/mockPeople';
 
 const container = {
   hidden: { opacity: 0 },
@@ -195,7 +195,7 @@ export default function People() {
     setDeletingPersonId(null);
     toast({
       title: "Person removed",
-      description: "The team member has been removed successfully.",
+      description: "The person has been removed successfully.",
       variant: "destructive",
     });
   };
@@ -246,15 +246,15 @@ export default function People() {
     }
   };
 
-  const filteredMembers = mockTeamMembers.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         member.department.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredPeople = mockPeople.filter(person => {
+    const matchesSearch = person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         person.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         person.department.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesRole = selectedRole === 'All' || member.role === selectedRole;
-    const matchesDepartment = selectedDepartment === 'all' || member.department === selectedDepartment;
-    const matchesStatus = selectedStatus === 'all' || member.status === selectedStatus;
-    const matchesLocation = selectedLocation === 'all' || member.location === selectedLocation;
+    const matchesRole = selectedRole === 'All' || person.role === selectedRole;
+    const matchesDepartment = selectedDepartment === 'all' || person.department === selectedDepartment;
+    const matchesStatus = selectedStatus === 'all' || person.status === selectedStatus;
+    const matchesLocation = selectedLocation === 'all' || person.location === selectedLocation;
 
     return matchesSearch && matchesRole && matchesDepartment && matchesStatus && matchesLocation;
   });
@@ -278,11 +278,11 @@ export default function People() {
       initial="hidden"
       animate="show"
     >
-      {filteredMembers.map((member) => (
+      {filteredPeople.map((person) => (
         <motion.div
-          key={member.id}
+          key={person.id}
           variants={item}
-          onClick={() => handleCardClick(member.id)}
+          onClick={() => handleCardClick(person.id)}
         >
           <div className="relative group">
             <motion.div
@@ -295,15 +295,15 @@ export default function People() {
             >
               <div className="flex items-start gap-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={member.avatar} alt={member.name} />
-                  <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarImage src={person.avatar} alt={person.name} />
+                  <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{member.name}</h3>
-                  <p className="text-sm text-muted-foreground">{member.role}</p>
-                  <p className="text-sm text-muted-foreground">{member.department}</p>
-                  <p className="text-sm text-muted-foreground">{member.location}</p>
+                  <h3 className="font-semibold">{person.name}</h3>
+                  <p className="text-sm text-muted-foreground">{person.role}</p>
+                  <p className="text-sm text-muted-foreground">{person.department}</p>
+                  <p className="text-sm text-muted-foreground">{person.location}</p>
                 </div>
               </div>
 
@@ -311,8 +311,8 @@ export default function People() {
                 <TooltipProvider>
                   <Tooltip delayDuration={200}>
                     <TooltipTrigger asChild>
-                      <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                        {member.status}
+                      <Badge variant={getStatusBadgeVariant(person.role, person.status)}>
+                        {person.status}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent
@@ -322,7 +322,7 @@ export default function People() {
                       alignOffset={-5}
                       className="max-w-[200px]"
                     >
-                      <p>{getStatusDescription(member.role, member.status)}</p>
+                      <p>{getStatusDescription(person.role, person.status)}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -334,7 +334,7 @@ export default function People() {
                 <Button
                   variant="secondary"
                   size="icon"
-                  onClick={(e) => handleEditClick(e, member.id)}
+                  onClick={(e) => handleEditClick(e, person.id)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -343,7 +343,7 @@ export default function People() {
                   size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setDeletingPersonId(member.id);
+                    setDeletingPersonId(person.id);
                   }}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -369,30 +369,30 @@ export default function People() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {filteredMembers.map((member) => (
+        {filteredPeople.map((person) => (
           <TableRow
-            key={member.id}
+            key={person.id}
             className="cursor-pointer hover:bg-muted/50"
-            onClick={() => handleCardClick(member.id)}
+            onClick={() => handleCardClick(person.id)}
           >
             <TableCell className="font-medium">
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={member.avatar} alt={member.name} />
-                  <AvatarFallback>{member.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarImage src={person.avatar} alt={person.name} />
+                  <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
-                {member.name}
+                {person.name}
               </div>
             </TableCell>
-            <TableCell>{member.role}</TableCell>
-            <TableCell>{member.department}</TableCell>
-            <TableCell>{member.location}</TableCell>
+            <TableCell>{person.role}</TableCell>
+            <TableCell>{person.department}</TableCell>
+            <TableCell>{person.location}</TableCell>
             <TableCell>
               <TooltipProvider>
                 <Tooltip delayDuration={200}>
                   <TooltipTrigger asChild>
-                    <Badge variant={getStatusBadgeVariant(member.role, member.status)}>
-                      {member.status}
+                    <Badge variant={getStatusBadgeVariant(person.role, person.status)}>
+                      {person.status}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent 
@@ -401,7 +401,7 @@ export default function People() {
                     sideOffset={5}
                     className="max-w-[200px]"
                   >
-                    <p>{getStatusDescription(member.role, member.status)}</p>
+                    <p>{getStatusDescription(person.role, person.status)}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -411,7 +411,7 @@ export default function People() {
                 <Button
                   variant="secondary"
                   size="icon"
-                  onClick={(e) => handleEditClick(e, member.id)}
+                  onClick={(e) => handleEditClick(e, person.id)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -420,7 +420,7 @@ export default function People() {
                   size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setDeletingPersonId(member.id);
+                    setDeletingPersonId(person.id);
                   }}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -443,7 +443,7 @@ export default function People() {
             <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
               <div>
                 <h1 className="text-2xl font-bold">People Directory</h1>
-                <p className="text-muted-foreground">View and manage all team members</p>
+                <p className="text-muted-foreground">View and manage all people</p>
               </div>
 
               <div className="flex-1 flex justify-center max-w-xl">
@@ -590,7 +590,7 @@ export default function People() {
         onOpenChange={(open) => !open && setDeletingPersonId(null)}
         onConfirm={handleDeletePerson}
         title="Delete Person"
-        description="Are you sure you want to remove this team member? This action cannot be undone."
+        description="Are you sure you want to remove this person? This action cannot be undone."
       />
     </div>
   );

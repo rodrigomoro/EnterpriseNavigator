@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockTeamMembers, mockSkills, competencyLevels } from "@/data/mockData";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
@@ -16,6 +15,8 @@ import {
   useDroppable
 } from "@dnd-kit/core";
 import { Search } from "lucide-react";
+import { mockPeople } from "@/data/mockPeople";
+import { mockSkills, competencyLevels } from "@/data/mockSkills";
 
 interface CompetencyMapping {
   employeeId: string;
@@ -37,14 +38,14 @@ export default function SkillsMatrix() {
   );
 
   // Filter employees based on search and department
-  const filteredEmployees = mockTeamMembers.filter(employee => {
+  const filteredEmployees = mockPeople.filter(employee => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          employee.role.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDepartment = selectedDepartment === "All" || employee.department === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
 
-  const departments = Array.from(new Set(mockTeamMembers.map(member => member.department)));
+  const departments = Array.from(new Set(mockPeople.map(person => person.department)));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

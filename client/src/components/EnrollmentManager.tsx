@@ -3,7 +3,6 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { mockModuleCatalog, mockPrograms } from '@/data/mockData';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Calendar, Filter, Search, X } from 'lucide-react';
@@ -21,6 +20,8 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { mockModuleCatalog } from '@/data/mockModules';
+import { mockPrograms } from '@/data/mockPrograms';
 
 interface Enrollment {
   id: string;
