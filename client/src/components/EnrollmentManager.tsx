@@ -12,10 +12,10 @@ import { Button } from '@/components/ui/button';
 import { CalendarIcon, Search, Download, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
-import { Checkbox } from './ui/checkbox';
 
 // Import mock data (in a real app, this would come from an API)
 import { mockModuleCatalog } from '@/data/mockModules';
+import { Checkbox } from './ui/checkbox';
 
 export const EnrollmentManager = () => {
   const { toast } = useToast();
@@ -24,7 +24,7 @@ export const EnrollmentManager = () => {
   const [dateFilter, setDateFilter] = useState<Date>();
   const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
 
-  // Mock data for enrollments
+  // Mock data for enrollments (in a real app, this would come from an API)
   const enrollments = [
     {
       id: "1",
@@ -80,10 +80,44 @@ export const EnrollmentManager = () => {
         { moduleId: "module-3", groupId: "GRP3" },
         { moduleId: "module-5", groupId: "GRP5" }
       ]
-    }
+    },
+    {
+      id: "6",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    {
+      id: "7",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    {
+      id: "8",
+      studentId: "ST005",
+      studentName: "Robert Brown",
+      enrolledAt: "2024-02-03T11:20:00Z",
+      status: "Pending",
+      moduleAssignments: [
+        { moduleId: "module-3", groupId: "GRP3" },
+        { moduleId: "module-5", groupId: "GRP5" }
+      ]
+    },
+    
   ];
 
-  // Mock function to get group info
+  // Mock function to get group info (in a real app, this would come from an API)
   const getGroupInfo = (groupId: string) => {
     const groupInfoMap: { [key: string]: { programName: string; intakeName: string; groupName: string } } = {
       GRP1: { programName: "Web Development", intakeName: "Spring 2024", groupName: "Morning A" },
@@ -93,6 +127,14 @@ export const EnrollmentManager = () => {
       GRP5: { programName: "Cloud Computing", intakeName: "Winter 2024", groupName: "Evening E" }
     };
     return groupInfoMap[groupId] || { programName: "Unknown", intakeName: "Unknown", groupName: "Unknown" };
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedEnrollments.length === filteredEnrollments.length) {
+      setSelectedEnrollments([]);
+    } else {
+      setSelectedEnrollments(filteredEnrollments.map(e => e.id));
+    }
   };
 
   const handleDownloadReceipt = () => {
@@ -159,14 +201,6 @@ export const EnrollmentManager = () => {
     );
   };
 
-  const toggleSelectAll = () => {
-    if (selectedEnrollments.length === filteredEnrollments.length) {
-      setSelectedEnrollments([]);
-    } else {
-      setSelectedEnrollments(filteredEnrollments.map(e => e.id));
-    }
-  };
-
   const getStatusVariant = (status: string) => {
     return status === 'Pending' ? 'secondary' : 'outline';
   };
@@ -210,8 +244,7 @@ export const EnrollmentManager = () => {
           </PopoverContent>
         </Popover>
       </div>
-
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex gap-4">
         <div className="flex items-center gap-2">
           <Checkbox 
             checked={selectedEnrollments.length > 0 && selectedEnrollments.length === filteredEnrollments.length}
@@ -220,33 +253,30 @@ export const EnrollmentManager = () => {
           />
           <span className="text-sm text-muted-foreground">Select All</span>
         </div>
-        <div className="flex gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleBulkDownload}
-            disabled={selectedEnrollments.length === 0}
-          >
-            <Download className="h-4 w-4" />
-            Download All Receipts
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleBulkEmail}
-            disabled={selectedEnrollments.length === 0}
-          >
-            <Mail className="h-4 w-4" />
-            Email All Receipts
-          </Button>
-        </div>
-      </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleBulkDownload}
+              disabled={selectedEnrollments.length === 0}
+            >
+              <Download className="h-4 w-4" />
+              Download All Receipts
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleBulkEmail}
+              disabled={selectedEnrollments.length === 0}
+            >
+              <Mail className="h-4 w-4" />
+              Email All Receipts
+            </Button>
+          </div>
 
       <ScrollArea className="h-[600px]">
-        <Card className="p-4">
-          <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4">
             {filteredEnrollments.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {enrollments.length === 0 
@@ -261,7 +291,6 @@ export const EnrollmentManager = () => {
                       <Checkbox 
                         checked={selectedEnrollments.includes(enrollment.id)}
                         onCheckedChange={() => toggleEnrollmentSelection(enrollment.id)}
-                        className="text-orange-500 border-gray-300 rounded data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
                       />
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
@@ -309,7 +338,6 @@ export const EnrollmentManager = () => {
               ))
             )}
           </div>
-        </Card>
       </ScrollArea>
     </div>
   );
