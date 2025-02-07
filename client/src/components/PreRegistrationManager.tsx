@@ -11,18 +11,22 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  useSortable
 } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 import { ConversionDialog } from './ConversionDialog';
 import { mockModuleCatalog } from '@/data/mockModules';
+import { GripVertical } from 'lucide-react';
 
 interface PreRegistration {
   id: string;
@@ -40,53 +44,78 @@ interface PreRegistrationItemProps {
   onSelect: (id: string) => void;
 }
 
-const PreRegistrationItem: React.FC<PreRegistrationItemProps> = ({
+const SortablePreRegistrationItem = ({
   preReg,
   onConvert,
   selected,
   onSelect,
-}) => {
+}: PreRegistrationItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: preReg.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <Card className="p-4 mb-2 cursor-move hover:shadow-md transition-shadow">
-      <div className="flex items-center gap-4">
-        <Checkbox 
-          checked={selected}
-          onCheckedChange={() => onSelect(preReg.id)}
-        />
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${preReg.studentId}`} />
-          <AvatarFallback>{preReg.studentName.slice(0, 2)}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <h4 className="font-semibold">{preReg.studentName}</h4>
-          <div className="flex gap-2 mt-1 flex-wrap">
-            {preReg.modules.map((module) => {
-            const moduleName = mockModuleCatalog.find(m => m.id === module)?.name;
-            
-            return (
-              <Badge key={moduleName} variant="secondary">
-                {moduleName}
-              </Badge>
-            )})}
+    <div ref={setNodeRef} style={style}>
+      <Card className="p-4 mb-2 bg-white">
+        <div className="flex items-center gap-4">
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+          >
+            <GripVertical className="h-5 w-5 text-muted-foreground" />
           </div>
-        </div>
-        <div className="text-right">
-          <Badge variant="outline" className="mb-2">
-            Priority #{preReg.priority}
-          </Badge>
-          <div className="text-sm text-muted-foreground">
-            {new Date(preReg.timestamp).toLocaleDateString()}
+          <Checkbox 
+            checked={selected}
+            onCheckedChange={() => onSelect(preReg.id)}
+            className="text-orange-500 border-gray-300 rounded data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
+          />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${preReg.studentId}`} />
+            <AvatarFallback>{preReg.studentName.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <h4 className="font-semibold">{preReg.studentName}</h4>
+            <div className="flex gap-2 mt-1 flex-wrap">
+              {preReg.modules.map((module) => {
+                const moduleName = mockModuleCatalog.find(m => m.id === module)?.name;
+                return (
+                  <Badge key={moduleName} variant="secondary">
+                    {moduleName}
+                  </Badge>
+                );
+              })}
+            </div>
           </div>
+          <div className="text-right">
+            <Badge variant="outline" className="mb-2">
+              Priority #{preReg.priority}
+            </Badge>
+            <div className="text-sm text-muted-foreground">
+              {new Date(preReg.timestamp).toLocaleDateString()}
+            </div>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onConvert(preReg)}
+          >
+            Convert
+          </Button>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => onConvert(preReg)}
-        >
-          Convert
-        </Button>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
 
@@ -98,24 +127,34 @@ export const PreRegistrationManager = () => {
   const { toast } = useToast();
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
-  const handleDragEnd = (event: any) => {
-    const {active, over} = event;
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (active.id !== over?.id) {
       setPreRegistrations((items) => {
         const oldIndex = items.findIndex((i) => i.id === active.id);
-        const newIndex = items.findIndex((i) => i.id === over.id);
+        const newIndex = items.findIndex((i) => i.id === over?.id);
 
-        return arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+        const reordered = arrayMove(items, oldIndex, newIndex);
+        return reordered.map((item, index) => ({
           ...item,
           priority: index + 1
         }));
+      });
+
+      toast({
+        title: "Priority updated",
+        description: "The pre-registration priority has been updated.",
       });
     }
   };
@@ -142,16 +181,11 @@ export const PreRegistrationManager = () => {
       }>;
     }>;
   }) => {
-    // Here we would make the API call to convert the pre-registrations
-    console.log('Converting with assignments:', data);
-
-    // Remove all converted pre-registrations
     const convertedIds = new Set(data.conversions.map(c => c.preRegistrationId));
     setPreRegistrations(prev => 
       prev.filter(p => !convertedIds.has(p.id))
     );
 
-    // Clear selections
     setSelectedIds(prev => {
       const next = new Set(prev);
       convertedIds.forEach(id => next.delete(id));
@@ -211,7 +245,7 @@ export const PreRegistrationManager = () => {
             strategy={verticalListSortingStrategy}
           >
             {preRegistrations.map((preReg) => (
-              <PreRegistrationItem
+              <SortablePreRegistrationItem
                 key={preReg.id}
                 preReg={preReg}
                 onConvert={handleConvert}
