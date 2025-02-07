@@ -30,7 +30,7 @@ export const EnrollmentManager = () => {
       studentId: "ST001",
       studentName: "John Doe",
       enrolledAt: "2024-02-07T10:00:00Z",
-      status: "Active",
+      status: "Completed",
       moduleAssignments: [
         { moduleId: "module-1", groupId: "GRP1" },
         { moduleId: "module-2", groupId: "GRP2" }
@@ -74,7 +74,7 @@ export const EnrollmentManager = () => {
       studentId: "ST005",
       studentName: "Robert Brown",
       enrolledAt: "2024-02-03T11:20:00Z",
-      status: "Active",
+      status: "Pending",
       moduleAssignments: [
         { moduleId: "module-3", groupId: "GRP3" },
         { moduleId: "module-5", groupId: "GRP5" }
@@ -159,16 +159,7 @@ export const EnrollmentManager = () => {
   };
 
   const getStatusVariant = (status: string) => {
-    switch (status) {
-      case 'Active':
-        return 'default';
-      case 'Pending':
-        return 'secondary';
-      case 'Completed':
-        return 'outline';
-      default:
-        return 'default';
-    }
+    return status === 'Pending' ? 'secondary' : 'outline';
   };
 
   return (
@@ -189,7 +180,6 @@ export const EnrollmentManager = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="Active">Active</SelectItem>
             <SelectItem value="Pending">Pending</SelectItem>
             <SelectItem value="Completed">Completed</SelectItem>
           </SelectContent>
@@ -212,68 +202,68 @@ export const EnrollmentManager = () => {
         </Popover>
       </div>
 
-      {/* Bulk Actions */}
-      {selectedEnrollments.length > 0 && (
-        <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-          <span className="text-sm text-muted-foreground">
-            {selectedEnrollments.length} enrollment(s) selected
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleBulkDownload}
-          >
-            <Download className="h-4 w-4" />
-            Download All Receipts
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleBulkEmail}
-          >
-            <Mail className="h-4 w-4" />
-            Email All Receipts
-          </Button>
-        </div>
-      )}
-
       <ScrollArea className="h-[600px] pr-4">
-        <div className="grid grid-cols-1 gap-4">
-          {filteredEnrollments.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {enrollments.length === 0 
-                ? "No enrollments yet. Convert pre-registrations to see them here."
-                : "No enrollments match your search criteria."}
+        <Card className="p-4">
+          {/* Bulk Actions Header */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Enrollments</h2>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={handleBulkDownload}
+                disabled={selectedEnrollments.length === 0}
+              >
+                <Download className="h-4 w-4" />
+                Download All Receipts
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={handleBulkEmail}
+                disabled={selectedEnrollments.length === 0}
+              >
+                <Mail className="h-4 w-4" />
+                Email All Receipts
+              </Button>
             </div>
-          ) : (
-            filteredEnrollments.map((enrollment) => (
-              <Card key={enrollment.id} className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedEnrollments.includes(enrollment.id)}
-                      onChange={() => toggleEnrollmentSelection(enrollment.id)}
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
-                      <AvatarFallback>{enrollment.studentName.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-medium">{enrollment.studentName}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
-                      </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {filteredEnrollments.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                {enrollments.length === 0 
+                  ? "No enrollments yet. Convert pre-registrations to see them here."
+                  : "No enrollments match your search criteria."}
+              </div>
+            ) : (
+              filteredEnrollments.map((enrollment) => (
+                <Card key={enrollment.id} className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedEnrollments.includes(enrollment.id)}
+                        onChange={() => toggleEnrollmentSelection(enrollment.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                      />
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${enrollment.studentId}`} />
+                        <AvatarFallback>{enrollment.studentName.slice(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h4 className="font-medium">{enrollment.studentName}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant={getStatusVariant(enrollment.status)}>
-                      {enrollment.status}
-                    </Badge>
-                    {enrollment.status !== 'Pending' && (
+                    <div className="flex items-center gap-4">
+                      <Badge variant={getStatusVariant(enrollment.status)}>
+                        {enrollment.status}
+                      </Badge>
                       <ReceiptPreviewDialog
                         enrollment={enrollment}
                         modules={mockModuleCatalog}
@@ -281,31 +271,31 @@ export const EnrollmentManager = () => {
                         onDownload={handleDownloadReceipt}
                         onEmail={handleEmailReceipt}
                       />
-                    )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  {enrollment.moduleAssignments.map((assignment) => {
-                    const module = mockModuleCatalog.find(m => m.id === assignment.moduleId);
-                    const groupInfo = getGroupInfo(assignment.groupId);
+                  <div className="grid grid-cols-2 gap-4">
+                    {enrollment.moduleAssignments.map((assignment) => {
+                      const module = mockModuleCatalog.find(m => m.id === assignment.moduleId);
+                      const groupInfo = getGroupInfo(assignment.groupId);
 
-                    return (
-                      <div key={`${enrollment.id}-${assignment.moduleId}`} className="space-y-2">
-                        <Badge variant="outline" className="truncate">
-                          {module?.name}
-                        </Badge>
-                        <div className="text-sm text-muted-foreground">
-                          {groupInfo.programName} - {groupInfo.intakeName} - {groupInfo.groupName}
+                      return (
+                        <div key={`${enrollment.id}-${assignment.moduleId}`} className="space-y-2">
+                          <Badge variant="outline" className="truncate">
+                            {module?.name}
+                          </Badge>
+                          <div className="text-sm text-muted-foreground">
+                            {groupInfo.programName} - {groupInfo.intakeName} - {groupInfo.groupName}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+        </Card>
       </ScrollArea>
     </div>
   );
