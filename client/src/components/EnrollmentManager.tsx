@@ -1,10 +1,38 @@
-// Previous imports remain unchanged
+// Imports for UI components
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ReceiptPreviewDialog } from './ReceiptPreviewDialog';
 import { useToast } from '@/hooks/use-toast';
 
+// Import mock data (in a real app, this would come from an API)
+import { mockModuleCatalog } from '@/data/mockModules';
+
 export const EnrollmentManager = () => {
-  // Previous state and mock data remain unchanged
   const { toast } = useToast();
+
+  // Mock data for enrollments (in a real app, this would come from an API)
+  const enrollments = [
+    {
+      id: "1",
+      studentId: "ST001",
+      studentName: "John Doe",
+      enrolledAt: "2024-02-07T10:00:00Z",
+      moduleAssignments: [
+        { moduleId: "MOD1", groupId: "GRP1" },
+        { moduleId: "MOD2", groupId: "GRP2" }
+      ]
+    },
+    // Add more mock enrollments as needed
+  ];
+
+  // Mock function to get group info (in a real app, this would come from an API)
+  const getGroupInfo = (groupId: string) => ({
+    programName: "Web Development",
+    intakeName: "Spring 2024",
+    groupName: "Group A"
+  });
 
   const handleDownloadReceipt = () => {
     toast({
@@ -20,10 +48,11 @@ export const EnrollmentManager = () => {
     });
   };
 
+  // Filter logic would go here in a real app
+  const filteredEnrollments = enrollments;
+
   return (
     <div className="space-y-4">
-      {/* Previous header section remains unchanged */}
-
       <ScrollArea className="h-[600px] pr-4">
         <div className="grid grid-cols-1 gap-4">
           {filteredEnrollments.length === 0 ? (
@@ -82,3 +111,5 @@ export const EnrollmentManager = () => {
     </div>
   );
 };
+
+export default EnrollmentManager;
