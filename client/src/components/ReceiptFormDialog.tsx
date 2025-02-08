@@ -122,7 +122,7 @@ export function ReceiptFormDialog({
         <DialogHeader>
           <DialogTitle>Payment Details</DialogTitle>
           <DialogDescription>
-            {isBulkAction 
+            {isBulkAction
               ? `Select payment method and fees for ${selectedEnrollments?.length} enrollments`
               : `Select applicable fees and payment method for ${studentName}'s enrollment
                 ${moduleAssignments?.length > 1 ? ` (${moduleAssignments.length} modules)` : ''}`
@@ -206,8 +206,11 @@ export function ReceiptFormDialog({
                     <FormItem>
                       <FormLabel>Reference Number (Optional)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter payment reference number" />
+                        <Input {...field} placeholder="Bank transfer reference, transaction ID, or check number" />
                       </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Add an external payment reference for tracking purposes (e.g., bank transfer reference, transaction ID)
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
