@@ -141,6 +141,30 @@ export function ReceiptPreviewDialog({
               </div>
             </Card>
 
+            <Card className="p-4">
+              <h4 className="font-medium mb-3">Fee Breakdown</h4>
+              <div className="space-y-2">
+                {paymentInfo?.selectedFees.map((fee, index) => (
+                  <div key={index} className="flex justify-between">
+                    <div>
+                      <span className="text-muted-foreground">{fee.name}</span>
+                      {fee.name === 'Tuition Fee' && (
+                        <p className="text-sm text-muted-foreground">
+                          {enrollment.moduleAssignments.length} modules - Variable costs
+                        </p>
+                      )}
+                    </div>
+                    <span className="font-medium">${fee.amount.toFixed(2)}</span>
+                  </div>
+                ))}
+                <Separator className="my-2" />
+                <div className="flex justify-between text-lg font-semibold">
+                  <span>Total Amount</span>
+                  <span>${paymentInfo?.totalAmount.toFixed(2) || '0.00'}</span>
+                </div>
+              </div>
+            </Card>
+
             {paymentInfo?.payers.map((payer, index) => (
               <Card key={index} className="p-4">
                 <h4 className="font-medium mb-3">
@@ -179,30 +203,6 @@ export function ReceiptPreviewDialog({
                 </div>
               </Card>
             ))}
-
-            <Card className="p-4">
-              <h4 className="font-medium mb-3">Fee Breakdown</h4>
-              <div className="space-y-2">
-                {paymentInfo?.selectedFees.map((fee, index) => (
-                  <div key={index} className="flex justify-between">
-                    <div>
-                      <span className="text-muted-foreground">{fee.name}</span>
-                      {fee.name === 'Tuition Fee' && (
-                        <p className="text-sm text-muted-foreground">
-                          {enrollment.moduleAssignments.length} modules - Variable costs
-                        </p>
-                      )}
-                    </div>
-                    <span className="font-medium">${fee.amount.toFixed(2)}</span>
-                  </div>
-                ))}
-                <Separator className="my-2" />
-                <div className="flex justify-between text-lg font-semibold">
-                  <span>Total Amount</span>
-                  <span>${paymentInfo?.totalAmount.toFixed(2) || '0.00'}</span>
-                </div>
-              </div>
-            </Card>
 
             <Card className="p-4">
               <h4 className="font-medium mb-2">Terms and Conditions</h4>
