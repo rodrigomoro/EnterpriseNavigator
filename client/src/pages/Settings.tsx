@@ -16,8 +16,9 @@ import PageTransition from "@/components/PageTransition";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
-import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle, RefreshCw, Key } from "lucide-react";
+import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle, RefreshCw, Key, Landmark } from "lucide-react";
 import { useState } from "react";
+import BankFileInterface from "@/components/BankFileInterface";
 
 // Mock data for settings
 const mockNotificationChannels = [
@@ -555,7 +556,7 @@ export default function Settings() {
             </header>
 
             <Tabs defaultValue="personal" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="personal" className="flex items-center gap-2">
                   <UserCog className="h-4 w-4" />
                   Personal
@@ -571,6 +572,10 @@ export default function Settings() {
                 <TabsTrigger value="security" className="flex items-center gap-2">
                   <Shield className="h-4 w-4" />
                   Security
+                </TabsTrigger>
+                <TabsTrigger value="bank" className="flex items-center gap-2">
+                  <Landmark className="h-4 w-4" />
+                  Bank Integration
                 </TabsTrigger>
               </TabsList>
 
@@ -820,8 +825,7 @@ export default function Settings() {
                                                     "Moodle"}
                               </p>
                             </div>
-                            <Switch
-                              checked={mapping.enabled}
+                            <Switch                              checked={mapping.enabled}
                               onCheckedChange={(checked) => handleToggleFieldMapping(mapping.field, checked)}
                             />
                           </div>
