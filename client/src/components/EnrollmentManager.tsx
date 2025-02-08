@@ -39,36 +39,40 @@ export const EnrollmentManager = () => {
   ];
 
   // Mock completed payment info
-  const getCompletedPaymentInfo = (enrollment: any) => ({
-    payers: [
-      {
-        type: 'student',
-        paymentMethod: 'credit_card',
-        referenceNumber: `TXN-${Date.now()}`,
-        coverageType: 'percentage' as const,
-        coverage: 60,
-      },
-      {
-        type: 'scholarship',
-        name: 'Merit Scholarship Program',
-        paymentMethod: 'bank_transfer',
-        referenceNumber: `SCH-${Date.now()}`,
-        coverageType: 'percentage' as const,
-        coverage: 40,
-        invoiceNumber: `INV-${Date.now()}`, // Added invoice reference
-      }
-    ],
-    selectedFees: [
-      { id: 'tuition', name: 'Tuition Fee', amount: enrollment.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) },
-      { id: 'registration', name: 'Registration Fee', amount: 100 },
-      { id: 'materials', name: 'Learning Materials', amount: 200 },
-      { id: 'technology', name: 'Technology Fee', amount: 150 },
-      { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
-    ],
-    totalAmount: enrollment.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) + 750, // 750 is the sum of other fees
-    paymentPlan: 'installments' as const, // Added payment plan
-    numberOfInstallments: 12, // Added number of installments
-  });
+  const getCompletedPaymentInfo = (enrollment: any) => {
+    const moduleTotal = enrollment?.moduleAssignments?.reduce((sum: number, assignment: any) => 
+      sum + (assignment.cost || 500), 0) || 0;
+
+    return {
+      payers: [
+        {
+          type: 'student',
+          paymentMethod: 'credit_card',
+          referenceNumber: `TXN-${Date.now()}`,
+          coverageType: 'percentage' as const,
+          coverage: 60,
+        },
+        {
+          type: 'scholarship',
+          name: 'Merit Scholarship Program',
+          paymentMethod: 'bank_transfer',
+          referenceNumber: `SCH-${Date.now()}`,
+          coverageType: 'percentage' as const,
+          coverage: 40,
+        }
+      ],
+      selectedFees: [
+        { id: 'tuition', name: 'Tuition Fee', amount: moduleTotal },
+        { id: 'registration', name: 'Registration Fee', amount: 100 },
+        { id: 'materials', name: 'Learning Materials', amount: 200 },
+        { id: 'technology', name: 'Technology Fee', amount: 150 },
+        { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+      ],
+      totalAmount: moduleTotal + 750, // 750 is the sum of other fees
+      paymentPlan: 'installments' as const,
+      numberOfInstallments: 12,
+    };
+  };
 
   const handlePaymentSubmit = (data: {
     payers: Array<{

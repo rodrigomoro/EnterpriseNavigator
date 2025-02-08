@@ -59,21 +59,20 @@ const paymentSchema = z
     selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
     payers: z.array(payerSchema).min(1, 'At least one payer is required'),
     additionalNotes: z.string().optional(),
-    paymentPlan: z.enum(['single', 'installments']).default('single'),
-    numberOfInstallments: z.number().optional(),
+    paymentPlan: z.enum(['single', 'installments']),
+    numberOfInstallments: z.number().nullable(),
   })
-  .refine(
-    (data) => {
-      if (data.paymentPlan === 'installments') {
-        return typeof data.numberOfInstallments === 'number' && data.numberOfInstallments > 0;
+  .superRefine((data, ctx) => {
+    if (data.paymentPlan === 'installments') {
+      if (!data.numberOfInstallments || data.numberOfInstallments <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Number of installments is required and must be greater than 0",
+          path: ["numberOfInstallments"]
+        });
       }
-      return true;
-    },
-    {
-      message: "Number of installments is required for installment plans",
-      path: ["numberOfInstallments"], // This will show the error on the numberOfInstallments field
     }
-  );
+  });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
