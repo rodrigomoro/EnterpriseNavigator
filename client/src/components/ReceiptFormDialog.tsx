@@ -59,7 +59,7 @@ const paymentSchema = z.object({
   payers: z.array(payerSchema).min(1, 'At least one payer is required'),
   additionalNotes: z.string().optional(),
   paymentPlan: z.enum(['single', 'installments']),
-  numberOfInstallments: z.number().optional()
+  numberOfInstallments: z.number().nullable().optional(),
 }).refine((data) => {
   // If payment plan is installments, numberOfInstallments must be a positive number
   if (data.paymentPlan === 'installments') {
@@ -133,9 +133,10 @@ export function ReceiptFormDialog({
       }],
       additionalNotes: '',
       paymentPlan: 'single',
-      numberOfInstallments: null
+      numberOfInstallments: undefined,
     },
   });
+  
 
   const calculateTotal = (selectedFeeIds: string[]) => {
     return availableFees
@@ -243,37 +244,41 @@ export function ReceiptFormDialog({
                 {/* Number of Installments */}
                 {form.watch('paymentPlan') === 'installments' && (
                   <FormField
-                    control={form.control}
-                    name="numberOfInstallments"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Installments</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select number of months" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {installmentOptions.map(option => (
-                              <SelectItem key={option.value} value={option.value.toString()}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {field.value && (
-                          <p className="text-sm text-muted-foreground">
-                            Monthly payment: ${calculateMonthlyAmount(
-                              calculateTotal(form.watch('selectedFees')),
-                              field.value
-                            ).toFixed(2)}
-                          </p>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="numberOfInstallments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of Installments</FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                        defaultValue={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select number of months" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {installmentOptions.map(option => (
+                            <SelectItem key={option.value} value={option.value.toString()}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {field.value && (
+                        <p className="text-sm text-muted-foreground">
+                          Monthly payment: ${calculateMonthlyAmount(
+                            calculateTotal(form.watch('selectedFees')),
+                            field.value
+                          ).toFixed(2)}
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 )}
 
                 <FormField
