@@ -136,11 +136,19 @@ export const EnrollmentManager = () => {
   };
 
   const availableFees = [
-    {id: 'fee1', name: 'Tuition Fee', amount: 1000},
-    {id: 'fee2', name: 'Lab Fee', amount: 200}
-  ]
+    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
+    { id: 'registration', name: 'Registration Fee', amount: 100 },
+    { id: 'materials', name: 'Learning Materials', amount: 200 },
+    { id: 'technology', name: 'Technology Fee', amount: 150 },
+    { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+  ];
 
-  const handlePaymentSubmit = (data: any) => {
+  const handlePaymentSubmit = (data: { 
+    paymentMethod: string;
+    referenceNumber?: string;
+    selectedFees: string[];
+    totalAmount: number;
+  }) => {
     setPaymentInfo({
       method: data.paymentMethod,
       referenceNumber: data.referenceNumber,
@@ -165,7 +173,7 @@ export const EnrollmentManager = () => {
     }
   };
 
-  const handleSingleReceiptAction = (enrollment: any, action: 'download' | 'email') => {
+  const handleSingleReceiptAction = (enrollment: any) => {
     setSelectedEnrollment(enrollment);
     setIsBulkAction(false);
     setPaymentFormOpen(true);
@@ -321,7 +329,7 @@ export const EnrollmentManager = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => handleSingleReceiptAction(enrollment, 'download')}
+                      onClick={() => handleSingleReceiptAction(enrollment)}
                     >
                       Generate Receipt
                     </Button>
@@ -379,12 +387,14 @@ export const EnrollmentManager = () => {
               title: "Receipt downloaded",
               description: "The receipt has been downloaded successfully.",
             });
+            setShowReceiptPreview(false);
           }}
           onEmail={() => {
             toast({
               title: "Receipt sent",
               description: "The receipt has been sent to the student's email.",
             });
+            setShowReceiptPreview(false);
           }}
         />
       )}

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -7,6 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Download, Mail, QrCode, Building2 } from "lucide-react"
 
 interface ReceiptPreviewDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   enrollment: {
     id: string;
     studentName: string;
@@ -33,6 +35,8 @@ interface ReceiptPreviewDialogProps {
 }
 
 export function ReceiptPreviewDialog({ 
+  open,
+  onOpenChange,
   enrollment, 
   modules, 
   getGroupInfo, 
@@ -43,7 +47,7 @@ export function ReceiptPreviewDialog({
   const modulesFees = enrollment.moduleAssignments.reduce((sum, assignment) => sum + 500, 0);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Receipt Preview</DialogTitle>
