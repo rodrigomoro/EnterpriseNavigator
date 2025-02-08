@@ -32,6 +32,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Minus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { generateSEPAXML, downloadSEPAFile } from '@/lib/sepa';
 
 const payerSchema = z.object({
   type: z.enum(['student', 'scholarship', 'government', 'institution', 'bank', 'other']),
@@ -181,6 +182,43 @@ export function ReceiptFormDialog({
       });
       return;
     }
+
+    // Generate SEPA file for direct debit payments
+    const directDebitPayers = data.payers.filter(
+      payer => payer.paymentMethod === 'direct_debit' && payer.bankAccount
+    );
+
+    // Institution's bank details (in a real app, these would come from configuration)
+    const institutionDetails = {
+      creditorId: 'ES12ZZZ12345678',
+      creditorName: 'Educational Institution',
+      creditorIBAN: 'ES1234567890123456789012',
+      creditorBIC: 'BANKESM1XXX'
+    };
+
+    directDebitPayers.forEach(payer => {
+      if (payer.bankAccount) {
+        const paymentAmount = payer.coverageType === 'percentage'
+          ? (totalAmount * payer.coverage / 100)
+          : payer.coverage;
+
+        const sepaXML = generateSEPAXML(
+          institutionDetails.creditorId,
+          institutionDetails.creditorName,
+          institutionDetails.creditorIBAN,
+          institutionDetails.creditorBIC,
+          payer.bankAccount,
+          {
+            amount: paymentAmount,
+            description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
+            dueDate: new Date().toISOString().split('T')[0]
+          }
+        );
+
+        // Download the SEPA file
+        downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
+      }
+    });
 
     onSubmit({
       ...data,
