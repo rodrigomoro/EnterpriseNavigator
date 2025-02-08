@@ -68,6 +68,7 @@ interface ReceiptFormDialogProps {
   moduleAssignments: Array<{
     moduleId: string;
     groupId: string;
+    cost?: number; // Added cost field
   }>;
   isBulkAction?: boolean;
   selectedEnrollments?: string[] | null;
@@ -84,12 +85,21 @@ export function ReceiptFormDialog({
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
 
-  // Calculate tuition fee based on number of modules
-  const tuitionFeePerModule = 500;
-  const tuitionFee = (moduleAssignments?.length || 0) * tuitionFeePerModule;
+  // Calculate tuition fee based on module costs
+  const tuitionFee = moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) || 0;
+  const moduleDetails = moduleAssignments?.map(module => ({
+    cost: module.cost || 500
+  })) || [];
 
   const availableFees = [
-    { id: 'tuition', name: 'Tuition Fee', amount: tuitionFee, description: `${moduleAssignments?.length || 0} modules × $${tuitionFeePerModule}` },
+    { 
+      id: 'tuition', 
+      name: 'Tuition Fee', 
+      amount: tuitionFee, 
+      description: moduleAssignments?.length 
+        ? `${moduleAssignments.length} modules - Variable costs based on credits/hours`
+        : 'No modules selected' 
+    },
     { id: 'registration', name: 'Registration Fee', amount: 100, description: 'One-time registration fee' },
     { id: 'materials', name: 'Learning Materials', amount: 200, description: 'Course materials and resources' },
     { id: 'technology', name: 'Technology Fee', amount: 150, description: 'Access to online learning platforms' },

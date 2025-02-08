@@ -17,6 +17,7 @@ interface ReceiptPreviewDialogProps {
     moduleAssignments: Array<{
       moduleId: string;
       groupId: string;
+      cost?: number; // Added cost field
     }>;
   };
   modules: any[];
@@ -107,6 +108,39 @@ export function ReceiptPreviewDialog({
               </div>
             </Card>
 
+            <Card>
+              <div className="p-4">
+                <h4 className="font-medium mb-3">Enrolled Modules</h4>
+                <div className="divide-y">
+                  {enrollment.moduleAssignments.map((assignment, index) => {
+                    const module = modules.find(m => m.id === assignment.moduleId);
+                    const groupInfo = getGroupInfo(assignment.groupId);
+                    const moduleCost = assignment.cost || 500;
+
+                    return module ? (
+                      <div key={index} className="py-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">{module.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {groupInfo.programName} - {groupInfo.intakeName}
+                            </p>
+                            <Badge variant="outline" className="mt-1">
+                              {groupInfo.groupName}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">${moduleCost.toFixed(2)}</p>
+                            <p className="text-sm text-muted-foreground">Module fee</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            </Card>
+
             {paymentInfo?.payers.map((payer, index) => (
               <Card key={index} className="p-4">
                 <h4 className="font-medium mb-3">
@@ -146,34 +180,6 @@ export function ReceiptPreviewDialog({
               </Card>
             ))}
 
-            <Card>
-              <div className="p-4">
-                <h4 className="font-medium mb-3">Enrolled Modules</h4>
-                <div className="divide-y">
-                  {enrollment.moduleAssignments.map((assignment, index) => {
-                    const module = modules.find(m => m.id === assignment.moduleId);
-                    const groupInfo = getGroupInfo(assignment.groupId);
-
-                    return module ? (
-                      <div key={index} className="py-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-medium">{module.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {groupInfo.programName} - {groupInfo.intakeName}
-                            </p>
-                            <Badge variant="outline" className="mt-1">
-                              {groupInfo.groupName}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-            </Card>
-
             <Card className="p-4">
               <h4 className="font-medium mb-3">Fee Breakdown</h4>
               <div className="space-y-2">
@@ -183,7 +189,7 @@ export function ReceiptPreviewDialog({
                       <span className="text-muted-foreground">{fee.name}</span>
                       {fee.name === 'Tuition Fee' && (
                         <p className="text-sm text-muted-foreground">
-                          {enrollment.moduleAssignments.length} modules × $500
+                          {enrollment.moduleAssignments.length} modules - Variable costs
                         </p>
                       )}
                     </div>

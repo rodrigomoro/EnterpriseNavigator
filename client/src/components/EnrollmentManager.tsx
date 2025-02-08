@@ -61,7 +61,7 @@ export const EnrollmentManager = () => {
     totalAmount: availableFees.reduce((sum, fee) => sum + fee.amount, 0),
   });
 
-  const handlePaymentSubmit = (data: { 
+  const handlePaymentSubmit = (data: {
     payers: Array<{
       type: string;
       name?: string;
@@ -111,7 +111,7 @@ export const EnrollmentManager = () => {
 
   const handleBulkAction = (action: 'download' | 'email') => {
     // Filter only completed enrollments
-    const completedEnrollments = selectedEnrollments.filter(id => 
+    const completedEnrollments = selectedEnrollments.filter(id =>
       filteredEnrollments.find(e => e.id === id)?.status === 'Completed'
     );
 
@@ -152,8 +152,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-07T10:00:00Z",
       status: "Completed",
       moduleAssignments: [
-        { moduleId: "module-1", groupId: "GRP1" },
-        { moduleId: "module-2", groupId: "GRP2" }
+        { moduleId: "module-1", groupId: "GRP1", cost: 600 },
+        { moduleId: "module-2", groupId: "GRP2", cost: 450 }
       ]
     },
     {
@@ -163,8 +163,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-06T14:30:00Z",
       status: "Completed",
       moduleAssignments: [
-        { moduleId: "module-3", groupId: "GRP3" },
-        { moduleId: "module-4", groupId: "GRP4" }
+        { moduleId: "module-3", groupId: "GRP3", cost: 750 },
+        { moduleId: "module-4", groupId: "GRP4", cost: 500 }
       ]
     },
     {
@@ -174,8 +174,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-05T09:15:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "module-1", groupId: "GRP1" },
-        { moduleId: "module-5", groupId: "GRP5" }
+        { moduleId: "module-1", groupId: "GRP1", cost: 600 },
+        { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
     {
@@ -185,8 +185,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-04T16:45:00Z",
       status: "Completed",
       moduleAssignments: [
-        { moduleId: "module-2", groupId: "GRP2" },
-        { moduleId: "module-4", groupId: "GRP4" }
+        { moduleId: "module-2", groupId: "GRP2", cost: 450 },
+        { moduleId: "module-4", groupId: "GRP4", cost: 500 }
       ]
     },
     {
@@ -196,8 +196,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-03T11:20:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "module-3", groupId: "GRP3" },
-        { moduleId: "module-5", groupId: "GRP5" }
+        { moduleId: "module-3", groupId: "GRP3", cost: 750 },
+        { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
     {
@@ -207,8 +207,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-03T11:20:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "module-3", groupId: "GRP3" },
-        { moduleId: "module-5", groupId: "GRP5" }
+        { moduleId: "module-3", groupId: "GRP3", cost: 750 },
+        { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
     {
@@ -218,8 +218,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-03T11:20:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "module-3", groupId: "GRP3" },
-        { moduleId: "module-5", groupId: "GRP5" }
+        { moduleId: "module-3", groupId: "GRP3", cost: 750 },
+        { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
     {
@@ -229,8 +229,8 @@ export const EnrollmentManager = () => {
       enrolledAt: "2024-02-03T11:20:00Z",
       status: "Pending",
       moduleAssignments: [
-        { moduleId: "module-3", groupId: "GRP3" },
-        { moduleId: "module-5", groupId: "GRP5" }
+        { moduleId: "module-3", groupId: "GRP3", cost: 750 },
+        { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
 
@@ -268,8 +268,8 @@ export const EnrollmentManager = () => {
   });
 
   const toggleEnrollmentSelection = (enrollmentId: string) => {
-    setSelectedEnrollments(prev => 
-      prev.includes(enrollmentId) 
+    setSelectedEnrollments(prev =>
+      prev.includes(enrollmentId)
         ? prev.filter(id => id !== enrollmentId)
         : [...prev, enrollmentId]
     );
@@ -321,7 +321,7 @@ export const EnrollmentManager = () => {
 
       <div className="flex gap-4">
         <div className="flex items-center gap-2">
-          <Checkbox 
+          <Checkbox
             checked={selectedEnrollments.length > 0 && selectedEnrollments.length === filteredEnrollments.length}
             onCheckedChange={toggleSelectAll}
             className="text-orange-500 border-gray-300 rounded data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
@@ -354,7 +354,7 @@ export const EnrollmentManager = () => {
         <div className="grid grid-cols-1 gap-4">
           {filteredEnrollments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              {enrollments.length === 0 
+              {enrollments.length === 0
                 ? "No enrollments yet. Convert pre-registrations to see them here."
                 : "No enrollments match your search criteria."}
             </div>
@@ -363,7 +363,7 @@ export const EnrollmentManager = () => {
               <Card key={enrollment.id} className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <Checkbox 
+                    <Checkbox
                       checked={selectedEnrollments.includes(enrollment.id)}
                       onCheckedChange={() => toggleEnrollmentSelection(enrollment.id)}
                     />
@@ -382,8 +382,8 @@ export const EnrollmentManager = () => {
                     <Badge variant={getStatusVariant(enrollment.status)}>
                       {enrollment.status}
                     </Badge>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => handleSingleReceiptAction(enrollment)}
                     >
@@ -404,6 +404,7 @@ export const EnrollmentManager = () => {
                         </Badge>
                         <div className="text-sm text-muted-foreground">
                           {groupInfo.programName} - {groupInfo.intakeName} - {groupInfo.groupName}
+                          {assignment.cost ? ` - Cost: $${assignment.cost}` : ''}
                         </div>
                       </div>
                     );
