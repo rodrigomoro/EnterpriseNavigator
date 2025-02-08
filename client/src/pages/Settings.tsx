@@ -833,8 +833,7 @@ export default function Settings() {
                       </div>
                     </CardContent>
                   </Card>
-                </div>
-              </TabsContent>
+                </div>              </TabsContent>
 
               <TabsContent value="security">
                 <div className="grid gap-4 grid-cols-12">
