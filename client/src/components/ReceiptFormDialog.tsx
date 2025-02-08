@@ -54,23 +54,26 @@ const payerSchema = z.object({
   installments: z.number().optional(),
 });
 
-const paymentSchema = z.object({
-  selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
-  payers: z.array(payerSchema).min(1, 'At least one payer is required'),
-  additionalNotes: z.string().optional(),
-  paymentPlan: z.enum(['single', 'installments']).default('single'),
-  numberOfInstallments: z.union([
-    z.number().min(1).optional(),
-    z.literal(undefined)
-  ]).refine((val, ctx) => {
-    if (ctx.parent?.paymentPlan === 'installments') {
-      return val !== undefined && val > 0;
-    }
-    return true;
-  }, {
-    message: "Number of installments is required for installment plans"
+const paymentSchema = z
+  .object({
+    selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
+    payers: z.array(payerSchema).min(1, 'At least one payer is required'),
+    additionalNotes: z.string().optional(),
+    paymentPlan: z.enum(['single', 'installments']).default('single'),
+    numberOfInstallments: z.number().optional(),
   })
-});
+  .refine(
+    (data) => {
+      if (data.paymentPlan === 'installments') {
+        return typeof data.numberOfInstallments === 'number' && data.numberOfInstallments > 0;
+      }
+      return true;
+    },
+    {
+      message: "Number of installments is required for installment plans",
+      path: ["numberOfInstallments"], // This will show the error on the numberOfInstallments field
+    }
+  );
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
