@@ -31,7 +31,7 @@ export const EnrollmentManager = () => {
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   const availableFees = [
-    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
+    { id: 'tuition', name: 'Tuition Fee', amount: selectedEnrollment?.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) || 0 },
     { id: 'registration', name: 'Registration Fee', amount: 100 },
     { id: 'materials', name: 'Learning Materials', amount: 200 },
     { id: 'technology', name: 'Technology Fee', amount: 150 },
@@ -39,7 +39,7 @@ export const EnrollmentManager = () => {
   ];
 
   // Mock completed payment info
-  const getCompletedPaymentInfo = () => ({
+  const getCompletedPaymentInfo = (enrollment: any) => ({
     payers: [
       {
         type: 'student',
@@ -57,8 +57,14 @@ export const EnrollmentManager = () => {
         coverage: 40,
       }
     ],
-    selectedFees: availableFees,
-    totalAmount: availableFees.reduce((sum, fee) => sum + fee.amount, 0),
+    selectedFees: [
+      { id: 'tuition', name: 'Tuition Fee', amount: enrollment.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) },
+      { id: 'registration', name: 'Registration Fee', amount: 100 },
+      { id: 'materials', name: 'Learning Materials', amount: 200 },
+      { id: 'technology', name: 'Technology Fee', amount: 150 },
+      { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+    ],
+    totalAmount: enrollment.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) + 750, // 750 is the sum of other fees
   });
 
   const handlePaymentSubmit = (data: {
@@ -100,7 +106,7 @@ export const EnrollmentManager = () => {
 
     if (enrollment.status === 'Completed') {
       // For completed enrollments, show receipt preview directly
-      setPaymentInfo(getCompletedPaymentInfo());
+      setPaymentInfo(getCompletedPaymentInfo(enrollment));
       setShowReceiptPreview(true);
     } else {
       // For pending enrollments, show payment form first
@@ -135,7 +141,8 @@ export const EnrollmentManager = () => {
     // Process only completed enrollments
     setSelectedEnrollments(completedEnrollments);
     setIsBulkAction(true);
-    setPaymentInfo(getCompletedPaymentInfo());
+    setPaymentInfo(getCompletedPaymentInfo(completedEnrollments[0])); // Pass the first enrollment for bulk action
+
 
     // In a real app, we would process the receipts here
     toast({
