@@ -55,6 +55,7 @@ export const EnrollmentManager = () => {
         referenceNumber: `SCH-${Date.now()}`,
         coverageType: 'percentage' as const,
         coverage: 40,
+        invoiceNumber: `INV-${Date.now()}`, // Added invoice reference
       }
     ],
     selectedFees: [
@@ -65,6 +66,8 @@ export const EnrollmentManager = () => {
       { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
     ],
     totalAmount: enrollment.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) + 750, // 750 is the sum of other fees
+    paymentPlan: 'installments' as const, // Added payment plan
+    numberOfInstallments: 12, // Added number of installments
   });
 
   const handlePaymentSubmit = (data: {
@@ -75,14 +78,21 @@ export const EnrollmentManager = () => {
       referenceNumber?: string;
       coverageType: 'percentage' | 'amount';
       coverage: number;
+      invoiceNumber?: string;
+      paymentPlan?: 'single' | 'installments';
+      installments?: number;
     }>;
     selectedFees: string[];
     totalAmount: number;
+    paymentPlan: 'single' | 'installments';
+    numberOfInstallments?: number;
   }) => {
     setPaymentInfo({
       payers: data.payers,
       selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
       totalAmount: data.totalAmount,
+      paymentPlan: data.paymentPlan,
+      numberOfInstallments: data.numberOfInstallments,
     });
 
     setPaymentFormOpen(false);

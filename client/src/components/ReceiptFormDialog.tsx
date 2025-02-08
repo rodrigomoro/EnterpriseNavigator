@@ -50,12 +50,17 @@ const payerSchema = z.object({
   coverageType: z.enum(['percentage', 'amount']),
   coverage: z.number().min(0),
   notes: z.string().optional(),
+  invoiceNumber: z.string().optional(), // Added for invoice reference
+  paymentPlan: z.enum(['single', 'installments']).optional(), // Added for payment plans
+  installments: z.number().optional(), // Added for number of installments
 });
 
 const paymentSchema = z.object({
   selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
   payers: z.array(payerSchema).min(1, 'At least one payer is required'),
   additionalNotes: z.string().optional(),
+  paymentPlan: z.enum(['single', 'installments']).default('single'),
+  numberOfInstallments: z.number().optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
@@ -68,7 +73,7 @@ interface ReceiptFormDialogProps {
   moduleAssignments: Array<{
     moduleId: string;
     groupId: string;
-    cost?: number; // Added cost field
+    cost?: number;
   }>;
   isBulkAction?: boolean;
   selectedEnrollments?: string[] | null;
@@ -115,8 +120,10 @@ export function ReceiptFormDialog({
         paymentMethod: 'credit_card',
         coverageType: 'percentage',
         coverage: 100,
+        paymentPlan: 'single',
       }],
       additionalNotes: '',
+      paymentPlan: 'single',
     },
   });
 
@@ -124,6 +131,10 @@ export function ReceiptFormDialog({
     return availableFees
       .filter(fee => selectedFeeIds.includes(fee.id))
       .reduce((sum, fee) => sum + fee.amount, 0);
+  };
+
+  const calculateMonthlyAmount = (total: number, installments: number) => {
+    return total / installments;
   };
 
   const handleSubmit = (data: PaymentFormValues) => {
@@ -172,6 +183,12 @@ export function ReceiptFormDialog({
     { id: 'other', name: 'Other' },
   ];
 
+  const installmentOptions = [
+    { value: 6, label: '6 months' },
+    { value: 12, label: '12 months' },
+    { value: 36, label: '36 months' },
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -190,6 +207,65 @@ export function ReceiptFormDialog({
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <ScrollArea className="h-[60vh] pr-4">
               <div className="space-y-6">
+                {/* Payment Plan Selection */}
+                <FormField
+                  control={form.control}
+                  name="paymentPlan"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Payment Plan</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select payment plan" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="single">Single Payment</SelectItem>
+                          <SelectItem value="installments">Monthly Installments</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Number of Installments */}
+                {form.watch('paymentPlan') === 'installments' && (
+                  <FormField
+                    control={form.control}
+                    name="numberOfInstallments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Installments</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select number of months" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {installmentOptions.map(option => (
+                              <SelectItem key={option.value} value={option.value.toString()}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {field.value && (
+                          <p className="text-sm text-muted-foreground">
+                            Monthly payment: ${calculateMonthlyAmount(
+                              calculateTotal(form.watch('selectedFees')),
+                              field.value
+                            ).toFixed(2)}
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
                   name="selectedFees"
@@ -251,6 +327,7 @@ export function ReceiptFormDialog({
                             paymentMethod: 'bank_transfer',
                             coverageType: 'percentage',
                             coverage: 0,
+                            paymentPlan: form.watch('paymentPlan'),
                           }
                         ]);
                       }}
@@ -300,6 +377,24 @@ export function ReceiptFormDialog({
                                   ))}
                                 </SelectContent>
                               </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Invoice Reference Field */}
+                        <FormField
+                          control={form.control}
+                          name={`payers.${index}.invoiceNumber`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Invoice Reference</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Enter invoice number (if applicable)" />
+                              </FormControl>
+                              <p className="text-sm text-muted-foreground">
+                                If this payment is linked to an invoice, enter the invoice number
+                              </p>
                               <FormMessage />
                             </FormItem>
                           )}

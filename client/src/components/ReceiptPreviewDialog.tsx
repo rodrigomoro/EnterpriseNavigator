@@ -30,12 +30,17 @@ interface ReceiptPreviewDialogProps {
       referenceNumber?: string;
       coverageType: 'percentage' | 'amount';
       coverage: number;
+      invoiceNumber?: string; // Added for invoice reference
+      paymentPlan?: 'single' | 'installments'; // Added for payment plans
+      installments?: number; // Added for number of installments
     }>;
     selectedFees: Array<{
       name: string;
       amount: number;
     }>;
     totalAmount: number;
+    paymentPlan?: 'single' | 'installments'; // Added for payment plans
+    numberOfInstallments?: number; // Added for number of installments
   };
   onDownload?: () => void;
   onEmail?: () => void;
@@ -53,6 +58,10 @@ export function ReceiptPreviewDialog({
 }: ReceiptPreviewDialogProps) {
   const formatPayerType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+  const calculateMonthlyPayment = (totalAmount: number, installments: number) => {
+    return totalAmount / installments;
   };
 
   return (
@@ -162,6 +171,16 @@ export function ReceiptPreviewDialog({
                   <span>Total Amount</span>
                   <span>${paymentInfo?.totalAmount.toFixed(2) || '0.00'}</span>
                 </div>
+                {paymentInfo?.paymentPlan === 'installments' && paymentInfo.numberOfInstallments && (
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-muted-foreground">
+                      Payment Plan: Monthly Installments ({paymentInfo.numberOfInstallments} months)
+                    </p>
+                    <p className="text-sm font-medium">
+                      Monthly Payment: ${calculateMonthlyPayment(paymentInfo.totalAmount, paymentInfo.numberOfInstallments).toFixed(2)}
+                    </p>
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -182,6 +201,12 @@ export function ReceiptPreviewDialog({
                       <span className="font-medium">{payer.referenceNumber}</span>
                     </div>
                   )}
+                  {payer.invoiceNumber && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Invoice Number:</span>
+                      <span className="font-medium">{payer.invoiceNumber}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Coverage:</span>
                     <span className="font-medium">
@@ -200,6 +225,19 @@ export function ReceiptPreviewDialog({
                       ).toFixed(2)}
                     </span>
                   </div>
+                  {payer.paymentPlan === 'installments' && payer.installments && (
+                    <div className="border-t pt-2 mt-2">
+                      <p className="text-sm text-muted-foreground">
+                        Payment Plan: {payer.installments} monthly installments
+                      </p>
+                      <p className="text-sm font-medium">
+                        Monthly Payment: ${(payer.coverageType === 'percentage' 
+                          ? (paymentInfo.totalAmount * payer.coverage / 100 / payer.installments)
+                          : payer.coverage / payer.installments
+                        ).toFixed(2)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </Card>
             ))}
@@ -211,6 +249,9 @@ export function ReceiptPreviewDialog({
                 <p>2. This receipt is only valid with an authorized signature or digital verification.</p>
                 <p>3. Any disputes regarding this receipt must be reported within 30 days of the issue date.</p>
                 <p>4. This receipt serves as proof of payment for the listed educational services.</p>
+                {paymentInfo?.paymentPlan === 'installments' && (
+                  <p>5. For installment plans, monthly payments are due on the same date each month as the initial payment.</p>
+                )}
               </div>
             </Card>
           </div>
