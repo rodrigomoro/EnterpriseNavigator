@@ -714,6 +714,45 @@ export default function Settings() {
                 </div>
               </TabsContent>
 
+              <TabsContent value="bank">
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Bank File Integration</CardTitle>
+                      <CardDescription>
+                        Manage bank file uploads and downloads for payment processing
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Alert className="mb-6">
+                        <Landmark className="h-4 w-4" />
+                        <AlertDescription>
+                          Upload payment files for processing or download reconciliation files. 
+                          Supports Norma 19, Norma 34, and Norma 43 file formats.
+                        </AlertDescription>
+                      </Alert>
+
+                      <BankFileInterface 
+                        onFileUpload={async (file, format) => {
+                          // Implementation for file upload
+                          console.log('File upload:', file, format);
+                        }}
+                        onDownload={async (format) => {
+                          // Implementation for file download
+                          console.log('Download requested:', format);
+                        }}
+                        supportedFormats={[
+                          { value: 'norma19', label: 'Norma 19 - Direct Debit Orders' },
+                          { value: 'norma34', label: 'Norma 34 - Transfer Orders' },
+                          { value: 'norma43', label: 'Norma 43 - Account Statements' },
+                          { value: 'sepa', label: 'SEPA XML - Direct Debit' }
+                        ]}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
               <TabsContent value="connectors">
                 <div className="space-y-6">
                   <Card>

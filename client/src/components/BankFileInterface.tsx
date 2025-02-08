@@ -13,19 +13,29 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Download, File } from "lucide-react";
 
+interface FormatOption {
+  value: string;
+  label: string;
+}
+
 interface BankFileInterfaceProps {
   onFileUpload: (file: File, format: string) => Promise<void>;
   onDownload?: (format: string) => Promise<void>;
+  supportedFormats?: FormatOption[];
 }
 
-const SUPPORTED_FORMATS = [
-  { id: 'norma19', name: 'Norma 19 - Direct Debit Orders' },
-  { id: 'norma34', name: 'Norma 34 - Transfer Orders' },
-  { id: 'norma43', name: 'Norma 43 - Account Statements' },
-  { id: 'sepa', name: 'SEPA XML' },
+const DEFAULT_FORMATS = [
+  { value: 'norma19', label: 'Norma 19 - Direct Debit Orders' },
+  { value: 'norma34', label: 'Norma 34 - Transfer Orders' },
+  { value: 'norma43', label: 'Norma 43 - Account Statements' },
+  { value: 'sepa', label: 'SEPA XML' },
 ];
 
-export function BankFileInterface({ onFileUpload, onDownload }: BankFileInterfaceProps) {
+export function BankFileInterface({ 
+  onFileUpload, 
+  onDownload,
+  supportedFormats = DEFAULT_FORMATS 
+}: BankFileInterfaceProps) {
   const [selectedFormat, setSelectedFormat] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -104,9 +114,9 @@ export function BankFileInterface({ onFileUpload, onDownload }: BankFileInterfac
                 <SelectValue placeholder="Select file format" />
               </SelectTrigger>
               <SelectContent>
-                {SUPPORTED_FORMATS.map((format) => (
-                  <SelectItem key={format.id} value={format.id}>
-                    {format.name}
+                {supportedFormats.map((format) => (
+                  <SelectItem key={format.value} value={format.value}>
+                    {format.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -149,10 +159,10 @@ export function BankFileInterface({ onFileUpload, onDownload }: BankFileInterfac
         <div className="mt-6 text-sm text-muted-foreground">
           <h4 className="font-medium mb-2">Supported File Formats:</h4>
           <ul className="list-disc list-inside space-y-1">
-            {SUPPORTED_FORMATS.map((format) => (
-              <li key={format.id} className="flex items-center gap-2">
+            {supportedFormats.map((format) => (
+              <li key={format.value} className="flex items-center gap-2">
                 <File className="h-4 w-4" />
-                {format.name}
+                {format.label}
               </li>
             ))}
           </ul>
@@ -161,3 +171,5 @@ export function BankFileInterface({ onFileUpload, onDownload }: BankFileInterfac
     </Card>
   );
 }
+
+export default BankFileInterface;
