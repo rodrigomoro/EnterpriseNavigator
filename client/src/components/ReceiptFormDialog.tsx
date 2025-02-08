@@ -52,6 +52,14 @@ const payerSchema = z.object({
   notes: z.string().optional(),
   paymentPlan: z.enum(['single', 'installments']).optional(),
   installments: z.number().optional(),
+  // Add bank account information for direct debit
+  bankAccount: z.object({
+    iban: z.string().regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, 'Invalid IBAN format').optional(),
+    bic: z.string().regex(/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/, 'Invalid BIC/SWIFT format').optional(),
+    accountHolder: z.string().optional(),
+    mandateReference: z.string().optional(),
+    mandateDate: z.string().optional(),
+  }).optional(),
 });
 
 const paymentSchema = z.object({
@@ -130,13 +138,19 @@ export function ReceiptFormDialog({
         coverageType: 'percentage',
         coverage: 100,
         paymentPlan: 'single',
+        bankAccount: {
+          iban: '',
+          bic: '',
+          accountHolder: '',
+          mandateReference: '',
+          mandateDate: new Date().toISOString().split('T')[0],
+        },
       }],
       additionalNotes: '',
       paymentPlan: 'single',
       numberOfInstallments: undefined,
     },
   });
-  
 
   const calculateTotal = (selectedFeeIds: string[]) => {
     return availableFees
@@ -200,6 +214,87 @@ export function ReceiptFormDialog({
     { value: 36, label: '36 months' },
   ];
 
+  const renderBankAccountFields = (index: number) => {
+    const showBankFields = form.watch(`payers.${index}.paymentMethod`) === 'direct_debit';
+
+    if (!showBankFields) return null;
+
+    return (
+      <div className="space-y-4 border rounded-lg p-4 bg-muted/50">
+        <h4 className="font-medium">Bank Account Details</h4>
+        <FormField
+          control={form.control}
+          name={`payers.${index}.bankAccount.accountHolder`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Account Holder Name</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter account holder name" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`payers.${index}.bankAccount.iban`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>IBAN</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter IBAN" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`payers.${index}.bankAccount.bic`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>BIC/SWIFT</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter BIC/SWIFT code" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`payers.${index}.bankAccount.mandateReference`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mandate Reference</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter SEPA mandate reference" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`payers.${index}.bankAccount.mandateDate`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mandate Date</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -244,41 +339,40 @@ export function ReceiptFormDialog({
                 {/* Number of Installments */}
                 {form.watch('paymentPlan') === 'installments' && (
                   <FormField
-                  control={form.control}
-                  name="numberOfInstallments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Number of Installments</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(parseInt(value, 10))}
-                        defaultValue={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select number of months" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {installmentOptions.map(option => (
-                            <SelectItem key={option.value} value={option.value.toString()}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {field.value && (
-                        <p className="text-sm text-muted-foreground">
-                          Monthly payment: ${calculateMonthlyAmount(
-                            calculateTotal(form.watch('selectedFees')),
-                            field.value
-                          ).toFixed(2)}
-                        </p>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
+                    control={form.control}
+                    name="numberOfInstallments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Installments</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                          defaultValue={field.value?.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select number of months" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {installmentOptions.map(option => (
+                              <SelectItem key={option.value} value={option.value.toString()}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {field.value && (
+                          <p className="text-sm text-muted-foreground">
+                            Monthly payment: ${calculateMonthlyAmount(
+                              calculateTotal(form.watch('selectedFees')),
+                              field.value
+                            ).toFixed(2)}
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
 
                 <FormField
@@ -397,7 +491,6 @@ export function ReceiptFormDialog({
                           )}
                         />
 
-
                         {form.watch(`payers.${index}.type`) !== 'student' && (
                           <FormField
                             control={form.control}
@@ -438,7 +531,7 @@ export function ReceiptFormDialog({
                             </FormItem>
                           )}
                         />
-
+                        {renderBankAccountFields(index)}
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={form.control}
