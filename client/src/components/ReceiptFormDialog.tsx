@@ -50,9 +50,8 @@ const payerSchema = z.object({
   coverageType: z.enum(['percentage', 'amount']),
   coverage: z.number().min(0),
   notes: z.string().optional(),
-  invoiceNumber: z.string().optional(), // Added for invoice reference
-  paymentPlan: z.enum(['single', 'installments']).optional(), // Added for payment plans
-  installments: z.number().optional(), // Added for number of installments
+  paymentPlan: z.enum(['single', 'installments']).optional(),
+  installments: z.number().optional(),
 });
 
 const paymentSchema = z.object({
@@ -60,7 +59,14 @@ const paymentSchema = z.object({
   payers: z.array(payerSchema).min(1, 'At least one payer is required'),
   additionalNotes: z.string().optional(),
   paymentPlan: z.enum(['single', 'installments']).default('single'),
-  numberOfInstallments: z.number().optional(),
+  numberOfInstallments: z.number().optional().superRefine((val, ctx) => {
+    if (ctx.parent.paymentPlan === 'installments' && !val) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Number of installments is required for installment plans'
+      });
+    }
+  }),
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
@@ -97,13 +103,13 @@ export function ReceiptFormDialog({
   })) || [];
 
   const availableFees = [
-    { 
-      id: 'tuition', 
-      name: 'Tuition Fee', 
-      amount: tuitionFee, 
-      description: moduleAssignments?.length 
+    {
+      id: 'tuition',
+      name: 'Tuition Fee',
+      amount: tuitionFee,
+      description: moduleAssignments?.length
         ? `${moduleAssignments.length} modules - Variable costs based on credits/hours`
-        : 'No modules selected' 
+        : 'No modules selected'
     },
     { id: 'registration', name: 'Registration Fee', amount: 100, description: 'One-time registration fee' },
     { id: 'materials', name: 'Learning Materials', amount: 200, description: 'Course materials and resources' },
@@ -382,23 +388,6 @@ export function ReceiptFormDialog({
                           )}
                         />
 
-                        {/* Invoice Reference Field */}
-                        <FormField
-                          control={form.control}
-                          name={`payers.${index}.invoiceNumber`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Invoice Reference</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Enter invoice number (if applicable)" />
-                              </FormControl>
-                              <p className="text-sm text-muted-foreground">
-                                If this payment is linked to an invoice, enter the invoice number
-                              </p>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
 
                         {form.watch(`payers.${index}.type`) !== 'student' && (
                           <FormField
@@ -471,9 +460,9 @@ export function ReceiptFormDialog({
                               <FormItem>
                                 <FormLabel>Coverage {form.watch(`payers.${index}.coverageType`) === 'percentage' ? '(%)' : '($)'}</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    type="number" 
-                                    {...field} 
+                                  <Input
+                                    type="number"
+                                    {...field}
                                     onChange={e => field.onChange(parseFloat(e.target.value))}
                                     min={0}
                                     max={form.watch(`payers.${index}.coverageType`) === 'percentage' ? 100 : undefined}

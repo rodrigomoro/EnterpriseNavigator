@@ -1,10 +1,12 @@
+import { useState } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Download, Mail, QrCode, Building2 } from "lucide-react"
+import { Download, Mail, QrCode, Building2, Plus } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface ReceiptPreviewDialogProps {
   open: boolean;
@@ -17,7 +19,7 @@ interface ReceiptPreviewDialogProps {
     moduleAssignments: Array<{
       moduleId: string;
       groupId: string;
-      cost?: number; // Added cost field
+      cost?: number; 
     }>;
   };
   modules: any[];
@@ -30,17 +32,17 @@ interface ReceiptPreviewDialogProps {
       referenceNumber?: string;
       coverageType: 'percentage' | 'amount';
       coverage: number;
-      invoiceNumber?: string; // Added for invoice reference
-      paymentPlan?: 'single' | 'installments'; // Added for payment plans
-      installments?: number; // Added for number of installments
+      invoiceNumber?: string; 
+      paymentPlan?: 'single' | 'installments'; 
+      installments?: number; 
     }>;
     selectedFees: Array<{
       name: string;
       amount: number;
     }>;
     totalAmount: number;
-    paymentPlan?: 'single' | 'installments'; // Added for payment plans
-    numberOfInstallments?: number; // Added for number of installments
+    paymentPlan?: 'single' | 'installments'; 
+    numberOfInstallments?: number; 
   };
   onDownload?: () => void;
   onEmail?: () => void;
@@ -56,12 +58,27 @@ export function ReceiptPreviewDialog({
   onDownload, 
   onEmail 
 }: ReceiptPreviewDialogProps) {
+  const { toast } = useToast();
+  const [generatedInvoices, setGeneratedInvoices] = useState<Record<number, string>>({});
+
   const formatPayerType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
   const calculateMonthlyPayment = (totalAmount: number, installments: number) => {
     return totalAmount / installments;
+  };
+
+  const handleGenerateInvoice = (payerIndex: number) => {
+    const invoiceNumber = `INV-${Date.now()}-${payerIndex}`;
+    setGeneratedInvoices(prev => ({
+      ...prev,
+      [payerIndex]: invoiceNumber
+    }));
+    toast({
+      title: "Invoice Generated",
+      description: `Invoice ${invoiceNumber} has been generated successfully.`
+    });
   };
 
   return (
@@ -201,12 +218,22 @@ export function ReceiptPreviewDialog({
                       <span className="font-medium">{payer.referenceNumber}</span>
                     </div>
                   )}
-                  {payer.invoiceNumber && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Invoice Number:</span>
-                      <span className="font-medium">{payer.invoiceNumber}</span>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Invoice Number:</span>
+                    {generatedInvoices[index] ? (
+                      <span className="font-medium">{generatedInvoices[index]}</span>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="gap-2"
+                        onClick={() => handleGenerateInvoice(index)}
+                      >
+                        <Plus className="h-4 w-4" />
+                        Generate Invoice
+                      </Button>
+                    )}
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Coverage:</span>
                     <span className="font-medium">
