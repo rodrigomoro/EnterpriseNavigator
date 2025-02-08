@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect as ReactuseEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,11 @@ import { Plus, Minus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { generateSEPAXML, downloadSEPAFile } from '@/lib/sepa';
 
+const generateMandateReference = (studentId: string) => {
+  const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+  return `MANDATE-${studentId}-${timestamp}`;
+};
+
 const payerSchema = z.object({
   type: z.enum(['student', 'scholarship', 'government', 'institution', 'bank', 'other']),
   name: z.string().optional(),
@@ -53,7 +58,6 @@ const payerSchema = z.object({
   notes: z.string().optional(),
   paymentPlan: z.enum(['single', 'installments']).optional(),
   installments: z.number().optional(),
-  // Add bank account information for direct debit
   bankAccount: z.object({
     iban: z.string().regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, 'Invalid IBAN format').optional(),
     bic: z.string().regex(/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/, 'Invalid BIC/SWIFT format').optional(),
@@ -70,11 +74,9 @@ const paymentSchema = z.object({
   paymentPlan: z.enum(['single', 'installments']),
   numberOfInstallments: z.number().nullable().optional(),
 }).refine((data) => {
-  // If payment plan is installments, numberOfInstallments must be a positive number
   if (data.paymentPlan === 'installments') {
     return typeof data.numberOfInstallments === 'number' && data.numberOfInstallments > 0;
   }
-  // If payment plan is single, numberOfInstallments is not required
   return true;
 }, {
   message: "Number of installments is required and must be greater than 0 for installment plans",
@@ -88,6 +90,7 @@ interface ReceiptFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: PaymentFormValues & { totalAmount: number }) => void;
   studentName: string;
+  studentId: string; // Add this prop
   moduleAssignments: Array<{
     moduleId: string;
     groupId: string;
@@ -95,6 +98,12 @@ interface ReceiptFormDialogProps {
   }>;
   isBulkAction?: boolean;
   selectedEnrollments?: string[] | null;
+  availableFees: Array<{ //Added this prop
+    id: string;
+    name: string;
+    amount: number;
+    description?: string;
+  }>;
 }
 
 export function ReceiptFormDialog({
@@ -104,30 +113,17 @@ export function ReceiptFormDialog({
   studentName,
   moduleAssignments,
   isBulkAction,
-  selectedEnrollments
+  selectedEnrollments,
+  studentId,
+  availableFees, // Use availableFees prop here
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
 
-  // Calculate tuition fee based on module costs
   const tuitionFee = moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) || 0;
   const moduleDetails = moduleAssignments?.map(module => ({
     cost: module.cost || 500
   })) || [];
 
-  const availableFees = [
-    {
-      id: 'tuition',
-      name: 'Tuition Fee',
-      amount: tuitionFee,
-      description: moduleAssignments?.length
-        ? `${moduleAssignments.length} modules - Variable costs based on credits/hours`
-        : 'No modules selected'
-    },
-    { id: 'registration', name: 'Registration Fee', amount: 100, description: 'One-time registration fee' },
-    { id: 'materials', name: 'Learning Materials', amount: 200, description: 'Course materials and resources' },
-    { id: 'technology', name: 'Technology Fee', amount: 150, description: 'Access to online learning platforms' },
-    { id: 'laboratory', name: 'Laboratory Fee', amount: 300, description: 'Lab equipment and facilities' },
-  ];
 
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -154,7 +150,7 @@ export function ReceiptFormDialog({
   });
 
   const calculateTotal = (selectedFeeIds: string[]) => {
-    return availableFees
+    return availableFees // Use availableFees here
       .filter(fee => selectedFeeIds.includes(fee.id))
       .reduce((sum, fee) => sum + fee.amount, 0);
   };
@@ -166,7 +162,6 @@ export function ReceiptFormDialog({
   const handleSubmit = (data: PaymentFormValues) => {
     const totalAmount = calculateTotal(data.selectedFees);
 
-    // Validate total coverage equals 100% or total amount
     const totalCoverage = data.payers.reduce((sum, payer) => {
       if (payer.coverageType === 'percentage') {
         return sum + payer.coverage;
@@ -183,12 +178,10 @@ export function ReceiptFormDialog({
       return;
     }
 
-    // Generate SEPA file for direct debit payments
     const directDebitPayers = data.payers.filter(
       payer => payer.paymentMethod === 'direct_debit' && payer.bankAccount
     );
 
-    // Institution's bank details (in a real app, these would come from configuration)
     const institutionDetails = {
       creditorId: 'ES12ZZZ12345678',
       creditorName: 'Educational Institution',
@@ -215,7 +208,6 @@ export function ReceiptFormDialog({
           }
         );
 
-        // Download the SEPA file
         downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
       }
     });
@@ -256,6 +248,15 @@ export function ReceiptFormDialog({
     const showBankFields = form.watch(`payers.${index}.paymentMethod`) === 'direct_debit';
 
     if (!showBankFields) return null;
+
+    ReactuseEffect(() => {
+      if (showBankFields && !form.watch(`payers.${index}.bankAccount.mandateReference`)) {
+        form.setValue(
+          `payers.${index}.bankAccount.mandateReference`,
+          generateMandateReference(studentId || 'TEMP')
+        );
+      }
+    }, [showBankFields, studentId]);
 
     return (
       <div className="space-y-4 border rounded-lg p-4 bg-muted/50">
@@ -309,8 +310,15 @@ export function ReceiptFormDialog({
             <FormItem>
               <FormLabel>Mandate Reference</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter SEPA mandate reference" />
+                <Input
+                  {...field}
+                  placeholder="Enter SEPA mandate reference"
+                  disabled
+                />
               </FormControl>
+              <p className="text-sm text-muted-foreground">
+                Auto-generated unique reference for this direct debit mandate
+              </p>
               <FormMessage />
             </FormItem>
           )}
@@ -351,7 +359,6 @@ export function ReceiptFormDialog({
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <ScrollArea className="h-[60vh] pr-4">
               <div className="space-y-6">
-                {/* Payment Plan Selection */}
                 <FormField
                   control={form.control}
                   name="paymentPlan"
@@ -374,7 +381,6 @@ export function ReceiptFormDialog({
                   )}
                 />
 
-                {/* Number of Installments */}
                 {form.watch('paymentPlan') === 'installments' && (
                   <FormField
                     control={form.control}
@@ -420,7 +426,7 @@ export function ReceiptFormDialog({
                     <FormItem>
                       <FormLabel>Applicable Fees</FormLabel>
                       <div className="space-y-4">
-                        {availableFees.map((fee) => (
+                        {availableFees.map((fee) => ( // Use availableFees here
                           <div key={fee.id} className="flex items-center justify-between p-4 border rounded-lg">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">

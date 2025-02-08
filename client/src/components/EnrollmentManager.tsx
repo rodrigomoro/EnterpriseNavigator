@@ -444,6 +444,7 @@ export const EnrollmentManager = () => {
           onOpenChange={setPaymentFormOpen}
           onSubmit={handlePaymentSubmit}
           studentName={selectedEnrollment?.studentName}
+          studentId={selectedEnrollment?.studentId} // Add this prop
           moduleAssignments={selectedEnrollment?.moduleAssignments}
           isBulkAction={isBulkAction}
           selectedEnrollments={isBulkAction ? selectedEnrollments : null}
