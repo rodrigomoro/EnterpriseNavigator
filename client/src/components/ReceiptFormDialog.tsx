@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Minus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { generateSEPAXML, downloadSEPAFile } from '@/lib/sepa';
+import { generateSEPAXML, downloadSEPAFile, generateInstallmentSEPAXMLs } from '@/lib/sepa';
 
 const generateMandateReference = (studentId: string) => {
   const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
@@ -218,7 +218,13 @@ export function ReceiptFormDialog({
             institutionDetails.creditorName,
             institutionDetails.creditorIBAN,
             institutionDetails.creditorBIC,
-            payer.bankAccount,
+            {
+              iban: payer.bankAccount.iban!,
+              bic: payer.bankAccount.bic!,
+              accountHolder: payer.bankAccount.accountHolder!,
+              mandateReference: payer.bankAccount.mandateReference!,
+              mandateDate: payer.bankAccount.mandateDate!
+            },
             {
               amount: paymentAmount,
               description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
@@ -233,7 +239,13 @@ export function ReceiptFormDialog({
             institutionDetails.creditorName,
             institutionDetails.creditorIBAN,
             institutionDetails.creditorBIC,
-            payer.bankAccount,
+            {
+              iban: payer.bankAccount.iban!,
+              bic: payer.bankAccount.bic!,
+              accountHolder: payer.bankAccount.accountHolder!,
+              mandateReference: payer.bankAccount.mandateReference!,
+              mandateDate: payer.bankAccount.mandateDate!
+            },
             {
               amount: paymentAmount,
               description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
@@ -698,14 +710,3 @@ export function ReceiptFormDialog({
     </Dialog>
   );
 }
-
-// Placeholder for the new function
-const generateInstallmentSEPAXMLs = (creditorId: string, creditorName: string, creditorIBAN: string, creditorBIC: string, bankAccount: any, paymentDetails: any) => {
-  console.log("Installment SEPA XML generation not implemented yet.");
-  console.log("creditorId:", creditorId);
-  console.log("creditorName:", creditorName);
-  console.log("creditorIBAN:", creditorIBAN);
-  console.log("creditorBIC:", creditorBIC);
-  console.log("bankAccount:", bankAccount);
-  console.log("paymentDetails:", paymentDetails);
-};
