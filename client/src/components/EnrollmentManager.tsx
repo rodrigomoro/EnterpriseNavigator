@@ -30,7 +30,100 @@ export const EnrollmentManager = () => {
   const [paymentInfo, setPaymentInfo] = useState<any>(null);
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
-  // Mock data for enrollments (in a real app, this would come from an API)
+  const availableFees = [
+    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
+    { id: 'registration', name: 'Registration Fee', amount: 100 },
+    { id: 'materials', name: 'Learning Materials', amount: 200 },
+    { id: 'technology', name: 'Technology Fee', amount: 150 },
+    { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+  ];
+
+  // Mock completed payment info
+  const getCompletedPaymentInfo = () => ({
+    method: 'credit_card',
+    referenceNumber: `TXN-${Date.now()}`,
+    selectedFees: availableFees,
+    totalAmount: availableFees.reduce((sum, fee) => sum + fee.amount, 0),
+  });
+
+  const handlePaymentSubmit = (data: { 
+    paymentMethod: string;
+    referenceNumber?: string;
+    selectedFees: string[];
+    totalAmount: number;
+  }) => {
+    setPaymentInfo({
+      method: data.paymentMethod,
+      referenceNumber: data.referenceNumber,
+      selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
+      totalAmount: data.totalAmount,
+    });
+
+    setPaymentFormOpen(false);
+    setShowReceiptPreview(true);
+
+    if (isBulkAction) {
+      toast({
+        title: "Bulk receipt generation started",
+        description: `Generating receipts for ${selectedEnrollments.length} enrollments...`,
+      });
+    } else {
+      toast({
+        title: "Receipt generated",
+        description: "The receipt has been generated successfully.",
+      });
+    }
+  };
+
+  const handleSingleReceiptAction = (enrollment: any) => {
+    setSelectedEnrollment(enrollment);
+
+    if (enrollment.status === 'Completed') {
+      // For completed enrollments, show receipt preview directly
+      setPaymentInfo(getCompletedPaymentInfo());
+      setShowReceiptPreview(true);
+    } else {
+      // For pending enrollments, show payment form first
+      setIsBulkAction(false);
+      setPaymentFormOpen(true);
+    }
+  };
+
+  const handleBulkAction = (action: 'download' | 'email') => {
+    // Filter only completed enrollments
+    const completedEnrollments = selectedEnrollments.filter(id => 
+      filteredEnrollments.find(e => e.id === id)?.status === 'Completed'
+    );
+
+    if (completedEnrollments.length === 0) {
+      toast({
+        title: "No completed enrollments selected",
+        description: `Please select enrollments with 'Completed' status to ${action} receipts.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // If some selected enrollments were pending, show a warning
+    if (completedEnrollments.length < selectedEnrollments.length) {
+      toast({
+        title: "Some enrollments skipped",
+        description: `Only processing ${completedEnrollments.length} completed enrollments. Pending enrollments were skipped.`,
+      });
+    }
+
+    // Process only completed enrollments
+    setSelectedEnrollments(completedEnrollments);
+    setIsBulkAction(true);
+    setPaymentInfo(getCompletedPaymentInfo());
+
+    // In a real app, we would process the receipts here
+    toast({
+      title: `Receipts ${action === 'download' ? 'downloaded' : 'sent'}`,
+      description: `Successfully ${action === 'download' ? 'downloaded' : 'sent'} ${completedEnrollments.length} receipts.`,
+    });
+  };
+
   const enrollments = [
     {
       id: "1",
@@ -135,63 +228,6 @@ export const EnrollmentManager = () => {
     return groupInfoMap[groupId] || { programName: "Unknown", intakeName: "Unknown", groupName: "Unknown" };
   };
 
-  const availableFees = [
-    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
-    { id: 'registration', name: 'Registration Fee', amount: 100 },
-    { id: 'materials', name: 'Learning Materials', amount: 200 },
-    { id: 'technology', name: 'Technology Fee', amount: 150 },
-    { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
-  ];
-
-  const handlePaymentSubmit = (data: { 
-    paymentMethod: string;
-    referenceNumber?: string;
-    selectedFees: string[];
-    totalAmount: number;
-  }) => {
-    setPaymentInfo({
-      method: data.paymentMethod,
-      referenceNumber: data.referenceNumber,
-      selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
-      totalAmount: data.totalAmount,
-    });
-
-    setPaymentFormOpen(false);
-    setShowReceiptPreview(true);
-
-    if (isBulkAction) {
-      toast({
-        title: "Bulk receipt generation started",
-        description: `Generating receipts for ${selectedEnrollments.length} enrollments...`,
-      });
-      // In a real app, we would process bulk receipts here
-    } else {
-      toast({
-        title: "Receipt generated",
-        description: "The receipt has been generated successfully.",
-      });
-    }
-  };
-
-  const handleSingleReceiptAction = (enrollment: any) => {
-    setSelectedEnrollment(enrollment);
-    setIsBulkAction(false);
-    setPaymentFormOpen(true);
-  };
-
-  const handleBulkAction = (action: 'download' | 'email') => {
-    if (selectedEnrollments.length === 0) {
-      toast({
-        title: "No enrollments selected",
-        description: `Please select at least one enrollment to ${action} receipts.`,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsBulkAction(true);
-    setPaymentFormOpen(true);
-  };
 
   const toggleSelectAll = () => {
     if (selectedEnrollments.length === filteredEnrollments.length) {
