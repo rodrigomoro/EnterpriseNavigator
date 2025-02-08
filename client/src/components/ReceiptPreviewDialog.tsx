@@ -50,8 +50,6 @@ export function ReceiptPreviewDialog({
   onDownload, 
   onEmail 
 }: ReceiptPreviewDialogProps) {
-  const modulesFees = enrollment.moduleAssignments.reduce((sum, assignment) => sum + 500, 0);
-
   const formatPayerType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
@@ -157,19 +155,17 @@ export function ReceiptPreviewDialog({
                     const groupInfo = getGroupInfo(assignment.groupId);
 
                     return module ? (
-                      <div key={index} className="py-3 flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">{module.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {groupInfo.programName} - {groupInfo.intakeName}
-                          </p>
-                          <Badge variant="outline" className="mt-1">
-                            {groupInfo.groupName}
-                          </Badge>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">$500.00</p>
-                          <p className="text-sm text-muted-foreground">Tuition fee</p>
+                      <div key={index} className="py-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">{module.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {groupInfo.programName} - {groupInfo.intakeName}
+                            </p>
+                            <Badge variant="outline" className="mt-1">
+                              {groupInfo.groupName}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                     ) : null;
@@ -183,7 +179,14 @@ export function ReceiptPreviewDialog({
               <div className="space-y-2">
                 {paymentInfo?.selectedFees.map((fee, index) => (
                   <div key={index} className="flex justify-between">
-                    <span className="text-muted-foreground">{fee.name}</span>
+                    <div>
+                      <span className="text-muted-foreground">{fee.name}</span>
+                      {fee.name === 'Tuition Fee' && (
+                        <p className="text-sm text-muted-foreground">
+                          {enrollment.moduleAssignments.length} modules × $500
+                        </p>
+                      )}
+                    </div>
                     <span className="font-medium">${fee.amount.toFixed(2)}</span>
                   </div>
                 ))}

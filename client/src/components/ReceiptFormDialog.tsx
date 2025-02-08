@@ -84,12 +84,16 @@ export function ReceiptFormDialog({
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
 
+  // Calculate tuition fee based on number of modules
+  const tuitionFeePerModule = 500;
+  const tuitionFee = (moduleAssignments?.length || 0) * tuitionFeePerModule;
+
   const availableFees = [
-    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
-    { id: 'registration', name: 'Registration Fee', amount: 100 },
-    { id: 'materials', name: 'Learning Materials', amount: 200 },
-    { id: 'technology', name: 'Technology Fee', amount: 150 },
-    { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+    { id: 'tuition', name: 'Tuition Fee', amount: tuitionFee, description: `${moduleAssignments?.length || 0} modules × $${tuitionFeePerModule}` },
+    { id: 'registration', name: 'Registration Fee', amount: 100, description: 'One-time registration fee' },
+    { id: 'materials', name: 'Learning Materials', amount: 200, description: 'Course materials and resources' },
+    { id: 'technology', name: 'Technology Fee', amount: 150, description: 'Access to online learning platforms' },
+    { id: 'laboratory', name: 'Laboratory Fee', amount: 300, description: 'Lab equipment and facilities' },
   ];
 
   const form = useForm<PaymentFormValues>({
@@ -185,22 +189,27 @@ export function ReceiptFormDialog({
                       <div className="space-y-4">
                         {availableFees.map((fee) => (
                           <div key={fee.id} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={fee.id}
-                                checked={form.watch('selectedFees').includes(fee.id)}
-                                onCheckedChange={(checked) => {
-                                  const current = form.watch('selectedFees');
-                                  const updated = checked
-                                    ? [...current, fee.id]
-                                    : current.filter(id => id !== fee.id);
-                                  form.setValue('selectedFees', updated);
-                                  setSelectedFees(updated);
-                                }}
-                              />
-                              <Label htmlFor={fee.id} className="font-medium">
-                                {fee.name}
-                              </Label>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={fee.id}
+                                  checked={form.watch('selectedFees').includes(fee.id)}
+                                  onCheckedChange={(checked) => {
+                                    const current = form.watch('selectedFees');
+                                    const updated = checked
+                                      ? [...current, fee.id]
+                                      : current.filter(id => id !== fee.id);
+                                    form.setValue('selectedFees', updated);
+                                    setSelectedFees(updated);
+                                  }}
+                                />
+                                <Label htmlFor={fee.id} className="font-medium">
+                                  {fee.name}
+                                </Label>
+                              </div>
+                              <p className="text-sm text-muted-foreground ml-6">
+                                {fee.description}
+                              </p>
                             </div>
                             <span className="text-right font-medium">
                               ${fee.amount.toFixed(2)}
