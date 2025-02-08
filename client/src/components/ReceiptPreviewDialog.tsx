@@ -19,28 +19,31 @@ interface ReceiptPreviewDialogProps {
   };
   modules: any[];
   getGroupInfo: (groupId: string) => { programName: string; intakeName: string; groupName: string };
+  paymentInfo?: {
+    method: string;
+    referenceNumber?: string;
+    selectedFees: Array<{
+      name: string;
+      amount: number;
+    }>;
+    totalAmount: number;
+  };
   onDownload?: () => void;
   onEmail?: () => void;
 }
 
-export function ReceiptPreviewDialog({ enrollment, modules, getGroupInfo, onDownload, onEmail }: ReceiptPreviewDialogProps) {
+export function ReceiptPreviewDialog({ 
+  enrollment, 
+  modules, 
+  getGroupInfo, 
+  paymentInfo,
+  onDownload, 
+  onEmail 
+}: ReceiptPreviewDialogProps) {
   const modulesFees = enrollment.moduleAssignments.reduce((sum, assignment) => sum + 500, 0);
-  const materialsFee = 100;
-  const registrationFee = 50;
-  const totalAmount = modulesFees + materialsFee + registrationFee;
-
-  const paymentStatus = {
-    status: "Paid",
-    method: "Credit Card",
-    transactionId: "TXN-2024-001",
-    paidAt: new Date().toISOString(),
-  };
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">Generate Receipt</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Receipt Preview</DialogTitle>
@@ -95,24 +98,20 @@ export function ReceiptPreviewDialog({ enrollment, modules, getGroupInfo, onDown
             <Card className="p-4">
               <h4 className="font-medium mb-3">Payment Information</h4>
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Status:</span>
-                  <Badge variant={paymentStatus.status === "Paid" ? "default" : "secondary"}>
-                    {paymentStatus.status}
-                  </Badge>
-                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Payment Method:</span>
-                  <span className="font-medium">{paymentStatus.method}</span>
+                  <span className="font-medium">{paymentInfo?.method || 'Not specified'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Transaction ID:</span>
-                  <span className="font-medium">{paymentStatus.transactionId}</span>
-                </div>
+                {paymentInfo?.referenceNumber && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Reference Number:</span>
+                    <span className="font-medium">{paymentInfo.referenceNumber}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Payment Date:</span>
                   <span className="font-medium">
-                    {new Date(paymentStatus.paidAt).toLocaleDateString()}
+                    {new Date().toLocaleDateString()}
                   </span>
                 </div>
               </div>
@@ -151,22 +150,16 @@ export function ReceiptPreviewDialog({ enrollment, modules, getGroupInfo, onDown
             <Card className="p-4">
               <h4 className="font-medium mb-3">Fee Breakdown</h4>
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Modules Tuition</span>
-                  <span className="font-medium">${modulesFees.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Materials Fee</span>
-                  <span className="font-medium">${materialsFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Registration Fee</span>
-                  <span className="font-medium">${registrationFee.toFixed(2)}</span>
-                </div>
+                {paymentInfo?.selectedFees.map((fee, index) => (
+                  <div key={index} className="flex justify-between">
+                    <span className="text-muted-foreground">{fee.name}</span>
+                    <span className="font-medium">${fee.amount.toFixed(2)}</span>
+                  </div>
+                ))}
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total Amount</span>
-                  <span>${totalAmount.toFixed(2)}</span>
+                  <span>${paymentInfo?.totalAmount.toFixed(2) || '0.00'}</span>
                 </div>
               </div>
             </Card>

@@ -27,6 +27,8 @@ export const EnrollmentManager = () => {
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<any>(null);
   const [isBulkAction, setIsBulkAction] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState<any>(null);
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   // Mock data for enrollments (in a real app, this would come from an API)
   const enrollments = [
@@ -133,7 +135,22 @@ export const EnrollmentManager = () => {
     return groupInfoMap[groupId] || { programName: "Unknown", intakeName: "Unknown", groupName: "Unknown" };
   };
 
+  const availableFees = [
+    {id: 'fee1', name: 'Tuition Fee', amount: 1000},
+    {id: 'fee2', name: 'Lab Fee', amount: 200}
+  ]
+
   const handlePaymentSubmit = (data: any) => {
+    setPaymentInfo({
+      method: data.paymentMethod,
+      referenceNumber: data.referenceNumber,
+      selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
+      totalAmount: data.totalAmount,
+    });
+
+    setPaymentFormOpen(false);
+    setShowReceiptPreview(true);
+
     if (isBulkAction) {
       toast({
         title: "Bulk receipt generation started",
@@ -146,7 +163,6 @@ export const EnrollmentManager = () => {
         description: "The receipt has been generated successfully.",
       });
     }
-    setPaymentFormOpen(false);
   };
 
   const handleSingleReceiptAction = (enrollment: any, action: 'download' | 'email') => {
@@ -344,10 +360,34 @@ export const EnrollmentManager = () => {
           studentName={selectedEnrollment?.studentName}
           moduleAssignments={selectedEnrollment?.moduleAssignments}
           isBulkAction={isBulkAction}
-          selectedEnrollments={isBulkAction? selectedEnrollments : null}
+          selectedEnrollments={isBulkAction ? selectedEnrollments : null}
+          availableFees={availableFees}
         />
       )}
 
+      {/* Receipt Preview Dialog */}
+      {showReceiptPreview && selectedEnrollment && paymentInfo && (
+        <ReceiptPreviewDialog
+          open={showReceiptPreview}
+          onOpenChange={setShowReceiptPreview}
+          enrollment={selectedEnrollment}
+          modules={mockModuleCatalog}
+          getGroupInfo={getGroupInfo}
+          paymentInfo={paymentInfo}
+          onDownload={() => {
+            toast({
+              title: "Receipt downloaded",
+              description: "The receipt has been downloaded successfully.",
+            });
+          }}
+          onEmail={() => {
+            toast({
+              title: "Receipt sent",
+              description: "The receipt has been sent to the student's email.",
+            });
+          }}
+        />
+      )}
     </div>
   );
 };
