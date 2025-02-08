@@ -22,8 +22,14 @@ interface ReceiptPreviewDialogProps {
   modules: any[];
   getGroupInfo: (groupId: string) => { programName: string; intakeName: string; groupName: string };
   paymentInfo?: {
-    method: string;
-    referenceNumber?: string;
+    payers: Array<{
+      type: string;
+      name?: string;
+      paymentMethod: string;
+      referenceNumber?: string;
+      coverageType: 'percentage' | 'amount';
+      coverage: number;
+    }>;
     selectedFees: Array<{
       name: string;
       amount: number;
@@ -45,6 +51,10 @@ export function ReceiptPreviewDialog({
   onEmail 
 }: ReceiptPreviewDialogProps) {
   const modulesFees = enrollment.moduleAssignments.reduce((sum, assignment) => sum + 500, 0);
+
+  const formatPayerType = (type: string) => {
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -99,27 +109,44 @@ export function ReceiptPreviewDialog({
               </div>
             </Card>
 
-            <Card className="p-4">
-              <h4 className="font-medium mb-3">Payment Information</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Payment Method:</span>
-                  <span className="font-medium">{paymentInfo?.method || 'Not specified'}</span>
-                </div>
-                {paymentInfo?.referenceNumber && (
+            {paymentInfo?.payers.map((payer, index) => (
+              <Card key={index} className="p-4">
+                <h4 className="font-medium mb-3">
+                  Payment Source #{index + 1}: {formatPayerType(payer.type)}
+                  {payer.name && ` - ${payer.name}`}
+                </h4>
+                <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Reference Number:</span>
-                    <span className="font-medium">{paymentInfo.referenceNumber}</span>
+                    <span className="text-muted-foreground">Payment Method:</span>
+                    <span className="font-medium">{payer.paymentMethod.replace('_', ' ').toUpperCase()}</span>
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Payment Date:</span>
-                  <span className="font-medium">
-                    {new Date().toLocaleDateString()}
-                  </span>
+                  {payer.referenceNumber && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Reference Number:</span>
+                      <span className="font-medium">{payer.referenceNumber}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Coverage:</span>
+                    <span className="font-medium">
+                      {payer.coverageType === 'percentage' 
+                        ? `${payer.coverage}%`
+                        : `$${payer.coverage.toFixed(2)}`
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount Paid:</span>
+                    <span className="font-medium">
+                      ${(payer.coverageType === 'percentage' 
+                        ? (paymentInfo.totalAmount * payer.coverage / 100)
+                        : payer.coverage
+                      ).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            ))}
 
             <Card>
               <div className="p-4">

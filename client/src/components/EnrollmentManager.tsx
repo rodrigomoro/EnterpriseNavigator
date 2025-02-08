@@ -40,21 +40,41 @@ export const EnrollmentManager = () => {
 
   // Mock completed payment info
   const getCompletedPaymentInfo = () => ({
-    method: 'credit_card',
-    referenceNumber: `TXN-${Date.now()}`,
+    payers: [
+      {
+        type: 'student',
+        paymentMethod: 'credit_card',
+        referenceNumber: `TXN-${Date.now()}`,
+        coverageType: 'percentage' as const,
+        coverage: 60,
+      },
+      {
+        type: 'scholarship',
+        name: 'Merit Scholarship Program',
+        paymentMethod: 'bank_transfer',
+        referenceNumber: `SCH-${Date.now()}`,
+        coverageType: 'percentage' as const,
+        coverage: 40,
+      }
+    ],
     selectedFees: availableFees,
     totalAmount: availableFees.reduce((sum, fee) => sum + fee.amount, 0),
   });
 
   const handlePaymentSubmit = (data: { 
-    paymentMethod: string;
-    referenceNumber?: string;
+    payers: Array<{
+      type: string;
+      name?: string;
+      paymentMethod: string;
+      referenceNumber?: string;
+      coverageType: 'percentage' | 'amount';
+      coverage: number;
+    }>;
     selectedFees: string[];
     totalAmount: number;
   }) => {
     setPaymentInfo({
-      method: data.paymentMethod,
-      referenceNumber: data.referenceNumber,
+      payers: data.payers,
       selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
       totalAmount: data.totalAmount,
     });

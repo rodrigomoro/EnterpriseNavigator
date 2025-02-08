@@ -30,8 +30,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Plus, Minus } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
-const paymentSchema = z.object({
+const payerSchema = z.object({
+  type: z.enum(['student', 'scholarship', 'government', 'institution', 'bank', 'other']),
+  name: z.string().optional(),
   paymentMethod: z.enum([
     'credit_card',
     'bank_transfer',
@@ -43,20 +47,18 @@ const paymentSchema = z.object({
     'stripe'
   ]),
   referenceNumber: z.string().optional(),
+  coverageType: z.enum(['percentage', 'amount']),
+  coverage: z.number().min(0),
+  notes: z.string().optional(),
+});
+
+const paymentSchema = z.object({
   selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
+  payers: z.array(payerSchema).min(1, 'At least one payer is required'),
   additionalNotes: z.string().optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
-
-// Mock fee data (in a real app, this would come from an API)
-const availableFees = [
-  { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
-  { id: 'registration', name: 'Registration Fee', amount: 100 },
-  { id: 'materials', name: 'Learning Materials', amount: 200 },
-  { id: 'technology', name: 'Technology Fee', amount: 150 },
-  { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
-];
 
 interface ReceiptFormDialogProps {
   open: boolean;
@@ -82,11 +84,24 @@ export function ReceiptFormDialog({
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
 
+  const availableFees = [
+    { id: 'tuition', name: 'Tuition Fee', amount: 1000 },
+    { id: 'registration', name: 'Registration Fee', amount: 100 },
+    { id: 'materials', name: 'Learning Materials', amount: 200 },
+    { id: 'technology', name: 'Technology Fee', amount: 150 },
+    { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+  ];
+
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
-      paymentMethod: 'credit_card',
       selectedFees: [],
+      payers: [{
+        type: 'student',
+        paymentMethod: 'credit_card',
+        coverageType: 'percentage',
+        coverage: 100,
+      }],
       additionalNotes: '',
     },
   });
@@ -99,6 +114,24 @@ export function ReceiptFormDialog({
 
   const handleSubmit = (data: PaymentFormValues) => {
     const totalAmount = calculateTotal(data.selectedFees);
+
+    // Validate total coverage equals 100% or total amount
+    const totalCoverage = data.payers.reduce((sum, payer) => {
+      if (payer.coverageType === 'percentage') {
+        return sum + payer.coverage;
+      } else {
+        return sum + (payer.coverage / totalAmount * 100);
+      }
+    }, 0);
+
+    if (Math.abs(totalCoverage - 100) > 0.01) {
+      form.setError('payers', {
+        type: 'custom',
+        message: 'Total coverage must equal 100% of the fees'
+      });
+      return;
+    }
+
     onSubmit({
       ...data,
       totalAmount,
@@ -106,7 +139,7 @@ export function ReceiptFormDialog({
   };
 
   const paymentMethods = [
-    { id: 'credit_card', name: 'Credit Card', },
+    { id: 'credit_card', name: 'Credit Card' },
     { id: 'bank_transfer', name: 'Bank Transfer' },
     { id: 'cash', name: 'Cash' },
     { id: 'direct_debit', name: 'Direct Debit' },
@@ -116,9 +149,18 @@ export function ReceiptFormDialog({
     { id: 'stripe', name: 'Stripe' },
   ];
 
+  const payerTypes = [
+    { id: 'student', name: 'Student' },
+    { id: 'scholarship', name: 'Scholarship' },
+    { id: 'government', name: 'Government' },
+    { id: 'institution', name: 'Institution' },
+    { id: 'bank', name: 'Bank' },
+    { id: 'other', name: 'Other' },
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Payment Details</DialogTitle>
           <DialogDescription>
@@ -174,47 +216,181 @@ export function ReceiptFormDialog({
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="paymentMethod"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Payment Method</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select payment method" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {paymentMethods.map(method => (
-                            <SelectItem key={method.id} value={method.id}>
-                              {method.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium">Payment Sources</h3>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const payers = form.watch('payers');
+                        form.setValue('payers', [
+                          ...payers,
+                          {
+                            type: 'scholarship',
+                            paymentMethod: 'bank_transfer',
+                            coverageType: 'percentage',
+                            coverage: 0,
+                          }
+                        ]);
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Payment Source
+                    </Button>
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="referenceNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Reference Number (Optional)</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Bank transfer reference, transaction ID, or check number" />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        Add an external payment reference for tracking purposes (e.g., bank transfer reference, transaction ID)
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {form.watch('payers').map((payer, index) => (
+                    <Card key={index} className="p-4">
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Payment Source #{index + 1}</h4>
+                          {index > 0 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const payers = form.watch('payers');
+                                form.setValue('payers', payers.filter((_, i) => i !== index));
+                              }}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name={`payers.${index}.type`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Payer Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select payer type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {payerTypes.map(type => (
+                                    <SelectItem key={type.id} value={type.id}>
+                                      {type.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {form.watch(`payers.${index}.type`) !== 'student' && (
+                          <FormField
+                            control={form.control}
+                            name={`payers.${index}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Institution Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} placeholder="Enter institution name" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        <FormField
+                          control={form.control}
+                          name={`payers.${index}.paymentMethod`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Payment Method</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select payment method" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {paymentMethods.map(method => (
+                                    <SelectItem key={method.id} value={method.id}>
+                                      {method.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name={`payers.${index}.coverageType`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Coverage Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select coverage type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="percentage">Percentage</SelectItem>
+                                    <SelectItem value="amount">Fixed Amount</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`payers.${index}.coverage`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Coverage {form.watch(`payers.${index}.coverageType`) === 'percentage' ? '(%)' : '($)'}</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    {...field} 
+                                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                                    min={0}
+                                    max={form.watch(`payers.${index}.coverageType`) === 'percentage' ? 100 : undefined}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name={`payers.${index}.referenceNumber`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Reference Number (Optional)</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Bank transfer reference, transaction ID, or check number" />
+                              </FormControl>
+                              <p className="text-sm text-muted-foreground">
+                                Add an external payment reference for tracking purposes
+                              </p>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
 
                 <FormField
                   control={form.control}
