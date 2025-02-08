@@ -19,7 +19,7 @@ interface ReceiptPreviewDialogProps {
     moduleAssignments: Array<{
       moduleId: string;
       groupId: string;
-      cost?: number; 
+      cost?: number;
     }>;
   };
   modules: any[];
@@ -32,31 +32,38 @@ interface ReceiptPreviewDialogProps {
       referenceNumber?: string;
       coverageType: 'percentage' | 'amount';
       coverage: number;
-      invoiceNumber?: string; 
-      paymentPlan?: 'single' | 'installments'; 
-      installments?: number; 
+      invoiceNumber?: string;
+      paymentPlan?: 'single' | 'installments';
+      installments?: number;
+      bankAccount?: {
+        mandateReference: string;
+        accountHolder: string;
+        iban: string;
+        bic: string;
+        mandateDate: string;
+      };
     }>;
     selectedFees: Array<{
       name: string;
       amount: number;
     }>;
     totalAmount: number;
-    paymentPlan?: 'single' | 'installments'; 
-    numberOfInstallments?: number; 
+    paymentPlan?: 'single' | 'installments';
+    numberOfInstallments?: number;
   };
   onDownload?: () => void;
   onEmail?: () => void;
 }
 
-export function ReceiptPreviewDialog({ 
+export function ReceiptPreviewDialog({
   open,
   onOpenChange,
-  enrollment, 
-  modules, 
-  getGroupInfo, 
+  enrollment,
+  modules,
+  getGroupInfo,
   paymentInfo,
-  onDownload, 
-  onEmail 
+  onDownload,
+  onEmail
 }: ReceiptPreviewDialogProps) {
   const { toast } = useToast();
   const [generatedInvoices, setGeneratedInvoices] = useState<Record<number, string>>({});
@@ -201,6 +208,7 @@ export function ReceiptPreviewDialog({
               </div>
             </Card>
 
+            {/* Payment Source Section - Show SEPA details for direct debit */}
             {paymentInfo?.payers.map((payer, index) => (
               <Card key={index} className="p-4">
                 <h4 className="font-medium mb-3">
@@ -218,26 +226,36 @@ export function ReceiptPreviewDialog({
                       <span className="font-medium">{payer.referenceNumber}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Invoice Number:</span>
-                    {generatedInvoices[index] ? (
-                      <span className="font-medium">{generatedInvoices[index]}</span>
-                    ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="gap-2"
-                        onClick={() => handleGenerateInvoice(index)}
-                      >
-                        <Plus className="h-4 w-4" />
-                        Generate Invoice
-                      </Button>
-                    )}
-                  </div>
+                  {payer.paymentMethod === 'direct_debit' && payer.bankAccount && (
+                    <div className="border-t pt-2 mt-2 space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">SEPA Mandate Reference:</span>
+                        <span className="font-medium">{payer.bankAccount.mandateReference}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Account Holder:</span>
+                        <span className="font-medium">{payer.bankAccount.accountHolder}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">IBAN:</span>
+                        <span className="font-medium">{payer.bankAccount.iban}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">BIC/SWIFT:</span>
+                        <span className="font-medium">{payer.bankAccount.bic}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Mandate Date:</span>
+                        <span className="font-medium">
+                          {new Date(payer.bankAccount.mandateDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Coverage:</span>
                     <span className="font-medium">
-                      {payer.coverageType === 'percentage' 
+                      {payer.coverageType === 'percentage'
                         ? `${payer.coverage}%`
                         : `$${payer.coverage.toFixed(2)}`
                       }
@@ -246,7 +264,7 @@ export function ReceiptPreviewDialog({
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Amount Paid:</span>
                     <span className="font-medium">
-                      ${(payer.coverageType === 'percentage' 
+                      ${(payer.coverageType === 'percentage'
                         ? (paymentInfo.totalAmount * payer.coverage / 100)
                         : payer.coverage
                       ).toFixed(2)}
@@ -258,7 +276,7 @@ export function ReceiptPreviewDialog({
                         Payment Plan: {payer.installments} monthly installments
                       </p>
                       <p className="text-sm font-medium">
-                        Monthly Payment: ${(payer.coverageType === 'percentage' 
+                        Monthly Payment: ${(payer.coverageType === 'percentage'
                           ? (paymentInfo.totalAmount * payer.coverage / 100 / payer.installments)
                           : payer.coverage / payer.installments
                         ).toFixed(2)}
