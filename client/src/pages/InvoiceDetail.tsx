@@ -44,6 +44,8 @@ export default function InvoiceDetail() {
   const [, params] = useRoute('/invoices/:id');
   const invoice = mockInvoices.find(i => i.id === params?.id);
   const { toast } = useToast();
+  const navigate = useLocation()[1];
+
 
   if (!invoice) {
     return <div>Invoice not found</div>;
@@ -316,6 +318,20 @@ export default function InvoiceDetail() {
                   </CardContent>
                 </Card>
               </div>
+            </div>
+            <div className="flex justify-end gap-4 mt-6"> {/* Added mt-6 for spacing */}
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/invoices/${params?.id}/edit`)}
+              >
+                Edit Invoice
+              </Button>
+              <Button
+                variant="default"
+                onClick={() => navigate('/invoices/new')}
+              >
+                Generate New Invoice
+              </Button>
             </div>
           </main>
         </PageTransition>
