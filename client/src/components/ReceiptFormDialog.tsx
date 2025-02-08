@@ -54,25 +54,23 @@ const payerSchema = z.object({
   installments: z.number().optional(),
 });
 
-const paymentSchema = z
-  .object({
-    selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
-    payers: z.array(payerSchema).min(1, 'At least one payer is required'),
-    additionalNotes: z.string().optional(),
-    paymentPlan: z.enum(['single', 'installments']),
-    numberOfInstallments: z.number().nullable(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.paymentPlan === 'installments') {
-      if (!data.numberOfInstallments || data.numberOfInstallments <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Number of installments is required and must be greater than 0",
-          path: ["numberOfInstallments"]
-        });
-      }
-    }
-  });
+const paymentSchema = z.object({
+  selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
+  payers: z.array(payerSchema).min(1, 'At least one payer is required'),
+  additionalNotes: z.string().optional(),
+  paymentPlan: z.enum(['single', 'installments']),
+  numberOfInstallments: z.number().optional()
+}).refine((data) => {
+  // If payment plan is installments, numberOfInstallments must be a positive number
+  if (data.paymentPlan === 'installments') {
+    return typeof data.numberOfInstallments === 'number' && data.numberOfInstallments > 0;
+  }
+  // If payment plan is single, numberOfInstallments is not required
+  return true;
+}, {
+  message: "Number of installments is required and must be greater than 0 for installment plans",
+  path: ["numberOfInstallments"]
+});
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
@@ -135,6 +133,7 @@ export function ReceiptFormDialog({
       }],
       additionalNotes: '',
       paymentPlan: 'single',
+      numberOfInstallments: null
     },
   });
 
