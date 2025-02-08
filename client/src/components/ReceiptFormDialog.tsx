@@ -138,7 +138,7 @@ export function ReceiptFormDialog({
           iban: '',
           bic: '',
           accountHolder: '',
-          mandateReference: '',
+          mandateReference: generateMandateReference(studentId || 'TEMP'),
           mandateDate: new Date().toISOString().split('T')[0],
         },
       }],
@@ -148,19 +148,20 @@ export function ReceiptFormDialog({
     },
   });
 
-  // Watch for payment method changes and update mandate references
-  useEffect(() => {
-    const payers = form.watch('payers');
-    payers.forEach((payer, index) => {
-      if (payer.paymentMethod === 'direct_debit' && !form.watch(`payers.${index}.bankAccount.mandateReference`)) {
-        // Set initial mandate reference if not already set
-        form.setValue(
-          `payers.${index}.bankAccount.mandateReference`,
-          generateMandateReference(studentId || 'TEMP')
-        );
-      }
-    });
-  }, [form.watch('payers'), studentId]);
+  // Handler for payment method change
+  const handlePaymentMethodChange = (value: string, index: number) => {
+    form.setValue(`payers.${index}.paymentMethod`, value);
+
+    if (value === 'direct_debit') {
+      form.setValue(`payers.${index}.bankAccount`, {
+        iban: '',
+        bic: '',
+        accountHolder: '',
+        mandateReference: generateMandateReference(studentId || 'TEMP'),
+        mandateDate: new Date().toISOString().split('T')[0],
+      });
+    }
+  };
 
   const calculateTotal = (selectedFeeIds: string[]) => {
     return availableFees
@@ -560,7 +561,10 @@ export function ReceiptFormDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Payment Method</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select 
+                                onValueChange={(value) => handlePaymentMethodChange(value, index)} 
+                                defaultValue={field.value}
+                              >
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select payment method" />
