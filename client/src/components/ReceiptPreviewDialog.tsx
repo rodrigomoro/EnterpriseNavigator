@@ -5,8 +5,14 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Download, Mail, QrCode, Building2, Plus } from "lucide-react"
+import { Download, Mail, QrCode, Building2, Plus, FileDown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface ReceiptPreviewDialogProps {
   open: boolean;
@@ -86,6 +92,52 @@ export function ReceiptPreviewDialog({
       title: "Invoice Generated",
       description: `Invoice ${invoiceNumber} has been generated successfully.`
     });
+  };
+
+  const handleBankFileDownload = async (payerIndex: number, format: string) => {
+    const payer = paymentInfo?.payers[payerIndex];
+    if (!payer) return;
+
+    try {
+      let fileName = '';
+      let message = '';
+
+      switch (payer.paymentMethod) {
+        case 'direct_debit':
+          if (format === 'norma19') {
+            fileName = `norma19_direct_debit_${enrollment.id}.txt`;
+            message = 'Norma 19 direct debit file generated successfully';
+          } else if (format === 'sepa') {
+            fileName = `sepa_direct_debit_${enrollment.id}.xml`;
+            message = 'SEPA XML direct debit file generated successfully';
+          }
+          break;
+        case 'bank_transfer':
+          fileName = `norma34_transfer_${enrollment.id}.txt`;
+          message = 'Norma 34 transfer order file generated successfully';
+          break;
+        case 'credit_card':
+        case 'stripe':
+          toast({
+            title: "No bank file needed",
+            description: "This payment method doesn't require a bank file generation",
+          });
+          return;
+      }
+
+      if (fileName) {
+        toast({
+          title: "Bank file generated",
+          description: message,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "File generation failed",
+        description: error instanceof Error ? error.message : "Failed to generate bank file",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -208,7 +260,6 @@ export function ReceiptPreviewDialog({
               </div>
             </Card>
 
-            {/* Payment Source Section - Show SEPA details for direct debit */}
             {paymentInfo?.payers.map((payer, index) => (
               <Card key={index} className="p-4">
                 <h4 className="font-medium mb-3">
@@ -281,6 +332,35 @@ export function ReceiptPreviewDialog({
                           : payer.coverage / payer.installments
                         ).toFixed(2)}
                       </p>
+                    </div>
+                  )}
+                  {(payer.paymentMethod === 'direct_debit' || payer.paymentMethod === 'bank_transfer') && (
+                    <div className="border-t pt-2 mt-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <FileDown className="h-4 w-4" />
+                            Generate Bank File
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          {payer.paymentMethod === 'direct_debit' && (
+                            <>
+                              <DropdownMenuItem onClick={() => handleBankFileDownload(index, 'norma19')}>
+                                Norma 19 - Direct Debit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleBankFileDownload(index, 'sepa')}>
+                                SEPA XML - Direct Debit
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                          {payer.paymentMethod === 'bank_transfer' && (
+                            <DropdownMenuItem onClick={() => handleBankFileDownload(index, 'norma34')}>
+                              Norma 34 - Transfer Order
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   )}
                 </div>
