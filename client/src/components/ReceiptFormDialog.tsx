@@ -59,14 +59,17 @@ const paymentSchema = z.object({
   payers: z.array(payerSchema).min(1, 'At least one payer is required'),
   additionalNotes: z.string().optional(),
   paymentPlan: z.enum(['single', 'installments']).default('single'),
-  numberOfInstallments: z.number().optional().superRefine((val, ctx) => {
-    if (ctx.parent.paymentPlan === 'installments' && !val) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Number of installments is required for installment plans'
-      });
+  numberOfInstallments: z.union([
+    z.number().min(1).optional(),
+    z.literal(undefined)
+  ]).refine((val, ctx) => {
+    if (ctx.parent?.paymentPlan === 'installments') {
+      return val !== undefined && val > 0;
     }
-  }),
+    return true;
+  }, {
+    message: "Number of installments is required for installment plans"
+  })
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
