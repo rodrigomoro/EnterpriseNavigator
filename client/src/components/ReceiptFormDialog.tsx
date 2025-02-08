@@ -90,7 +90,7 @@ interface ReceiptFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: PaymentFormValues & { totalAmount: number }) => void;
   studentName: string;
-  studentId: string; 
+  studentId: string;
   moduleAssignments: Array<{
     moduleId: string;
     groupId: string;
@@ -98,7 +98,7 @@ interface ReceiptFormDialogProps {
   }>;
   isBulkAction?: boolean;
   selectedEnrollments?: string[] | null;
-  availableFees: Array<{ 
+  availableFees: Array<{
     id: string;
     name: string;
     amount: number;
@@ -115,7 +115,7 @@ export function ReceiptFormDialog({
   isBulkAction,
   selectedEnrollments,
   studentId,
-  availableFees, 
+  availableFees,
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
 
@@ -148,8 +148,21 @@ export function ReceiptFormDialog({
     },
   });
 
+  // Watch for payment method changes and update mandate references
+  useEffect(() => {
+    const payers = form.watch('payers');
+    payers.forEach((payer, index) => {
+      if (payer.paymentMethod === 'direct_debit' && !payer.bankAccount?.mandateReference) {
+        form.setValue(
+          `payers.${index}.bankAccount.mandateReference`,
+          generateMandateReference(studentId || 'TEMP')
+        );
+      }
+    });
+  }, [form.watch('payers'), studentId]);
+
   const calculateTotal = (selectedFeeIds: string[]) => {
-    return availableFees 
+    return availableFees
       .filter(fee => selectedFeeIds.includes(fee.id))
       .reduce((sum, fee) => sum + fee.amount, 0);
   };
@@ -247,15 +260,6 @@ export function ReceiptFormDialog({
     const showBankFields = form.watch(`payers.${index}.paymentMethod`) === 'direct_debit';
 
     if (!showBankFields) return null;
-
-    useEffect(() => {
-      if (showBankFields && !form.watch(`payers.${index}.bankAccount.mandateReference`)) {
-        form.setValue(
-          `payers.${index}.bankAccount.mandateReference`,
-          generateMandateReference(studentId || 'TEMP')
-        );
-      }
-    }, [showBankFields, studentId]);
 
     return (
       <div className="space-y-4 border rounded-lg p-4 bg-muted/50">
@@ -425,7 +429,7 @@ export function ReceiptFormDialog({
                     <FormItem>
                       <FormLabel>Applicable Fees</FormLabel>
                       <div className="space-y-4">
-                        {availableFees.map((fee) => ( 
+                        {availableFees.map((fee) => (
                           <div key={fee.id} className="flex items-center justify-between p-4 border rounded-lg">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
