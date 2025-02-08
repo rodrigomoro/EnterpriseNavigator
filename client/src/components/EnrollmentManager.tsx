@@ -31,7 +31,7 @@ export const EnrollmentManager = () => {
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   const availableFees = [
-    { id: 'tuition', name: 'Tuition Fee', amount: selectedEnrollment?.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) || 0 },
+    { id: 'tuition', name: 'Tuition Fee', amount: selectedEnrollment?.moduleAssignments.reduce((sum: number, assignment: any) => sum + (assignment.cost || 500), 0) || 0 },
     { id: 'registration', name: 'Registration Fee', amount: 100 },
     { id: 'materials', name: 'Learning Materials', amount: 200 },
     { id: 'technology', name: 'Technology Fee', amount: 150 },
@@ -91,12 +91,13 @@ export const EnrollmentManager = () => {
     paymentPlan: 'single' | 'installments';
     numberOfInstallments?: number;
   }) => {
+    // Create payment info with selected fees
     setPaymentInfo({
       payers: data.payers,
       selectedFees: availableFees.filter(fee => data.selectedFees.includes(fee.id)),
       totalAmount: data.totalAmount,
       paymentPlan: data.paymentPlan,
-      numberOfInstallments: data.numberOfInstallments,
+      numberOfInstallments: data.numberOfInstallments || null,
     });
 
     setPaymentFormOpen(false);
@@ -119,7 +120,7 @@ export const EnrollmentManager = () => {
     setSelectedEnrollment(enrollment);
 
     if (enrollment.status === 'Completed') {
-      // For completed enrollments, show receipt preview directly
+      // For completed enrollments, show receipt preview directly with completed payment info
       setPaymentInfo(getCompletedPaymentInfo(enrollment));
       setShowReceiptPreview(true);
     } else {
@@ -444,7 +445,7 @@ export const EnrollmentManager = () => {
           onOpenChange={setPaymentFormOpen}
           onSubmit={handlePaymentSubmit}
           studentName={selectedEnrollment?.studentName}
-          studentId={selectedEnrollment?.studentId} // Add this prop
+          studentId={selectedEnrollment?.studentId}
           moduleAssignments={selectedEnrollment?.moduleAssignments}
           isBulkAction={isBulkAction}
           selectedEnrollments={isBulkAction ? selectedEnrollments : null}
