@@ -209,20 +209,40 @@ export function ReceiptFormDialog({
           ? (totalAmount * payer.coverage / 100)
           : payer.coverage;
 
-        const sepaXML = generateSEPAXML(
-          institutionDetails.creditorId,
-          institutionDetails.creditorName,
-          institutionDetails.creditorIBAN,
-          institutionDetails.creditorBIC,
-          payer.bankAccount,
-          {
-            amount: paymentAmount,
-            description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
-            dueDate: new Date().toISOString().split('T')[0]
-          }
-        );
+        const isInstallmentPlan = data.paymentPlan === 'installments' && data.numberOfInstallments;
 
-        downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
+        if (isInstallmentPlan && data.numberOfInstallments) {
+          // Generate SEPA XMLs for all installments
+          generateInstallmentSEPAXMLs(
+            institutionDetails.creditorId,
+            institutionDetails.creditorName,
+            institutionDetails.creditorIBAN,
+            institutionDetails.creditorBIC,
+            payer.bankAccount,
+            {
+              amount: paymentAmount,
+              description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
+              dueDate: new Date().toISOString().split('T')[0],
+              totalInstallments: data.numberOfInstallments,
+            }
+          );
+        } else {
+          // Generate single payment SEPA XML
+          const sepaXML = generateSEPAXML(
+            institutionDetails.creditorId,
+            institutionDetails.creditorName,
+            institutionDetails.creditorIBAN,
+            institutionDetails.creditorBIC,
+            payer.bankAccount,
+            {
+              amount: paymentAmount,
+              description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
+              dueDate: new Date().toISOString().split('T')[0],
+            }
+          );
+
+          downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
+        }
       }
     });
 
@@ -561,8 +581,8 @@ export function ReceiptFormDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Payment Method</FormLabel>
-                              <Select 
-                                onValueChange={(value) => handlePaymentMethodChange(value, index)} 
+                              <Select
+                                onValueChange={(value) => handlePaymentMethodChange(value, index)}
                                 defaultValue={field.value}
                               >
                                 <FormControl>
@@ -678,3 +698,14 @@ export function ReceiptFormDialog({
     </Dialog>
   );
 }
+
+// Placeholder for the new function
+const generateInstallmentSEPAXMLs = (creditorId: string, creditorName: string, creditorIBAN: string, creditorBIC: string, bankAccount: any, paymentDetails: any) => {
+  console.log("Installment SEPA XML generation not implemented yet.");
+  console.log("creditorId:", creditorId);
+  console.log("creditorName:", creditorName);
+  console.log("creditorIBAN:", creditorIBAN);
+  console.log("creditorBIC:", creditorBIC);
+  console.log("bankAccount:", bankAccount);
+  console.log("paymentDetails:", paymentDetails);
+};
