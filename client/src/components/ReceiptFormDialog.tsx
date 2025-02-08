@@ -152,7 +152,8 @@ export function ReceiptFormDialog({
   useEffect(() => {
     const payers = form.watch('payers');
     payers.forEach((payer, index) => {
-      if (payer.paymentMethod === 'direct_debit' && !payer.bankAccount?.mandateReference) {
+      if (payer.paymentMethod === 'direct_debit' && !form.watch(`payers.${index}.bankAccount.mandateReference`)) {
+        // Set initial mandate reference if not already set
         form.setValue(
           `payers.${index}.bankAccount.mandateReference`,
           generateMandateReference(studentId || 'TEMP')
@@ -316,11 +317,10 @@ export function ReceiptFormDialog({
                 <Input
                   {...field}
                   placeholder="Enter SEPA mandate reference"
-                  disabled
                 />
               </FormControl>
               <p className="text-sm text-muted-foreground">
-                Auto-generated unique reference for this direct debit mandate
+                A unique reference for this direct debit mandate
               </p>
               <FormMessage />
             </FormItem>
