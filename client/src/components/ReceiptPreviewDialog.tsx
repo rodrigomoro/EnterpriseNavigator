@@ -216,6 +216,21 @@ export function ReceiptPreviewDialog({
                   {payer.name && ` - ${payer.name}`}
                 </h4>
                 <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Invoice Number:</span>
+                    {generatedInvoices[index] ? (
+                      <span className="font-medium">{generatedInvoices[index]}</span>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleGenerateInvoice(index)}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Generate Invoice
+                      </Button>
+                    )}
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Payment Method:</span>
                     <span className="font-medium">{payer.paymentMethod.replace('_', ' ').toUpperCase()}</span>
@@ -316,3 +331,5 @@ export function ReceiptPreviewDialog({
     </Dialog>
   );
 }
+
+export default ReceiptPreviewDialog;
