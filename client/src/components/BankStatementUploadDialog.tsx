@@ -15,10 +15,18 @@ interface BankStatementUploadDialogProps {
 export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankStatementUploadDialogProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileContent, setFileContent] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFileSelection = async (file: File) => {
     setSelectedFile(file);
+    try {
+      const content = await file.text();
+      setFileContent(content);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      setFileContent(null);
+    }
   };
 
   const handleProcessFile = async () => {
@@ -30,6 +38,7 @@ export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankS
     } finally {
       setIsProcessing(false);
       setSelectedFile(null);
+      setFileContent(null);
     }
   };
 
@@ -64,41 +73,40 @@ export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankS
 
           <BankFileInterface onFileUpload={handleFileSelection} />
 
-          {selectedFile && !processedFile && (
-            <div className="flex justify-end">
-              <Button 
-                onClick={handleProcessFile} 
-                disabled={isProcessing}
-              >
-                {isProcessing ? "Processing..." : "Process File"}
-              </Button>
-            </div>
+          {fileContent && (
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">File Preview</h3>
+              <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                <pre className="whitespace-pre-wrap break-all text-sm text-muted-foreground">
+                  {fileContent.substring(0, 1000)}
+                  {fileContent.length > 1000 && '...'}
+                </pre>
+              </ScrollArea>
+              <div className="flex justify-end mt-4">
+                <Button 
+                  onClick={handleProcessFile} 
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : "Process File"}
+                </Button>
+              </div>
+            </Card>
           )}
 
           {processedFile && (
             <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
-              <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium">Reconciliation Summary</h4>
-                    <div className="mt-2 space-y-2">
-                      <p><span className="font-medium">Total Transactions:</span> {processedFile.metadata.recordCount}</p>
-                      <p><span className="font-medium">Matched Payments:</span> {processedFile.metadata.matchedCount || 0}</p>
-                      <p><span className="font-medium">Updated Statuses:</span> {processedFile.metadata.updatedCount || 0}</p>
-                      <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium">File Content Preview</h4>
-                    <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
-                      {processedFile.content.substring(0, 500)}
-                      {processedFile.content.length > 500 && '...'}
-                    </pre>
+              <h3 className="text-lg font-medium mb-4">Reconciliation Results</h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium">Summary</h4>
+                  <div className="mt-2 space-y-2">
+                    <p><span className="font-medium">Total Transactions:</span> {processedFile.metadata.recordCount}</p>
+                    <p><span className="font-medium">Matched Payments:</span> {processedFile.metadata.matchedCount || 0}</p>
+                    <p><span className="font-medium">Updated Statuses:</span> {processedFile.metadata.updatedCount || 0}</p>
+                    <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
                   </div>
                 </div>
-              </ScrollArea>
+              </div>
             </Card>
           )}
         </div>
