@@ -65,24 +65,17 @@ const payerSchema = z.object({
     accountHolder: z.string().optional(),
     mandateReference: z.string().optional(),
     mandateDate: z.string().optional(),
-  }).optional().refine(
-    (bankAccount, ctx) => {
-      const paymentMethod = (ctx.path[0] as any)?.paymentMethod;
-      if (paymentMethod === 'direct_debit') {
-        return bankAccount && 
-               bankAccount.iban && 
-               bankAccount.bic && 
-               bankAccount.accountHolder && 
-               bankAccount.mandateReference && 
-               bankAccount.mandateDate;
+  }).optional().superRefine((data, ctx) => {
+    const parentObj = ctx.parent as { paymentMethod: string };
+    if (parentObj.paymentMethod === 'direct_debit') {
+      if (!data || !data.iban || !data.bic || !data.accountHolder || !data.mandateReference || !data.mandateDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Bank account details are required for direct debit payments",
+        });
       }
-      return true;
-    },
-    {
-      message: "Bank account details are required for direct debit payments",
-      path: ["bankAccount"]
     }
-  ),
+  }),
 });
 
 const paymentSchema = z.object({
