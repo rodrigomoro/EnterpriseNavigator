@@ -11,6 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -100,8 +108,20 @@ export default function CreateEditInvoice() {
   const [, params] = useRoute('/invoices/:id/edit');
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [showFinalizeDialog, setShowFinalizeDialog] = useState(false);
   const isEditing = Boolean(params?.id);
   const existingInvoice = isEditing ? mockInvoices.find(i => i.id === params?.id) : null;
+
+  useEffect(() => {
+    if (isEditing && existingInvoice && existingInvoice.status !== 'draft') {
+      toast({
+        title: "Cannot edit invoice",
+        description: "Only draft invoices can be edited.",
+        variant: "destructive",
+      });
+      navigate('/invoices');
+    }
+  }, [isEditing, existingInvoice, navigate, toast]);
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
@@ -127,11 +147,9 @@ export default function CreateEditInvoice() {
     },
   });
 
-  // Watch all form fields that affect totals
   const items = form.watch('items');
   const [totals, setTotals] = useState(() => calculateTotals(items));
 
-  // Update totals whenever any item field changes
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       if (name?.startsWith('items.') || type === 'change') {
@@ -140,6 +158,22 @@ export default function CreateEditInvoice() {
     });
     return () => subscription.unsubscribe();
   }, [form]);
+
+  const handleFinalize = (data: InvoiceFormValues) => {
+    toast({
+      title: "Invoice finalized",
+      description: "Invoice has been finalized and is ready to be sent to VERIFACTU.",
+    });
+    navigate('/invoices');
+  };
+
+  const handleSaveAsDraft = (data: InvoiceFormValues) => {
+    toast({
+      title: `Invoice ${isEditing ? 'updated' : 'created'} as draft`,
+      description: `Invoice ${data.series}-${data.number} has been saved as draft.`,
+    });
+    navigate('/invoices');
+  };
 
   const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
@@ -184,7 +218,6 @@ export default function CreateEditInvoice() {
         notes: existingInvoice.notes || '',
       };
       form.reset(formData);
-      // Initialize totals after form reset
       setTotals(calculateTotals(formData.items));
     }
   }, [existingInvoice, form]);
@@ -212,7 +245,7 @@ export default function CreateEditInvoice() {
               <UserAvatar />
             </div>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(data => setShowFinalizeDialog(true))} className="space-y-6">
                 <Card>
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -617,12 +650,44 @@ export default function CreateEditInvoice() {
                   <Button type="button" variant="outline" onClick={() => navigate('/invoices')}>
                     Cancel
                   </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={form.handleSubmit(handleSaveAsDraft)}
+                  >
+                    {isEditing ? 'Update as Draft' : 'Save as Draft'}
+                  </Button>
                   <Button type="submit">
-                    {isEditing ? 'Update Invoice' : 'Create Invoice'}
+                    Finalize Invoice
                   </Button>
                 </div>
               </form>
             </Form>
+
+            <Dialog open={showFinalizeDialog} onOpenChange={setShowFinalizeDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Finalize Invoice</DialogTitle>
+                  <DialogDescription>
+                    Once finalized, this invoice cannot be updated or deleted. If you find errors
+                    after the invoice is sent to VERIFACTU, you will need to create a rectificative
+                    invoice. However, if the invoice hasn't been sent to VERIFACTU yet, you can still
+                    cancel it.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <Button variant="outline" onClick={() => setShowFinalizeDialog(false)}>
+                    Go Back
+                  </Button>
+                  <Button 
+                    onClick={form.handleSubmit(handleFinalize)}
+                    className="bg-primary"
+                  >
+                    Confirm Finalization
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </main>
         </PageTransition>
       </div>

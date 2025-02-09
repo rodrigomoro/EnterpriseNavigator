@@ -1,5 +1,5 @@
 import { useRoute } from "wouter";
-import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle, Download } from "lucide-react";
+import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle, Download, FileText } from "lucide-react";
 import { Link } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
@@ -11,6 +11,16 @@ import { Separator } from "@/components/ui/separator";
 import InvoiceApprovalWorkflow from "@/components/InvoiceApprovalWorkflow";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockInvoices";
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -19,7 +29,9 @@ const statusColors = {
   rejected: 'bg-red-100 text-red-700',
   signed: 'bg-blue-100 text-blue-700',
   submitted: 'bg-yellow-100 text-yellow-700',
-  accepted: 'bg-green-100 text-green-700'
+  accepted: 'bg-green-100 text-green-700',
+  ready_to_send_to_verifactu: 'bg-yellow-100 text-yellow-700',
+  verified_by_verifactu: 'bg-green-100 text-green-700'
 } as const;
 
 const actionIcons = {
@@ -44,6 +56,7 @@ export default function InvoiceDetail() {
   const [, params] = useRoute('/invoices/:id');
   const invoice = mockInvoices.find(i => i.id === params?.id);
   const { toast } = useToast();
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   if (!invoice) {
     return <div>Invoice not found</div>;
@@ -71,10 +84,40 @@ export default function InvoiceDetail() {
     });
   };
 
+  const handleSendToVerifactu = () => {
+    toast({
+      title: "Sent to VERIFACTU",
+      description: `Invoice ${invoice.invoiceNumber} has been submitted to VERIFACTU for verification.`,
+    });
+  };
+
+  const handleCancelInvoice = () => {
+    toast({
+      title: "Invoice Cancelled",
+      description: `Invoice ${invoice.invoiceNumber} has been cancelled.`,
+    });
+    setShowCancelDialog(false);
+  };
+
+  const handleMarkAsSentToClient = () => {
+    toast({
+      title: "Status Updated",
+      description: `Invoice ${invoice.invoiceNumber} has been marked as sent to client.`,
+    });
+  };
+
+  const handleGenerateNorma34 = (invoiceId: string) => {
+    //Implementation to generate Norma 34 file.  Replace with actual logic.
+    toast({
+      title: "Generating Norma 34 File",
+      description: `Generating Norma 34 file for invoice ${invoiceId}...`,
+    });
+  };
+
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-
       <div className="flex-1">
         <PageTransition>
           <main className="p-6">
@@ -93,14 +136,37 @@ export default function InvoiceDetail() {
                 <h1 className="text-2xl font-bold">Invoice Details</h1>
               </div>
 
-              <UserAvatar />
+              <div className="flex items-center gap-4">
+                {invoice.direction === 'outgoing' && (
+                  <>
+                    {invoice.status === 'ready_to_send_to_verifactu' && (
+                      <>
+                        <Button
+                          variant="destructive"
+                          onClick={() => setShowCancelDialog(true)}
+                        >
+                          Cancel Invoice
+                        </Button>
+                        <Button onClick={handleSendToVerifactu}>
+                          Send to VERIFACTU
+                        </Button>
+                      </>
+                    )}
+                    {invoice.status === 'verified_by_verifactu' && (
+                      <Button onClick={handleMarkAsSentToClient}>
+                        Mark as Sent to Client
+                      </Button>
+                    )}
+                  </>
+                )}
+                <UserAvatar />
+              </div>
             </div>
 
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 <Card>
                   <CardContent className="p-6">
-                    {/* Invoice header section */}
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <h2 className="text-xl font-semibold">{invoice.invoiceNumber}</h2>
@@ -116,7 +182,6 @@ export default function InvoiceDetail() {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Customer/Issuer Information */}
                       <div>
                         <h3 className="font-medium mb-2">
                           {invoice.direction === 'incoming' ? 'Issuer Information' : 'Customer Information'}
@@ -138,7 +203,6 @@ export default function InvoiceDetail() {
 
                       <Separator />
 
-                      {/* Items section */}
                       <div>
                         <h3 className="font-medium mb-2">Items</h3>
                         <div className="space-y-2">
@@ -158,7 +222,6 @@ export default function InvoiceDetail() {
 
                       <Separator />
 
-                      {/* Total amount */}
                       <div className="flex justify-between items-center">
                         <p className="font-medium">Total Amount</p>
                         <p className="text-xl font-bold">€{invoice.totalAmount}</p>
@@ -167,7 +230,32 @@ export default function InvoiceDetail() {
                   </CardContent>
                 </Card>
 
-                {/* Approval Workflow - Only show for incoming invoices */}
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Document Actions</h3>
+                    <div className="flex gap-4">
+                      <Button
+                        className="flex-1"
+                        variant="outline"
+                        onClick={handleDownloadPDF}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download Invoice PDF
+                      </Button>
+                      {invoice.direction === 'incoming' && (
+                        <Button
+                          className="flex-1"
+                          variant="outline"
+                          onClick={() => handleGenerateNorma34(invoice.id)}
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Generate SEPA Payment File
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {invoice.direction === 'incoming' && (
                   <InvoiceApprovalWorkflow
                     invoice={invoice}
@@ -176,7 +264,6 @@ export default function InvoiceDetail() {
                   />
                 )}
 
-                {/* Audit Trail */}
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4">Audit Trail</h3>
@@ -213,7 +300,6 @@ export default function InvoiceDetail() {
               </div>
 
               <div className="col-span-12 lg:col-span-4 space-y-6">
-                {/* Digital Signature Card */}
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -303,16 +389,6 @@ export default function InvoiceDetail() {
                         )}
                       </div>
 
-                      {/* PDF Download Button */}
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={handleDownloadPDF}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download PDF
-                      </Button>
-                      <Separator />
                       <div>
                         <h4 className="font-medium mb-2">VERIFACTU Status</h4>
                         {invoice.submissionInfo.verificationId ? (
@@ -347,6 +423,28 @@ export default function InvoiceDetail() {
                 </Card>
               </div>
             </div>
+
+            <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Cancel Invoice</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to cancel this invoice? This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <Button variant="outline" onClick={() => setShowCancelDialog(false)}>
+                    Go Back
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleCancelInvoice}
+                  >
+                    Yes, Cancel Invoice
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </main>
         </PageTransition>
       </div>

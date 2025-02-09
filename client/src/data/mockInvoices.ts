@@ -29,17 +29,16 @@ export interface Invoice {
     }[];
     totalAmount: number;
     status:
-        // Incoming invoice statuses
         | "draft"
+        | "ready_to_send_to_verifactu"
+        | "submitted_to_verifactu"
+        | "verified_by_verifactu"
+        | "sent_to_client"
+        | "cancelled"
         | "pending_approval"
         | "approved"
         | "rejected"
-        | "paid"
-        | "cancelled"
-        // Outgoing invoice statuses
-        | "submitted_to_verifactu"
-        | "verified_by_verifactu"
-        | "sent_to_client";
+        | "paid";
     approvalWorkflow?: {
         currentLevel: number;
         maxLevels: number;
@@ -92,9 +91,9 @@ export interface Invoice {
     }[];
 }
 
-// Example invoices with correct status workflows
+// Modify mock data - Remove draft status from incoming invoices and update outgoing invoice statuses
 export const mockInvoices: Invoice[] = [
-    // Outgoing invoice - Draft (can be edited)
+    // Outgoing invoice - Draft
     {
         id: "OUT-1",
         direction: "outgoing",
@@ -155,7 +154,7 @@ export const mockInvoices: Invoice[] = [
         ],
     },
 
-    // Outgoing invoice - Submitted to VERIFACTU
+    // Outgoing invoice - Ready to Send to VERIFACTU
     {
         id: "OUT-2",
         direction: "outgoing",
@@ -188,7 +187,7 @@ export const mockInvoices: Invoice[] = [
             },
         ],
         totalAmount: 3500,
-        status: "submitted_to_verifactu",
+        status: "ready_to_send_to_verifactu",
         paymentMethod: "bank_transfer",
         paymentStatus: "pending",
         signatureInfo: {
@@ -226,7 +225,7 @@ export const mockInvoices: Invoice[] = [
         ],
     },
 
-    // Outgoing invoice - Verified by VERIFACTU
+    // Outgoing invoice - Submitted to VERIFACTU
     {
         id: "OUT-3",
         direction: "outgoing",
@@ -259,7 +258,7 @@ export const mockInvoices: Invoice[] = [
             }
         ],
         totalAmount: 5000,
-        status: "verified_by_verifactu",
+        status: "submitted_to_verifactu",
         paymentMethod: "bank_transfer",
         paymentStatus: "pending",
         signatureInfo: {
@@ -303,7 +302,7 @@ export const mockInvoices: Invoice[] = [
         ],
     },
 
-    // Outgoing invoice - Sent to client
+    // Outgoing invoice - Verified by VERIFACTU
     {
         id: "OUT-4",
         direction: "outgoing",
@@ -336,7 +335,7 @@ export const mockInvoices: Invoice[] = [
             }
         ],
         totalAmount: 3000,
-        status: "sent_to_client",
+        status: "verified_by_verifactu",
         paymentMethod: "bank_transfer",
         paymentStatus: "pending",
         signatureInfo: {
@@ -386,7 +385,62 @@ export const mockInvoices: Invoice[] = [
         ],
     },
 
-    // Incoming invoice - Draft
+    // Outgoing invoice - Sent to client
+    {
+        id: "OUT-5",
+        direction: "outgoing",
+        operationDate: "2025-02-05",
+        type: "standard",
+        invoiceNumber: "INV-2025-005",
+        customer: {
+            name: "Another Customer",
+            taxId: "B11111111",
+            address: "Some Address",
+            postalCode: "11111",
+            city: "Some City"
+        },
+        issuer: {
+            name: "Educational Platform Inc",
+            taxId: "A87654321",
+            address: "Avenida Central 456",
+            postalCode: "28002",
+            city: "Madrid"
+        },
+        notes: "Some services",
+        issueDate: "2025-02-05",
+        dueDate: "2025-03-07",
+        items: [
+            {
+                description: "Service 1",
+                quantity: 1,
+                price: 1000,
+                total: 1000,
+            }
+        ],
+        totalAmount: 1000,
+        status: "sent_to_client",
+        paymentMethod: "bank_transfer",
+        paymentStatus: "pending",
+        signatureInfo: {},
+        submissionInfo: {},
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-005",
+        pdfUrl: "/invoices/INV-2025-005.pdf",
+        bankInfo: {
+            iban: "ES9121000418450200051332",
+            bic: "CAIXESBBXXX",
+            bankName: "CaixaBank"
+        },
+        auditTrail: [
+            {
+                timestamp: "2025-02-05T09:00:00Z",
+                action: "created",
+                actor: "Dana R.",
+                details: "Invoice created"
+            }
+        ],
+    },
+
+    // Incoming invoice - Pending Approval
     {
         id: "IN-1",
         direction: "incoming",
@@ -419,67 +473,6 @@ export const mockInvoices: Invoice[] = [
             }
         ],
         totalAmount: 2500,
-        status: "draft",
-        paymentMethod: "bank_transfer",
-        paymentStatus: "pending",
-        signatureInfo: {},
-        submissionInfo: {},
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-001",
-        pdfUrl: "/invoices/VINV-2025-001.pdf",
-        bankInfo: {
-            iban: "ES7100750327630600000573",
-            bic: "BSCHESMMXXX",
-            bankName: "Banco Santander"
-        },
-        auditTrail: [
-            {
-                timestamp: "2025-02-09T12:00:00Z",
-                action: "created",
-                actor: "System",
-                details: "Invoice received and registered"
-            }
-        ],
-    },
-
-    // Incoming invoice - Pending Approval
-    {
-        id: "IN-2",
-        direction: "incoming",
-        operationDate: "2025-02-08",
-        type: "standard",
-        invoiceNumber: "VINV-2025-002",
-        customer: {
-            name: "Educational Platform Inc",
-            taxId: "A87654321",
-            address: "Avenida Central 456",
-            postalCode: "28002",
-            city: "Madrid"
-        },
-        issuer: {
-            name: "Tech Equipment Solutions",
-            taxId: "B34567890",
-            address: "Calle Tecnología 123",
-            postalCode: "28045",
-            city: "Madrid"
-        },
-        notes: "IT Equipment and Installation",
-        issueDate: "2025-02-08",
-        dueDate: "2025-03-10",
-        items: [
-            {
-                description: "Interactive Whiteboards",
-                quantity: 5,
-                price: 1200,
-                total: 6000,
-            },
-            {
-                description: "Installation Service",
-                quantity: 5,
-                price: 150,
-                total: 750,
-            }
-        ],
-        totalAmount: 6750,
         status: "pending_approval",
         paymentMethod: "bank_transfer",
         paymentStatus: "pending",
@@ -504,38 +497,23 @@ export const mockInvoices: Invoice[] = [
                 }
             ]
         },
-        signatureInfo: {
-            signedAt: "2025-02-08T10:00:00Z",
-            signedBy: "Maria T."
-        },
+        signatureInfo: {},
         submissionInfo: {},
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-002",
-        pdfUrl: "/invoices/VINV-2025-002.pdf",
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-001",
+        pdfUrl: "/invoices/VINV-2025-001.pdf",
         bankInfo: {
-            iban: "ES9121000418450200051332",
-            bic: "CAIXESBBXXX",
-            bankName: "CaixaBank"
+            iban: "ES7100750327630600000573",
+            bic: "BSCHESMMXXX",
+            bankName: "Banco Santander"
         },
         auditTrail: [
             {
-                timestamp: "2025-02-08T10:00:00Z",
+                timestamp: "2025-02-09T12:00:00Z",
                 action: "created",
                 actor: "System",
                 details: "Invoice received and registered"
-            },
-            {
-                timestamp: "2025-02-08T10:00:00Z",
-                action: "signed",
-                actor: "Maria T.",
-                details: "Digital signature verified"
-            },
-            {
-                timestamp: "2025-02-08T10:30:00Z",
-                action: "approval_requested",
-                actor: "System",
-                details: "Approval workflow initiated"
             }
-        ]
+        ],
     },
 
     // Incoming invoice - Approved
