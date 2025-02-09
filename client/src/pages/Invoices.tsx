@@ -5,10 +5,12 @@ import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil } from 'lucide-react';
+import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { mockInvoices } from '@/data/mockInvoices';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from '@/hooks/use-toast';
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -39,12 +41,25 @@ const statusIcons = {
 
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('outgoing');
   const [, navigate] = useLocation();
+  const { toast } = useToast();
 
-  const filteredInvoices = mockInvoices.filter(invoice => 
-    invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    invoice.customer.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredInvoices = mockInvoices.filter(invoice => {
+    const matchesType = invoice.direction === activeTab;
+    const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invoice.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
+  const handleGenerateNorma34 = () => {
+    // In a real implementation, this would generate the SEPA XML file
+    // for the selected incoming invoices
+    toast({
+      title: "Norma 34 file generated",
+      description: "The SEPA payment file has been generated successfully.",
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -72,16 +87,40 @@ export default function Invoices() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Button onClick={() => navigate('/invoices/new')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Invoice
-                </Button>
+                {activeTab === 'incoming' ? (
+                  <Button onClick={handleGenerateNorma34}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Generate Norma 34
+                  </Button>
+                ) : (
+                  <Button onClick={() => navigate('/invoices/new')}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Invoice
+                  </Button>
+                )}
                 <UserAvatar />
               </div>
             </div>
           </header>
 
           <main className="p-6">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'outgoing' | 'incoming')} className="mb-6">
+              <TabsList className="grid w-[400px] grid-cols-2">
+                <TabsTrigger value="outgoing">Outgoing Invoices</TabsTrigger>
+                <TabsTrigger value="incoming">Incoming Invoices</TabsTrigger>
+              </TabsList>
+              <TabsContent value="outgoing">
+                <div className="text-sm text-muted-foreground mb-4">
+                  Manage invoices sent to students and educational institutions
+                </div>
+              </TabsContent>
+              <TabsContent value="incoming">
+                <div className="text-sm text-muted-foreground mb-4">
+                  Track and process invoices from vendors, teachers, and service providers
+                </div>
+              </TabsContent>
+            </Tabs>
+
             <div className="grid grid-cols-1 gap-4">
               {filteredInvoices.map((invoice) => (
                 <div key={invoice.id} className="relative group">
@@ -96,8 +135,13 @@ export default function Invoices() {
                                 {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                                 <StatusIcon status={invoice.status as InvoiceStatus} />
                               </Badge>
+                              {invoice.direction === 'incoming' && (
+                                <Badge variant="outline" className="ml-2">Vendor Invoice</Badge>
+                              )}
                             </div>
-                            <p className="text-sm text-muted-foreground">{invoice.customer.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {invoice.direction === 'incoming' ? invoice.issuer.name : invoice.customer.name}
+                            </p>
                           </div>
 
                           <div className="text-right mr-10">
@@ -108,13 +152,19 @@ export default function Invoices() {
                           </div>
                         </div>
 
-                        {invoice.submissionInfo.verificationId && (
-                          <div className="mt-2 pt-2 border-t">
-                            <p className="text-xs text-muted-foreground">
-                              VERIFACTU ID: {invoice.submissionInfo.verificationId}
-                            </p>
+                        <div className="mt-2 pt-2 border-t">
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            {invoice.submissionInfo.verificationId && (
+                              <span>VERIFACTU ID: {invoice.submissionInfo.verificationId}</span>
+                            )}
+                            {invoice.paymentMethod && (
+                              <span>Payment: {invoice.paymentMethod.replace('_', ' ').toUpperCase()}</span>
+                            )}
+                            {invoice.bankInfo && (
+                              <span>Bank: {invoice.bankInfo.bankName}</span>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </Card>
                     </a>
                   </Link>

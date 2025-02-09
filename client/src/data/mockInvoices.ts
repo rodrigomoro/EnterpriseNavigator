@@ -1,14 +1,23 @@
 export interface Invoice {
     operationDate: string;
-    issuer: any;
+    issuer: {
+        name: string;
+        taxId: string;
+        address: string;
+        postalCode: string;
+        city: string;
+    };
     notes: string;
-    type: string;
+    type: "standard" | "simplified" | "rectificative";
+    direction: "outgoing" | "incoming";
     id: string;
     invoiceNumber: string;
     customer: {
         name: string;
         taxId: string;
         address: string;
+        postalCode: string;
+        city: string;
     };
     issueDate: string;
     dueDate: string;
@@ -53,6 +62,13 @@ export interface Invoice {
     };
     qrCode: string;
     pdfUrl?: string;
+    bankInfo?: {
+        iban: string;
+        bic: string;
+        bankName: string;
+    };
+    paymentMethod: "bank_transfer" | "direct_debit" | "credit_card";
+    paymentStatus: "pending" | "paid" | "overdue" | "cancelled";
     auditTrail: {
         timestamp: string;
         action:
@@ -63,22 +79,38 @@ export interface Invoice {
         | "status_changed"
         | "approval_requested"
         | "approved"
-        | "rejected";
+        | "rejected"
+        | "payment_processed"
+        | "norma34_generated";
         actor: string;
         details: string;
         level?: number;
     }[];
 }
 
+// Update mock data to include both incoming and outgoing invoices
 export const mockInvoices: Invoice[] = [
     {
         id: "1",
+        direction: "outgoing",
+        operationDate: "2025-01-15",
+        type: "standard",
         invoiceNumber: "INV-2025-001",
         customer: {
             name: "Tech Education S.L.",
             taxId: "B12345678",
-            address: "Calle Principal 123, 28001 Madrid",
+            address: "Calle Principal 123",
+            postalCode: "28001",
+            city: "Madrid"
         },
+        issuer: {
+            name: "Educational Platform Inc",
+            taxId: "A87654321",
+            address: "Avenida Central 456",
+            postalCode: "28002",
+            city: "Madrid"
+        },
+        notes: "Annual software license and training package",
         issueDate: "2025-01-15",
         dueDate: "2025-02-14",
         items: [
@@ -97,6 +129,8 @@ export const mockInvoices: Invoice[] = [
         ],
         totalAmount: 2700,
         status: "pending_approval",
+        paymentMethod: "direct_debit",
+        paymentStatus: "pending",
         approvalWorkflow: {
             currentLevel: 1,
             maxLevels: 3,
@@ -121,6 +155,11 @@ export const mockInvoices: Invoice[] = [
         signatureInfo: {},
         submissionInfo: {},
         qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-001",
+        bankInfo: {
+            iban: "ES9121000418450200051332",
+            bic: "CAIXESBBXXX",
+            bankName: "CaixaBank"
+        },
         auditTrail: [
             {
                 timestamp: "2025-01-15T10:00:00Z",
@@ -137,215 +176,48 @@ export const mockInvoices: Invoice[] = [
             },
         ],
     },
+    // Add an example incoming invoice
     {
-        id: "2",
-        invoiceNumber: "INV-2025-002",
+        id: "5",
+        direction: "incoming",
+        operationDate: "2025-01-20",
+        type: "standard",
+        invoiceNumber: "VINV-2025-001",
         customer: {
-            name: "Educational Services Company",
-            taxId: "B87654321",
-            address: "Avenida Secundaria 456, 08001 Barcelona",
+            name: "Educational Platform Inc",
+            taxId: "A87654321",
+            address: "Avenida Central 456",
+            postalCode: "28002",
+            city: "Madrid"
         },
-        issueDate: "2025-01-18",
-        dueDate: "2025-02-17",
-        items: [
-            {
-                description: "Curriculum Development Services",
-                quantity: 1,
-                price: 3500,
-                total: 3500,
-            },
-        ],
-        totalAmount: 3500,
-        status: "submitted",
-        approvalWorkflow: {
-            currentLevel: 3,
-            maxLevels: 3,
-            approvers: [
-                {
-                    level: 1,
-                    role: "Department Manager",
-                    status: "approved",
-                    userId: "DM123",
-                    timestamp: "2025-01-18T12:00:00Z",
-                    comments: "Approved after budget review",
-                },
-                {
-                    level: 2,
-                    role: "Financial Controller",
-                    status: "approved",
-                    userId: "FC456",
-                    timestamp: "2025-01-18T13:30:00Z",
-                    comments: "Financial terms verified",
-                },
-                {
-                    level: 3,
-                    role: "CFO",
-                    status: "approved",
-                    userId: "CFO789",
-                    timestamp: "2025-01-18T14:00:00Z",
-                    comments: "Final approval granted",
-                },
-            ],
-        },
-        signatureInfo: {
-            signedAt: "2025-01-18T14:20:00Z",
-            signedBy: "Dana R.",
-        },
-        submissionInfo: {
-            submittedAt: "2025-01-18T14:25:00Z",
-            verificationId: "VF-2025-002-DEF",
-            response: {
-                status: "pending",
-            },
-        },
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-002",
-        auditTrail: [
-            {
-                timestamp: "2025-01-18T10:00:00Z",
-                action: "created",
-                actor: "Dana R.",
-                details: "Invoice created",
-            },
-            {
-                timestamp: "2025-01-18T12:00:00Z",
-                action: "approved",
-                actor: "Department Manager",
-                details: "Level 1 approval granted",
-                level: 1,
-            },
-            {
-                timestamp: "2025-01-18T13:30:00Z",
-                action: "approved",
-                actor: "Financial Controller",
-                details: "Level 2 approval granted",
-                level: 2,
-            },
-            {
-                timestamp: "2025-01-18T14:00:00Z",
-                action: "approved",
-                actor: "CFO",
-                details: "Level 3 approval granted",
-                level: 3,
-            },
-            {
-                timestamp: "2025-01-18T14:20:00Z",
-                action: "signed",
-                actor: "Dana R.",
-                details: "Digital signature applied",
-            },
-            {
-                timestamp: "2025-01-18T14:25:00Z",
-                action: "submitted",
-                actor: "System",
-                details: "Submitted to VERIFACTU",
-            },
-        ],
-    },
-    {
-        id: "3",
-        invoiceNumber: "INV-2025-003",
-        customer: {
-            name: "Learning Center Institute",
+        issuer: {
+            name: "Professional Training Services Ltd",
             taxId: "B98765432",
-            address: "Plaza Principal 789, 46001 Valencia",
+            address: "Plaza del Sol 789",
+            postalCode: "28003",
+            city: "Madrid"
         },
-        issueDate: "2025-01-19",
-        dueDate: "2025-02-18",
+        notes: "Professional development workshops for staff",
+        issueDate: "2025-01-20",
+        dueDate: "2025-02-19",
         items: [
             {
-                description: "Student Management System - Monthly Fee",
+                description: "Advanced Teaching Methods Workshop",
                 quantity: 1,
-                price: 800,
-                total: 800,
+                price: 2500,
+                total: 2500,
             },
             {
-                description: "Setup Service",
+                description: "Educational Technology Training",
                 quantity: 1,
-                price: 500,
-                total: 500,
+                price: 1800,
+                total: 1800,
             },
         ],
-        totalAmount: 1300,
-        status: "rejected",
-        approvalWorkflow: {
-            currentLevel: 2,
-            maxLevels: 3,
-            approvers: [
-                {
-                    level: 1,
-                    role: "Department Manager",
-                    status: "approved",
-                    userId: "DM123",
-                    timestamp: "2025-01-19T11:00:00Z",
-                    comments: "Initial approval granted",
-                },
-                {
-                    level: 2,
-                    role: "Financial Controller",
-                    status: "rejected",
-                    userId: "FC456",
-                    timestamp: "2025-01-19T12:00:00Z",
-                    comments: "Budget exceeded for this quarter",
-                },
-                {
-                    level: 3,
-                    role: "CFO",
-                    status: "pending",
-                },
-            ],
-        },
-        signatureInfo: {},
-        submissionInfo: {},
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-003",
-        auditTrail: [
-            {
-                timestamp: "2025-01-19T10:00:00Z",
-                action: "created",
-                actor: "Nancy W.",
-                details: "Invoice created",
-            },
-            {
-                timestamp: "2025-01-19T11:00:00Z",
-                action: "approved",
-                actor: "Department Manager",
-                details: "Level 1 approval granted",
-                level: 1,
-            },
-            {
-                timestamp: "2025-01-19T1200:00Z",
-                action: "rejected",
-                actor: "Financial Controller",
-                details: "Level 2 approval rejected - Budget exceeded",
-                level: 2,
-            },
-        ],
-    },
-    {
-        id: "4",
-        invoiceNumber: "INV-2025-004",
-        customer: {
-            name: "Digital Learning Academy",
-            taxId: "B45678901",
-            address: "Avenida Principal 321, 41001 Sevilla",
-        },
-        issueDate: "2025-01-16",
-        dueDate: "2025-02-15",
-        items: [
-            {
-                description: "Learning Management System - Annual License",
-                quantity: 1,
-                price: 4500,
-                total: 4500,
-            },
-            {
-                description: "Implementation Services",
-                quantity: 1,
-                price: 1500,
-                total: 1500,
-            },
-        ],
-        totalAmount: 6000,
-        status: "accepted",
+        totalAmount: 4300,
+        status: "approved",
+        paymentMethod: "bank_transfer",
+        paymentStatus: "pending",
         approvalWorkflow: {
             currentLevel: 3,
             maxLevels: 3,
@@ -354,100 +226,73 @@ export const mockInvoices: Invoice[] = [
                     level: 1,
                     role: "Department Manager",
                     status: "approved",
-                    userId: "DM123",
-                    timestamp: "2025-01-16T11:00:00Z",
-                    comments: "Approved - Strategic investment",
+                    userId: "DM789",
+                    timestamp: "2025-01-20T14:00:00Z",
+                    comments: "Workshop aligns with our training needs"
                 },
                 {
                     level: 2,
                     role: "Financial Controller",
                     status: "approved",
                     userId: "FC456",
-                    timestamp: "2025-01-16T13:00:00Z",
-                    comments: "Budget verified and approved",
+                    timestamp: "2025-01-20T15:00:00Z",
+                    comments: "Within budget allocation"
                 },
                 {
                     level: 3,
                     role: "CFO",
                     status: "approved",
-                    userId: "CFO789",
-                    timestamp: "2025-01-16T14:30:00Z",
-                    comments: "Final approval granted - High priority program",
-                },
+                    userId: "CFO123",
+                    timestamp: "2025-01-20T16:00:00Z",
+                    comments: "Approved for payment"
+                }
             ],
         },
         signatureInfo: {
-            signedAt: "2025-01-16T15:00:00Z",
-            signedBy: "Dana R.",
+            signedAt: "2025-01-20T13:00:00Z",
+            signedBy: "John Smith"
         },
-        submissionInfo: {
-            submittedAt: "2025-01-16T15:05:00Z",
-            verificationId: "VF-2025-004-XYZ",
-            response: {
-                status: "accepted",
-                message: "Invoice successfully verified and accepted by VERIFACTU",
-            },
+        submissionInfo: {},
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-001",
+        bankInfo: {
+            iban: "ES7100750327630600000573",
+            bic: "BSCHESMMXXX",
+            bankName: "Banco Santander"
         },
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-004",
         auditTrail: [
             {
-                timestamp: "2025-01-16T10:00:00Z",
+                timestamp: "2025-01-20T12:00:00Z",
                 action: "created",
-                actor: "Dana R.",
-                details: "Invoice created",
+                actor: "System",
+                details: "Invoice received and registered"
             },
             {
-                timestamp: "2025-01-16T10:05:00Z",
-                action: "approval_requested",
-                actor: "Dana R.",
-                details: "Approval workflow initiated",
-                level: 1,
+                timestamp: "2025-01-20T13:00:00Z",
+                action: "signed",
+                actor: "John Smith",
+                details: "Digital signature verified"
             },
             {
-                timestamp: "2025-01-16T11:00:00Z",
+                timestamp: "2025-01-20T14:00:00Z",
                 action: "approved",
                 actor: "Department Manager",
                 details: "Level 1 approval granted",
-                level: 1,
+                level: 1
             },
             {
-                timestamp: "2025-01-16T13:00:00Z",
+                timestamp: "2025-01-20T15:00:00Z",
                 action: "approved",
                 actor: "Financial Controller",
                 details: "Level 2 approval granted",
-                level: 2,
+                level: 2
             },
             {
-                timestamp: "2025-01-16T14:30:00Z",
+                timestamp: "2025-01-20T16:00:00Z",
                 action: "approved",
                 actor: "CFO",
                 details: "Level 3 approval granted",
-                level: 3,
-            },
-            {
-                timestamp: "2025-01-16T15:00:00Z",
-                action: "signed",
-                actor: "Dana R.",
-                details: "Digital signature applied",
-            },
-            {
-                timestamp: "2025-01-16T15:05:00Z",
-                action: "submitted",
-                actor: "System",
-                details: "Submitted to VERIFACTU for verification",
-            },
-            {
-                timestamp: "2025-01-16T15:10:00Z",
-                action: "verified",
-                actor: "VERIFACTU",
-                details: "Invoice verified and accepted by VERIFACTU",
-            },
-            {
-                timestamp: "2025-01-16T15:11:00Z",
-                action: "status_changed",
-                actor: "System",
-                details: "Status updated to Accepted",
-            },
+                level: 3
+            }
         ],
-    },
+    }
 ];
