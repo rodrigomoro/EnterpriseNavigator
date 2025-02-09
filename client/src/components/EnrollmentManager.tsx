@@ -40,36 +40,86 @@ export const EnrollmentManager = () => {
 
   // Mock completed payment info
   const getCompletedPaymentInfo = (enrollment: any) => {
-    const moduleTotal = enrollment?.moduleAssignments?.reduce((sum: number, assignment: any) => 
-      sum + (assignment.cost || 500), 0) || 0;
-
+    // Calculate the total tuition fee by summing module costs.
+    const moduleTotal = enrollment?.moduleAssignments?.reduce(
+      (sum: number, assignment: any) => sum + (assignment.cost || 500),
+      0
+    ) || 0;
+  
+    // Additional fixed fees.
+    const additionalFees = {
+      registration: 100,
+      materials: 200,
+      technology: 150,
+      laboratory: 300,
+    };
+    const extraFeeTotal =
+      additionalFees.registration +
+      additionalFees.materials +
+      additionalFees.technology +
+      additionalFees.laboratory;
+  
+    // If the enrollment meets the condition for Direct Debit (for example, studentId "ST009"),
+    // then return the Direct Debit payment information.
+    if (enrollment.studentId === "ST009") {
+      return {
+        payers: [
+          {
+            type: "student",
+            paymentMethod: "direct_debit",
+            referenceNumber: `TXN-${Date.now()}`,
+            coverageType: "percentage" as const,
+            coverage: 100, // in this scenario, the student covers 100% via Direct Debit
+            bankAccount: {
+              iban: "DE89370400440532013000", // example valid IBAN
+              bic: "COBADEFFXXX",            // example valid BIC/SWIFT
+              accountHolder: enrollment.studentName,
+              mandateReference: `MANDATE-${enrollment.studentId}-${format(new Date(), "yyyyMMdd")}`,
+              mandateDate: format(new Date(), "yyyy-MM-dd"),
+            },
+          },
+        ],
+        selectedFees: [
+          { id: "tuition", name: "Tuition Fee", amount: moduleTotal },
+          { id: "registration", name: "Registration Fee", amount: additionalFees.registration },
+          { id: "materials", name: "Learning Materials", amount: additionalFees.materials },
+          { id: "technology", name: "Technology Fee", amount: additionalFees.technology },
+          { id: "laboratory", name: "Laboratory Fee", amount: additionalFees.laboratory },
+        ],
+        totalAmount: moduleTotal + extraFeeTotal,
+        paymentPlan: "installments" as const,
+        numberOfInstallments: 12,
+      };
+    }
+  
+    // Otherwise, return the default payment information.
     return {
       payers: [
         {
-          type: 'student',
-          paymentMethod: 'credit_card',
+          type: "student",
+          paymentMethod: "credit_card",
           referenceNumber: `TXN-${Date.now()}`,
-          coverageType: 'percentage' as const,
+          coverageType: "percentage" as const,
           coverage: 60,
         },
         {
-          type: 'scholarship',
-          name: 'Merit Scholarship Program',
-          paymentMethod: 'bank_transfer',
+          type: "scholarship",
+          name: "Merit Scholarship Program",
+          paymentMethod: "bank_transfer",
           referenceNumber: `SCH-${Date.now()}`,
-          coverageType: 'percentage' as const,
+          coverageType: "percentage" as const,
           coverage: 40,
-        }
+        },
       ],
       selectedFees: [
-        { id: 'tuition', name: 'Tuition Fee', amount: moduleTotal },
-        { id: 'registration', name: 'Registration Fee', amount: 100 },
-        { id: 'materials', name: 'Learning Materials', amount: 200 },
-        { id: 'technology', name: 'Technology Fee', amount: 150 },
-        { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
+        { id: "tuition", name: "Tuition Fee", amount: moduleTotal },
+        { id: "registration", name: "Registration Fee", amount: additionalFees.registration },
+        { id: "materials", name: "Learning Materials", amount: additionalFees.materials },
+        { id: "technology", name: "Technology Fee", amount: additionalFees.technology },
+        { id: "laboratory", name: "Laboratory Fee", amount: additionalFees.laboratory },
       ],
-      totalAmount: moduleTotal + 750, // 750 is the sum of other fees
-      paymentPlan: 'installments' as const,
+      totalAmount: moduleTotal + extraFeeTotal,
+      paymentPlan: "installments" as const,
       numberOfInstallments: 12,
     };
   };
@@ -165,6 +215,42 @@ export const EnrollmentManager = () => {
     });
   };
 
+  const completedEnrollment = {
+    id: "9",
+    studentId: "ST009",
+    studentName: "Alice Wonder",
+    enrolledAt: "2024-03-01T09:00:00Z",
+    status: "Completed",
+    moduleAssignments: [
+      { moduleId: "module-1", groupId: "GRP1", cost: 600 },
+      { moduleId: "module-2", groupId: "GRP2", cost: 500 },
+      { moduleId: "module-3", groupId: "GRP3", cost: 550 },
+      { moduleId: "module-4", groupId: "GRP4", cost: 450 },
+      { moduleId: "module-5", groupId: "GRP5", cost: 650 },
+      { moduleId: "module-6", groupId: "GRP1", cost: 700 },
+      { moduleId: "module-7", groupId: "GRP2", cost: 600 },
+      { moduleId: "module-8", groupId: "GRP3", cost: 500 },
+    ]
+  };
+  
+  // Calculate the tuition fee by summing module costs
+  const tuitionFee = completedEnrollment.moduleAssignments.reduce(
+    (sum, assignment) => sum + (assignment.cost || 0),
+    0
+  ); // 600 + 500 + 550 + 450 + 650 + 700 + 600 + 500 = 4550
+  
+  // Additional fixed fees
+  const additionalFees = {
+    registration: 100,
+    materials: 200,
+    technology: 150,
+    laboratory: 300,
+  };
+  // Sum of additional fees: 100 + 200 + 150 + 300 = 750
+  
+  // Total amount payable
+  const totalAmount = tuitionFee + 750; // 4550 + 750 = 5300
+
   const enrollments = [
     {
       id: "1",
@@ -254,7 +340,7 @@ export const EnrollmentManager = () => {
         { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
-
+    completedEnrollment
   ];
 
   // Mock function to get group info (in a real app, this would come from an API)
