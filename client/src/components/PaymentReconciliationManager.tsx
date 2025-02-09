@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Info, AlertCircle, CheckCircle2, XCircle, ArrowDown, ArrowUp, Search, Calendar } from "lucide-react";
+import { Info, AlertCircle, CheckCircle2, XCircle, ArrowDown, ArrowUp, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { addDays } from "date-fns";
@@ -30,7 +30,7 @@ interface Payment {
   type: PaymentType;
   direction: PaymentDirection;
   source: {
-    type: string; // 'enrollment' | 'invoice' | 'module'
+    type: string;
     description: string;
     reference: string;
   };
@@ -68,15 +68,29 @@ const statusInfo = {
   }
 };
 
+const referenceInfo = {
+  DD: {
+    label: 'Direct Debit',
+    description: 'Automatically collected payments from student bank accounts'
+  },
+  TR: {
+    label: 'Transfer',
+    description: 'Bank transfers to vendors, teachers, or service providers'
+  }
+};
+
 export function PaymentReconciliationManager({
   payments,
   onMarkReconciled
 }: PaymentReconciliationManagerProps) {
   const [filter, setFilter] = useState<PaymentDirection | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState({
-    from: new Date(2024, 0, 1), // January 1, 2024
-    to: addDays(new Date(), 1) // Tomorrow
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined
   });
 
   const filteredPayments = payments.filter(p => {
@@ -93,7 +107,7 @@ export function PaymentReconciliationManager({
       if (!matchesSearch) return false;
     }
 
-    // Date filter
+    // Date filter (only apply if dates are defined)
     const paymentDate = new Date(p.date);
     if (dateRange.from && paymentDate < dateRange.from) return false;
     if (dateRange.to && paymentDate > dateRange.to) return false;
@@ -129,17 +143,28 @@ export function PaymentReconciliationManager({
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent className="w-80">
-                    <div className="space-y-2">
-                      <p className="font-medium">Payment Status Guide</p>
-                      {Object.entries(statusInfo).map(([key, info]) => (
-                        <div key={key} className="flex items-center gap-2">
-                          {info.icon}
-                          <div>
-                            <p className="font-medium">{info.label}</p>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-medium mb-2">Payment Status Guide</p>
+                        {Object.entries(statusInfo).map(([key, info]) => (
+                          <div key={key} className="flex items-center gap-2 mb-2">
+                            {info.icon}
+                            <div>
+                              <p className="font-medium">{info.label}</p>
+                              <p className="text-sm text-muted-foreground">{info.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div>
+                        <p className="font-medium mb-2">Reference Types</p>
+                        {Object.entries(referenceInfo).map(([prefix, info]) => (
+                          <div key={prefix} className="mb-2">
+                            <p className="font-medium">{prefix} - {info.label}</p>
                             <p className="text-sm text-muted-foreground">{info.description}</p>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </TooltipContent>
                 </Tooltip>
@@ -210,7 +235,16 @@ export function PaymentReconciliationManager({
                       )}
                       <div className="space-y-1">
                         <div className="font-medium flex items-center gap-2">
-                          {payment.reference}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger className="text-left">
+                                {payment.reference}
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{payment.type === 'direct-debit' ? 'Direct Debit Payment' : 'Bank Transfer'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                           <span className="text-sm font-normal text-muted-foreground">
                             {new Date(payment.date).toLocaleDateString()}
                           </span>
