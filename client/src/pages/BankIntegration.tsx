@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { BankFileInterface } from '@/components/BankFileInterface';
-import { PaymentReconciliationManager } from '@/components/PaymentReconciliationManager';
 import { BankFileProcessor } from '@/lib/bankFileProcessor';
 import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { AlertCircle, Upload, Download, RefreshCw, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import { FileFormatGuideDialog } from '@/components/FileFormatGuideDialog';
+import { BankStatementUploadDialog } from '@/components/BankStatementUploadDialog';
+import { PaymentReconciliationManager } from '@/components/PaymentReconciliationManager';
+import UserAvatar from "@/components/UserAvatar";
 
 // File format descriptions and info
 const fileFormatInfo = {
@@ -155,18 +155,26 @@ export default function BankIntegration() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
+
       <div className="flex-1">
         <PageTransition>
           <div className="container mx-auto py-6 space-y-6">
-            <div className="flex items-center justify-between">
+            <header className="flex justify-between items-center">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight">Bank Integration</h2>
                 <p className="text-muted-foreground">
                   Manage bank file uploads for payment processing and reconciliation.
                 </p>
               </div>
-              <FileFormatGuideDialog formats={fileFormatInfo} />
-            </div>
+              <div className="flex items-center gap-2">
+                <FileFormatGuideDialog formats={fileFormatInfo} />
+                <BankStatementUploadDialog 
+                  onFileUpload={handleFileUpload}
+                  processedFile={processedFile}
+                />
+                <UserAvatar />
+              </div>
+            </header>
 
             <Alert>
               <AlertCircle className="h-4 w-4" />
@@ -212,49 +220,11 @@ export default function BankIntegration() {
                 </div>
               </Card>
 
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-6">
-                  <BankFileInterface onFileUpload={handleFileUpload} />
-
-                  {processedFile && (
-                    <Card className="p-6">
-                      <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
-                      <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                        <div className="space-y-4">
-                          <div>
-                            <h4 className="font-medium">Metadata</h4>
-                            <div className="mt-2 space-y-2">
-                              <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
-                              <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
-                              <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
-                              {processedFile.metadata.recordCount && (
-                                <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
-                              )}
-                              {processedFile.metadata.totalAmount && (
-                                <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
-                              )}
-                            </div>
-                          </div>
-
-                          <div>
-                            <h4 className="font-medium">Content Preview</h4>
-                            <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
-                              {processedFile.content.substring(0, 500)}
-                              {processedFile.content.length > 500 && '...'}
-                            </pre>
-                          </div>
-                        </div>
-                      </ScrollArea>
-                    </Card>
-                  )}
-                </div>
-
-                <PaymentReconciliationManager
-                  payments={payments}
-                  onRetryPayment={handleRetryPayment}
-                  onMarkReconciled={handleMarkReconciled}
-                />
-              </div>
+              <PaymentReconciliationManager
+                payments={payments}
+                onRetryPayment={handleRetryPayment}
+                onMarkReconciled={handleMarkReconciled}
+              />
             </div>
           </div>
         </PageTransition>
