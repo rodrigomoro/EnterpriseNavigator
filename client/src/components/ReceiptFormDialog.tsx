@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,21 +6,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+} from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -28,71 +28,112 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Minus } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { generateSEPAXML, downloadSEPAFile, generateInstallmentSEPAXMLs } from '@/lib/sepa';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus, Minus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import {
+  generateSEPAXML,
+  downloadSEPAFile,
+  generateInstallmentSEPAXMLs,
+} from "@/lib/sepa";
+import { useToast } from "@/hooks/use-toast";
 
 const generateMandateReference = (studentId: string) => {
-  const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+  const timestamp = new Date().toISOString().split("T")[0].replace(/-/g, "");
   return `MANDATE-${studentId}-${timestamp}`;
 };
 
-const payerSchema = z.object({
-  type: z.enum(['student', 'scholarship', 'government', 'institution', 'bank', 'other']),
-  name: z.string().optional(),
-  paymentMethod: z.enum([
-    'credit_card',
-    'bank_transfer',
-    'cash',
-    'direct_debit',
-    'paypal',
-    'google_pay',
-    'apple_pay',
-    'stripe'
-  ]),
-  referenceNumber: z.string().optional(),
-  coverageType: z.enum(['percentage', 'amount']),
-  coverage: z.number().min(0),
-  notes: z.string().optional(),
-  paymentPlan: z.enum(['single', 'installments']).optional(),
-  installments: z.number().optional(),
-  bankAccount: z.object({
-    iban: z.string().regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, 'Invalid IBAN format').optional(),
-    bic: z.string().regex(/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/, 'Invalid BIC/SWIFT format').optional(),
-    accountHolder: z.string().optional(),
-    mandateReference: z.string().optional(),
-    mandateDate: z.string().optional(),
-  }).optional().superRefine((data, ctx) => {
-    const parentObj = ctx.parent as { paymentMethod: string };
-    if (parentObj.paymentMethod === 'direct_debit') {
-      if (!data || !data.iban || !data.bic || !data.accountHolder || !data.mandateReference || !data.mandateDate) {
+const payerSchema = z
+  .object({
+    type: z.enum([
+      "student",
+      "scholarship",
+      "government",
+      "institution",
+      "bank",
+      "other",
+    ]),
+    name: z.string().optional(),
+    paymentMethod: z.enum([
+      "credit_card",
+      "bank_transfer",
+      "cash",
+      "direct_debit",
+      "paypal",
+      "google_pay",
+      "apple_pay",
+      "stripe",
+    ]),
+    referenceNumber: z.string().optional(),
+    coverageType: z.enum(["percentage", "amount"]),
+    coverage: z.number().min(0),
+    notes: z.string().optional(),
+    paymentPlan: z.enum(["single", "installments"]).optional(),
+    installments: z.number().optional(),
+    bankAccount: z
+      .object({
+        iban: z
+          .string()
+          .regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, "Invalid IBAN format")
+          .optional(),
+        bic: z
+          .string()
+          .regex(
+            /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/,
+            "Invalid BIC/SWIFT format",
+          )
+          .optional(),
+        accountHolder: z.string().optional(),
+        mandateReference: z.string().optional(),
+        mandateDate: z.string().optional(),
+      })
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.paymentMethod === "direct_debit") {
+      if (
+        !data.bankAccount ||
+        !data.bankAccount.iban ||
+        !data.bankAccount.bic ||
+        !data.bankAccount.accountHolder ||
+        !data.bankAccount.mandateReference ||
+        !data.bankAccount.mandateDate
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Bank account details are required for direct debit payments",
+          message:
+            "Bank account details are required for direct debit payments",
+          path: ["bankAccount"],
         });
       }
     }
-  }),
-});
+  });
 
-const paymentSchema = z.object({
-  selectedFees: z.array(z.string()).min(1, 'Please select at least one fee'),
-  payers: z.array(payerSchema).min(1, 'At least one payer is required'),
-  additionalNotes: z.string().optional(),
-  paymentPlan: z.enum(['single', 'installments']),
-  numberOfInstallments: z.number().nullable().optional(),
-}).refine((data) => {
-  if (data.paymentPlan === 'installments') {
-    return typeof data.numberOfInstallments === 'number' && data.numberOfInstallments > 0;
-  }
-  return true;
-}, {
-  message: "Number of installments is required and must be greater than 0 for installment plans",
-  path: ["numberOfInstallments"]
-});
+const paymentSchema = z
+  .object({
+    selectedFees: z.array(z.string()).min(1, "Please select at least one fee"),
+    payers: z.array(payerSchema).min(1, "At least one payer is required"),
+    additionalNotes: z.string().optional(),
+    paymentPlan: z.enum(["single", "installments"]),
+    numberOfInstallments: z.number().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.paymentPlan === "installments") {
+        return (
+          typeof data.numberOfInstallments === "number" &&
+          data.numberOfInstallments > 0
+        );
+      }
+      return true;
+    },
+    {
+      message:
+        "Number of installments is required and must be greater than 0 for installment plans",
+      path: ["numberOfInstallments"],
+    },
+  );
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
@@ -135,22 +176,17 @@ export function ReceiptFormDialog({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       selectedFees: [],
-      payers: [{
-        type: 'student',
-        paymentMethod: 'credit_card',
-        coverageType: 'percentage',
-        coverage: 100,
-        paymentPlan: 'single',
-        bankAccount: {
-          iban: '',
-          bic: '',
-          accountHolder: '',
-          mandateReference: generateMandateReference(studentId || 'TEMP'),
-          mandateDate: new Date().toISOString().split('T')[0],
+      payers: [
+        {
+          type: "student",
+          paymentMethod: "credit_card",
+          coverageType: "percentage",
+          coverage: 100,
+          paymentPlan: "single",
         },
-      }],
-      additionalNotes: '',
-      paymentPlan: 'single',
+      ],
+      additionalNotes: "",
+      paymentPlan: "single",
       numberOfInstallments: undefined,
     },
   });
@@ -161,10 +197,10 @@ export function ReceiptFormDialog({
 
       // Validate total coverage equals 100%
       const totalCoverage = data.payers.reduce((sum, payer) => {
-        if (payer.coverageType === 'percentage') {
+        if (payer.coverageType === "percentage") {
           return sum + payer.coverage;
         } else {
-          return sum + (payer.coverage / totalAmount * 100);
+          return sum + (payer.coverage / totalAmount) * 100;
         }
       }, 0);
 
@@ -179,7 +215,7 @@ export function ReceiptFormDialog({
 
       // Handle SEPA files generation if needed
       const directDebitPayers = data.payers.filter(
-        payer => payer.paymentMethod === 'direct_debit' && payer.bankAccount
+        (payer) => payer.paymentMethod === "direct_debit" && payer.bankAccount,
       );
 
       if (directDebitPayers.length > 0) {
@@ -195,7 +231,7 @@ export function ReceiptFormDialog({
       // Close the dialog after successful submission
       onOpenChange(false);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
       toast({
         title: "Error",
         description: "Failed to generate receipt. Please try again.",
@@ -206,7 +242,7 @@ export function ReceiptFormDialog({
 
   const calculateTotal = (selectedFeeIds: string[]) => {
     return availableFees
-      .filter(fee => selectedFeeIds.includes(fee.id))
+      .filter((fee) => selectedFeeIds.includes(fee.id))
       .reduce((sum, fee) => sum + fee.amount, 0);
   };
 
@@ -215,24 +251,26 @@ export function ReceiptFormDialog({
   };
 
   const handleSEPAGeneration = async (
-    directDebitPayers: PaymentFormValues['payers'][0][],
+    directDebitPayers: PaymentFormValues["payers"][0][],
     totalAmount: number,
-    data: PaymentFormValues
+    data: PaymentFormValues,
   ) => {
     const institutionDetails = {
-      creditorId: 'ES12ZZZ12345678',
-      creditorName: 'Educational Institution',
-      creditorIBAN: 'ES1234567890123456789012',
-      creditorBIC: 'BANKESM1XXX'
+      creditorId: "ES12ZZZ12345678",
+      creditorName: "Educational Institution",
+      creditorIBAN: "ES1234567890123456789012",
+      creditorBIC: "BANKESM1XXX",
     };
 
     for (const payer of directDebitPayers) {
       if (payer.bankAccount) {
-        const paymentAmount = payer.coverageType === 'percentage'
-          ? (totalAmount * payer.coverage / 100)
-          : payer.coverage;
+        const paymentAmount =
+          payer.coverageType === "percentage"
+            ? (totalAmount * payer.coverage) / 100
+            : payer.coverage;
 
-        const isInstallmentPlan = data.paymentPlan === 'installments' && data.numberOfInstallments;
+        const isInstallmentPlan =
+          data.paymentPlan === "installments" && data.numberOfInstallments;
 
         if (isInstallmentPlan && data.numberOfInstallments) {
           await generateInstallmentSEPAXMLs(
@@ -245,14 +283,14 @@ export function ReceiptFormDialog({
               bic: payer.bankAccount.bic!,
               accountHolder: payer.bankAccount.accountHolder!,
               mandateReference: payer.bankAccount.mandateReference!,
-              mandateDate: payer.bankAccount.mandateDate!
+              mandateDate: payer.bankAccount.mandateDate!,
             },
             {
               amount: paymentAmount,
               description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
-              dueDate: new Date().toISOString().split('T')[0],
+              dueDate: new Date().toISOString().split("T")[0],
               totalInstallments: data.numberOfInstallments,
-            }
+            },
           );
         } else {
           const sepaXML = generateSEPAXML(
@@ -265,16 +303,19 @@ export function ReceiptFormDialog({
               bic: payer.bankAccount.bic!,
               accountHolder: payer.bankAccount.accountHolder!,
               mandateReference: payer.bankAccount.mandateReference!,
-              mandateDate: payer.bankAccount.mandateDate!
+              mandateDate: payer.bankAccount.mandateDate!,
             },
             {
               amount: paymentAmount,
               description: `Payment for ${studentName} - ${moduleAssignments?.length} modules`,
-              dueDate: new Date().toISOString().split('T')[0],
-            }
+              dueDate: new Date().toISOString().split("T")[0],
+            },
           );
 
-          downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
+          downloadSEPAFile(
+            sepaXML,
+            `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`,
+          );
         }
       }
     }
@@ -283,45 +324,49 @@ export function ReceiptFormDialog({
   const handlePaymentMethodChange = (value: string, index: number) => {
     form.setValue(`payers.${index}.paymentMethod`, value);
 
-    if (value === 'direct_debit') {
+    if (value === "direct_debit") {
       form.setValue(`payers.${index}.bankAccount`, {
-        iban: '',
-        bic: '',
-        accountHolder: '',
-        mandateReference: generateMandateReference(studentId || 'TEMP'),
-        mandateDate: new Date().toISOString().split('T')[0],
+        iban: "",
+        bic: "",
+        accountHolder: "",
+        mandateReference: generateMandateReference(studentId || "TEMP"),
+        mandateDate: new Date().toISOString().split("T")[0],
       });
+    } else {
+      // Optionally, clear bankAccount if not needed.
+      form.setValue(`payers.${index}.bankAccount`, undefined);
     }
   };
 
   const paymentMethods = [
-    { id: 'credit_card', name: 'Credit Card' },
-    { id: 'bank_transfer', name: 'Bank Transfer' },
-    { id: 'cash', name: 'Cash' },
-    { id: 'direct_debit', name: 'Direct Debit' },
-    { id: 'paypal', name: 'PayPal' },
-    { id: 'google_pay', name: 'Google Pay' },
-    { id: 'apple_pay', name: 'Apple Pay' },
-    { id: 'stripe', name: 'Stripe' },
+    { id: "credit_card", name: "Credit Card" },
+    { id: "bank_transfer", name: "Bank Transfer" },
+    { id: "cash", name: "Cash" },
+    { id: "direct_debit", name: "Direct Debit" },
+    { id: "paypal", name: "PayPal" },
+    { id: "google_pay", name: "Google Pay" },
+    { id: "apple_pay", name: "Apple Pay" },
+    { id: "stripe", name: "Stripe" },
   ];
 
   const payerTypes = [
-    { id: 'student', name: 'Student' },
-    { id: 'scholarship', name: 'Scholarship' },
-    { id: 'government', name: 'Government' },
-    { id: 'institution', name: 'Institution' },
-    { id: 'bank', name: 'Bank' },
-    { id: 'other', name: 'Other' },
+    { id: "student", name: "Student" },
+    { id: "scholarship", name: "Scholarship" },
+    { id: "government", name: "Government" },
+    { id: "institution", name: "Institution" },
+    { id: "bank", name: "Bank" },
+    { id: "other", name: "Other" },
   ];
 
   const installmentOptions = [
-    { value: 6, label: '6 months' },
-    { value: 12, label: '12 months' },
-    { value: 36, label: '36 months' },
+    { value: 6, label: "6 months" },
+    { value: 12, label: "12 months" },
+    { value: 36, label: "36 months" },
   ];
 
   const renderBankAccountFields = (index: number) => {
-    const showBankFields = form.watch(`payers.${index}.paymentMethod`) === 'direct_debit';
+    const showBankFields =
+      form.watch(`payers.${index}.paymentMethod`) === "direct_debit";
 
     if (!showBankFields) return null;
 
@@ -377,10 +422,7 @@ export function ReceiptFormDialog({
             <FormItem>
               <FormLabel>Mandate Reference</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Enter SEPA mandate reference"
-                />
+                <Input {...field} placeholder="Enter SEPA mandate reference" />
               </FormControl>
               <p className="text-sm text-muted-foreground">
                 A unique reference for this direct debit mandate
@@ -407,10 +449,13 @@ export function ReceiptFormDialog({
     );
   };
 
-  const tuitionFee = moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) || 0;
-  const moduleDetails = moduleAssignments?.map(module => ({
-    cost: module.cost || 500
-  })) || [];
+  const tuitionFee =
+    moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) ||
+    0;
+  const moduleDetails =
+    moduleAssignments?.map((module) => ({
+      cost: module.cost || 500,
+    })) || [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -421,13 +466,15 @@ export function ReceiptFormDialog({
             {isBulkAction
               ? `Select payment method and fees for ${selectedEnrollments?.length} enrollments`
               : `Select applicable fees and payment method for ${studentName}'s enrollment
-                ${moduleAssignments?.length > 1 ? ` (${moduleAssignments.length} modules)` : ''}`
-            }
+                ${moduleAssignments?.length > 1 ? ` (${moduleAssignments.length} modules)` : ""}`}
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleFormSubmit)}
+            className="space-y-6"
+          >
             <ScrollArea className="h-[60vh] pr-4">
               <div className="space-y-6">
                 <FormField
@@ -436,7 +483,10 @@ export function ReceiptFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Payment Plan</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select payment plan" />
@@ -444,7 +494,9 @@ export function ReceiptFormDialog({
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="single">Single Payment</SelectItem>
-                          <SelectItem value="installments">Monthly Installments</SelectItem>
+                          <SelectItem value="installments">
+                            Monthly Installments
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -452,7 +504,7 @@ export function ReceiptFormDialog({
                   )}
                 />
 
-                {form.watch('paymentPlan') === 'installments' && (
+                {form.watch("paymentPlan") === "installments" && (
                   <FormField
                     control={form.control}
                     name="numberOfInstallments"
@@ -460,7 +512,9 @@ export function ReceiptFormDialog({
                       <FormItem>
                         <FormLabel>Number of Installments</FormLabel>
                         <Select
-                          onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                          onValueChange={(value) =>
+                            field.onChange(parseInt(value, 10))
+                          }
                           defaultValue={field.value?.toString()}
                         >
                           <FormControl>
@@ -469,8 +523,11 @@ export function ReceiptFormDialog({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {installmentOptions.map(option => (
-                              <SelectItem key={option.value} value={option.value.toString()}>
+                            {installmentOptions.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value.toString()}
+                              >
                                 {option.label}
                               </SelectItem>
                             ))}
@@ -478,9 +535,10 @@ export function ReceiptFormDialog({
                         </Select>
                         {field.value && (
                           <p className="text-sm text-muted-foreground">
-                            Monthly payment: ${calculateMonthlyAmount(
-                              calculateTotal(form.watch('selectedFees')),
-                              field.value
+                            Monthly payment: $
+                            {calculateMonthlyAmount(
+                              calculateTotal(form.watch("selectedFees")),
+                              field.value,
                             ).toFixed(2)}
                           </p>
                         )}
@@ -498,18 +556,23 @@ export function ReceiptFormDialog({
                       <FormLabel>Applicable Fees</FormLabel>
                       <div className="space-y-4">
                         {availableFees.map((fee) => (
-                          <div key={fee.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div
+                            key={fee.id}
+                            className="flex items-center justify-between p-4 border rounded-lg"
+                          >
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
                                 <Checkbox
                                   id={fee.id}
-                                  checked={form.watch('selectedFees').includes(fee.id)}
+                                  checked={form
+                                    .watch("selectedFees")
+                                    .includes(fee.id)}
                                   onCheckedChange={(checked) => {
-                                    const current = form.watch('selectedFees');
+                                    const current = form.watch("selectedFees");
                                     const updated = checked
                                       ? [...current, fee.id]
-                                      : current.filter(id => id !== fee.id);
-                                    form.setValue('selectedFees', updated);
+                                      : current.filter((id) => id !== fee.id);
+                                    form.setValue("selectedFees", updated);
                                     setSelectedFees(updated);
                                   }}
                                 />
@@ -528,7 +591,8 @@ export function ReceiptFormDialog({
                         ))}
                       </div>
                       <div className="mt-4 text-right text-lg font-semibold">
-                        Total: ${calculateTotal(form.watch('selectedFees')).toFixed(2)}
+                        Total: $
+                        {calculateTotal(form.watch("selectedFees")).toFixed(2)}
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -543,16 +607,16 @@ export function ReceiptFormDialog({
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        const payers = form.watch('payers');
-                        form.setValue('payers', [
+                        const payers = form.watch("payers");
+                        form.setValue("payers", [
                           ...payers,
                           {
-                            type: 'scholarship',
-                            paymentMethod: 'bank_transfer',
-                            coverageType: 'percentage',
+                            type: "scholarship",
+                            paymentMethod: "bank_transfer",
+                            coverageType: "percentage",
                             coverage: 0,
-                            paymentPlan: form.watch('paymentPlan'),
-                          }
+                            paymentPlan: form.watch("paymentPlan"),
+                          },
                         ]);
                       }}
                     >
@@ -561,19 +625,24 @@ export function ReceiptFormDialog({
                     </Button>
                   </div>
 
-                  {form.watch('payers').map((payer, index) => (
+                  {form.watch("payers").map((payer, index) => (
                     <Card key={index} className="p-4">
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                          <h4 className="font-medium">Payment Source #{index + 1}</h4>
+                          <h4 className="font-medium">
+                            Payment Source #{index + 1}
+                          </h4>
                           {index > 0 && (
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                const payers = form.watch('payers');
-                                form.setValue('payers', payers.filter((_, i) => i !== index));
+                                const payers = form.watch("payers");
+                                form.setValue(
+                                  "payers",
+                                  payers.filter((_, i) => i !== index),
+                                );
                               }}
                             >
                               <Minus className="h-4 w-4" />
@@ -587,14 +656,17 @@ export function ReceiptFormDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Payer Type</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select payer type" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {payerTypes.map(type => (
+                                  {payerTypes.map((type) => (
                                     <SelectItem key={type.id} value={type.id}>
                                       {type.name}
                                     </SelectItem>
@@ -606,7 +678,7 @@ export function ReceiptFormDialog({
                           )}
                         />
 
-                        {form.watch(`payers.${index}.type`) !== 'student' && (
+                        {form.watch(`payers.${index}.type`) !== "student" && (
                           <FormField
                             control={form.control}
                             name={`payers.${index}.name`}
@@ -614,7 +686,10 @@ export function ReceiptFormDialog({
                               <FormItem>
                                 <FormLabel>Institution Name</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder="Enter institution name" />
+                                  <Input
+                                    {...field}
+                                    placeholder="Enter institution name"
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -629,7 +704,9 @@ export function ReceiptFormDialog({
                             <FormItem>
                               <FormLabel>Payment Method</FormLabel>
                               <Select
-                                onValueChange={(value) => handlePaymentMethodChange(value, index)}
+                                onValueChange={(value) =>
+                                  handlePaymentMethodChange(value, index)
+                                }
                                 defaultValue={field.value}
                               >
                                 <FormControl>
@@ -638,8 +715,11 @@ export function ReceiptFormDialog({
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {paymentMethods.map(method => (
-                                    <SelectItem key={method.id} value={method.id}>
+                                  {paymentMethods.map((method) => (
+                                    <SelectItem
+                                      key={method.id}
+                                      value={method.id}
+                                    >
                                       {method.name}
                                     </SelectItem>
                                   ))}
@@ -657,15 +737,22 @@ export function ReceiptFormDialog({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Coverage Type</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select coverage type" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="percentage">Percentage</SelectItem>
-                                    <SelectItem value="amount">Fixed Amount</SelectItem>
+                                    <SelectItem value="percentage">
+                                      Percentage
+                                    </SelectItem>
+                                    <SelectItem value="amount">
+                                      Fixed Amount
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -678,14 +765,29 @@ export function ReceiptFormDialog({
                             name={`payers.${index}.coverage`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Coverage {form.watch(`payers.${index}.coverageType`) === 'percentage' ? '(%)' : '($)'}</FormLabel>
+                                <FormLabel>
+                                  Coverage{" "}
+                                  {form.watch(
+                                    `payers.${index}.coverageType`,
+                                  ) === "percentage"
+                                    ? "(%)"
+                                    : "($)"}
+                                </FormLabel>
                                 <FormControl>
                                   <Input
                                     type="number"
                                     {...field}
-                                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                                    onChange={(e) =>
+                                      field.onChange(parseFloat(e.target.value))
+                                    }
                                     min={0}
-                                    max={form.watch(`payers.${index}.coverageType`) === 'percentage' ? 100 : undefined}
+                                    max={
+                                      form.watch(
+                                        `payers.${index}.coverageType`,
+                                      ) === "percentage"
+                                        ? 100
+                                        : undefined
+                                    }
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -701,10 +803,14 @@ export function ReceiptFormDialog({
                             <FormItem>
                               <FormLabel>Reference Number (Optional)</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="Bank transfer reference, transaction ID, or check number" />
+                                <Input
+                                  {...field}
+                                  placeholder="Bank transfer reference, transaction ID, or check number"
+                                />
                               </FormControl>
                               <p className="text-sm text-muted-foreground">
-                                Add an external payment reference for tracking purposes
+                                Add an external payment reference for tracking
+                                purposes
                               </p>
                               <FormMessage />
                             </FormItem>
@@ -732,12 +838,14 @@ export function ReceiptFormDialog({
             </ScrollArea>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit">
-                Generate Receipt
-              </Button>
+              <Button type="submit">Generate Receipt</Button>
             </DialogFooter>
           </form>
         </Form>
