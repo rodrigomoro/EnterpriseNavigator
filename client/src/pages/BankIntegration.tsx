@@ -4,11 +4,11 @@ import { BankFileProcessor } from '@/lib/bankFileProcessor';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Upload, Download, RefreshCw, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
+import { FileFormatGuideDialog } from '@/components/FileFormatGuideDialog';
 
 // File format descriptions and info
 const fileFormatInfo = {
@@ -81,11 +81,14 @@ export default function BankIntegration() {
       <div className="flex-1">
         <PageTransition>
           <div className="container mx-auto py-6 space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight">Bank Integration</h2>
-              <p className="text-muted-foreground">
-                Manage bank file uploads for payment processing and reconciliation.
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold tracking-tight">Bank Integration</h2>
+                <p className="text-muted-foreground">
+                  Manage bank file uploads for payment processing and reconciliation.
+                </p>
+              </div>
+              <FileFormatGuideDialog formats={fileFormatInfo} />
             </div>
 
             <Alert>
@@ -132,76 +135,41 @@ export default function BankIntegration() {
                 </div>
               </Card>
 
-              <Tabs defaultValue="upload" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="upload">Reconciliation Upload</TabsTrigger>
-                  <TabsTrigger value="formats">File Format Guide</TabsTrigger>
-                </TabsList>
+              <div className="grid gap-6 md:grid-cols-2">
+                <BankFileInterface onFileUpload={handleFileUpload} />
 
-                <TabsContent value="upload" className="space-y-4">
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <BankFileInterface onFileUpload={handleFileUpload} />
-
-                    {processedFile && (
-                      <Card className="p-6">
-                        <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
-                        <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="font-medium">Metadata</h4>
-                              <div className="mt-2 space-y-2">
-                                <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
-                                <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
-                                <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
-                                {processedFile.metadata.recordCount && (
-                                  <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
-                                )}
-                                {processedFile.metadata.totalAmount && (
-                                  <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <h4 className="font-medium">Content Preview</h4>
-                              <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
-                                {processedFile.content.substring(0, 500)}
-                                {processedFile.content.length > 500 && '...'}
-                              </pre>
-                            </div>
-                          </div>
-                        </ScrollArea>
-                      </Card>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="formats">
-                  <div className="grid gap-4">
-                    {Object.entries(fileFormatInfo).map(([key, info]) => (
-                      <Card key={key} className="p-6">
-                        <h3 className="text-lg font-medium mb-2">{info.title}</h3>
-                        <p className="text-muted-foreground mb-4">{info.description}</p>
-
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <h4 className="font-medium mb-2">Workflow Steps</h4>
-                            <ul className="list-disc list-inside space-y-1 text-sm">
-                              {info.workflow.map((step, index) => (
-                                <li key={index} className="text-muted-foreground">{step}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h4 className="font-medium mb-2">File Format</h4>
-                            <p className="text-sm text-muted-foreground">{info.format}</p>
+                {processedFile && (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
+                    <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium">Metadata</h4>
+                          <div className="mt-2 space-y-2">
+                            <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
+                            <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
+                            <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
+                            {processedFile.metadata.recordCount && (
+                              <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
+                            )}
+                            {processedFile.metadata.totalAmount && (
+                              <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
+                            )}
                           </div>
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
+
+                        <div>
+                          <h4 className="font-medium">Content Preview</h4>
+                          <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
+                            {processedFile.content.substring(0, 500)}
+                            {processedFile.content.length > 500 && '...'}
+                          </pre>
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </Card>
+                )}
+              </div>
             </div>
           </div>
         </PageTransition>
