@@ -88,7 +88,7 @@ export interface Invoice {
     }[];
 }
 
-// Update mock data to include both incoming and outgoing invoices
+// Add more incoming invoice examples
 export const mockInvoices: Invoice[] = [
     {
         id: "1",
@@ -549,7 +549,6 @@ export const mockInvoices: Invoice[] = [
             },
         ],
     },
-    // Example incoming invoice
     {
         id: "5",
         direction: "incoming",
@@ -667,5 +666,191 @@ export const mockInvoices: Invoice[] = [
                 level: 3
             }
         ],
+    },
+    {
+        id: "6",
+        direction: "incoming",
+        operationDate: "2025-01-22",
+        type: "standard",
+        invoiceNumber: "VINV-2025-002",
+        customer: {
+            name: "Educational Platform Inc",
+            taxId: "A87654321",
+            address: "Avenida Central 456",
+            postalCode: "28002",
+            city: "Madrid"
+        },
+        issuer: {
+            name: "Tech Equipment Solutions",
+            taxId: "B34567890",
+            address: "Calle Tecnología 123",
+            postalCode: "28045",
+            city: "Madrid"
+        },
+        notes: "IT Equipment and Installation Services",
+        issueDate: "2025-01-22",
+        dueDate: "2025-02-21",
+        items: [
+            {
+                description: "Interactive Whiteboards - Model X2000",
+                quantity: 5,
+                price: 1200,
+                total: 6000
+            },
+            {
+                description: "Installation Service",
+                quantity: 5,
+                price: 150,
+                total: 750
+            }
+        ],
+        totalAmount: 6750,
+        status: "pending_approval",
+        paymentMethod: "bank_transfer",
+        paymentStatus: "pending",
+        approvalWorkflow: {
+            currentLevel: 1,
+            maxLevels: 2,
+            approvers: [
+                {
+                    level: 1,
+                    role: "IT Manager",
+                    status: "pending"
+                },
+                {
+                    level: 2,
+                    role: "Financial Controller",
+                    status: "pending"
+                }
+            ]
+        },
+        signatureInfo: {
+            signedAt: "2025-01-22T10:00:00Z",
+            signedBy: "Maria T."
+        },
+        submissionInfo: {},
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-002",
+        bankInfo: {
+            iban: "ES9121000418450200051332",
+            bic: "CAIXESBBXXX",
+            bankName: "CaixaBank"
+        },
+        auditTrail: [
+            {
+                timestamp: "2025-01-22T10:00:00Z",
+                action: "created",
+                actor: "System",
+                details: "Invoice received and registered"
+            },
+            {
+                timestamp: "2025-01-22T10:00:00Z",
+                action: "signed",
+                actor: "Maria T.",
+                details: "Digital signature verified"
+            }
+        ]
+    },
+    {
+        id: "7",
+        direction: "incoming",
+        operationDate: "2025-01-23",
+        type: "standard",
+        invoiceNumber: "VINV-2025-003",
+        customer: {
+            name: "Educational Platform Inc",
+            taxId: "A87654321",
+            address: "Avenida Central 456",
+            postalCode: "28002",
+            city: "Madrid"
+        },
+        issuer: {
+            name: "Educational Content Creators",
+            taxId: "B56789012",
+            address: "Rambla Catalunya 45",
+            postalCode: "08007",
+            city: "Barcelona"
+        },
+        notes: "Digital Learning Content Development",
+        issueDate: "2025-01-23",
+        dueDate: "2025-02-22",
+        items: [
+            {
+                description: "Interactive Course Development - Mathematics",
+                quantity: 1,
+                price: 3500,
+                total: 3500
+            },
+            {
+                description: "Video Production Services",
+                quantity: 10,
+                price: 250,
+                total: 2500
+            }
+        ],
+        totalAmount: 6000,
+        status: "approved",
+        paymentMethod: "bank_transfer",
+        paymentStatus: "pending",
+        approvalWorkflow: {
+            currentLevel: 2,
+            maxLevels: 2,
+            approvers: [
+                {
+                    level: 1,
+                    role: "Content Manager",
+                    status: "approved",
+                    userId: "CM123",
+                    timestamp: "2025-01-23T11:30:00Z",
+                    comments: "Content quality verified"
+                },
+                {
+                    level: 2,
+                    role: "Financial Controller",
+                    status: "approved",
+                    userId: "FC456",
+                    timestamp: "2025-01-23T14:00:00Z",
+                    comments: "Within budget allocation"
+                }
+            ]
+        },
+        signatureInfo: {
+            signedAt: "2025-01-23T10:15:00Z",
+            signedBy: "Carlos R."
+        },
+        submissionInfo: {},
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-003",
+        bankInfo: {
+            iban: "ES8200810658610001234567",
+            bic: "BSABESBBXXX",
+            bankName: "Banco Sabadell"
+        },
+        auditTrail: [
+            {
+                timestamp: "2025-01-23T10:00:00Z",
+                action: "created",
+                actor: "System",
+                details: "Invoice received and registered"
+            },
+            {
+                timestamp: "2025-01-23T10:15:00Z",
+                action: "signed",
+                actor: "Carlos R.",
+                details: "Digital signature verified"
+            },
+            {
+                timestamp: "2025-01-23T11:30:00Z",
+                action: "approved",
+                actor: "Content Manager",
+                details: "Content quality verification completed",
+                level: 1
+            },
+            {
+                timestamp: "2025-01-23T14:00:00Z",
+                action: "approved",
+                actor: "Financial Controller",
+                details: "Budget verification completed",
+                level: 2
+            }
+        ]
     }
 ];

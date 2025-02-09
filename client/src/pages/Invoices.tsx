@@ -5,7 +5,7 @@ import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download, Filter } from 'lucide-react';
+import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download, Filter, UploadCloud } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { mockInvoices } from '@/data/mockInvoices';
@@ -28,6 +28,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -74,6 +84,155 @@ const statuses = [
   { value: 'accepted', label: 'Accepted' },
 ];
 
+interface FilterDialogProps {
+  statusFilter: string;
+  setStatusFilter: (value: string) => void;
+  paymentMethodFilter: string;
+  setPaymentMethodFilter: (value: string) => void;
+  dateRange: DateRange | undefined;
+  setDateRange: (range: DateRange | undefined) => void;
+}
+
+const FilterDialog = ({
+  statusFilter,
+  setStatusFilter,
+  paymentMethodFilter,
+  setPaymentMethodFilter,
+  dateRange,
+  setDateRange,
+}: FilterDialogProps) => (
+  <Dialog>
+    <DialogTrigger asChild>
+      <Button variant="outline" size="icon">
+        <Filter className="h-4 w-4" />
+      </Button>
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Filter Invoices</DialogTitle>
+        <DialogDescription>
+          Apply filters to narrow down the invoice list
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label>Status</Label>
+          <Select
+            value={statusFilter}
+            onValueChange={setStatusFilter}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              {statuses.map((status) => (
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Payment Method</Label>
+          <Select
+            value={paymentMethodFilter}
+            onValueChange={setPaymentMethodFilter}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select payment method" />
+            </SelectTrigger>
+            <SelectContent>
+              {paymentMethods.map((method) => (
+                <SelectItem key={method.value} value={method.value}>
+                  {method.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Date Range</Label>
+          <DatePickerWithRange
+            date={dateRange}
+            onDateChange={setDateRange}
+          />
+        </div>
+      </div>
+    </DialogContent>
+  </Dialog>
+);
+
+const ImportInvoiceDialog = () => {
+  const { toast } = useToast();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPreviewUrl(URL.createObjectURL(file));
+      toast({
+        title: "PDF uploaded successfully",
+        description: "Processing invoice data...",
+      });
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>
+          <UploadCloud className="h-4 w-4 mr-2" />
+          Import Invoice
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Import Invoice</DialogTitle>
+          <DialogDescription>
+            Upload a PDF invoice to automatically extract its information
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="border-2 border-dashed rounded-lg p-6 text-center">
+            <Input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="pdf-upload"
+            />
+            <Label
+              htmlFor="pdf-upload"
+              className="flex flex-col items-center gap-2 cursor-pointer"
+            >
+              <UploadCloud className="h-8 w-8 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                Click to upload or drag and drop
+              </span>
+              <span className="text-xs text-muted-foreground">
+                PDF files only
+              </span>
+            </Label>
+          </div>
+          {previewUrl && (
+            <div className="border rounded-lg p-4">
+              <h3 className="text-sm font-medium mb-2">Preview</h3>
+              <iframe
+                src={previewUrl}
+                className="w-full h-[500px] border rounded"
+                title="PDF Preview"
+              />
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('outgoing');
@@ -84,22 +243,17 @@ export default function Invoices() {
   const { toast } = useToast();
 
   const filteredInvoices = mockInvoices.filter(invoice => {
-    // Direction filter
     const matchesType = invoice.direction === activeTab;
     if (!matchesType) return false;
 
-    // Search filter
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (activeTab === 'outgoing' ? invoice.customer.name : invoice.issuer.name).toLowerCase().includes(searchQuery.toLowerCase());
     if (!matchesSearch) return false;
 
-    // Status filter
     if (statusFilter !== 'all' && invoice.status !== statusFilter) return false;
 
-    // Payment method filter
     if (paymentMethodFilter !== 'all' && invoice.paymentMethod !== paymentMethodFilter) return false;
 
-    // Date filter
     if (dateRange?.from || dateRange?.to) {
       const issueDate = new Date(invoice.issueDate);
       if (dateRange.from && issueDate < dateRange.from) return false;
@@ -110,11 +264,9 @@ export default function Invoices() {
   });
 
   const handleGenerateNorma34 = (invoiceId?: string) => {
-    // In a real implementation, this would generate the SEPA XML file
-    // for the selected incoming invoices
     toast({
       title: "Norma 34 file generated",
-      description: invoiceId 
+      description: invoiceId
         ? `SEPA payment file generated for invoice ${invoiceId}`
         : "SEPA payment file generated for all pending payments",
     });
@@ -146,74 +298,17 @@ export default function Invoices() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Filter className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Filter Invoices</SheetTitle>
-                      <SheetDescription>
-                        Apply filters to narrow down the invoice list
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Status</label>
-                        <Select
-                          value={statusFilter}
-                          onValueChange={setStatusFilter}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {statuses.map((status) => (
-                              <SelectItem key={status.value} value={status.value}>
-                                {status.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Payment Method</label>
-                        <Select
-                          value={paymentMethodFilter}
-                          onValueChange={setPaymentMethodFilter}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select payment method" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {paymentMethods.map((method) => (
-                              <SelectItem key={method.value} value={method.value}>
-                                {method.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Date Range</label>
-                        <DatePickerWithRange
-                          date={dateRange}
-                          onDateChange={setDateRange}
-                        />
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                <FilterDialog
+                  statusFilter={statusFilter}
+                  setStatusFilter={setStatusFilter}
+                  paymentMethodFilter={paymentMethodFilter}
+                  setPaymentMethodFilter={setPaymentMethodFilter}
+                  dateRange={dateRange}
+                  setDateRange={setDateRange}
+                />
 
                 {activeTab === 'incoming' ? (
-                  <Button onClick={() => handleGenerateNorma34()}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Generate Norma 34
-                  </Button>
+                  <ImportInvoiceDialog />
                 ) : (
                   <Button onClick={() => navigate('/invoices/new')}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -291,21 +386,22 @@ export default function Invoices() {
                     </a>
                   </Link>
 
-                  {/* Action buttons overlay */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     {invoice.direction === 'outgoing' ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          navigate(`/invoices/${invoice.id}/edit`);
-                        }}
-                        className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      invoice.status === 'draft' && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            navigate(`/invoices/${invoice.id}/edit`);
+                          }}
+                          className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )
                     ) : (
                       <Button
                         variant="ghost"

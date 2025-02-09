@@ -1,5 +1,5 @@
 import { useRoute } from "wouter";
-import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle } from "lucide-react";
+import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle, Download } from "lucide-react";
 import { Link } from "wouter";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import InvoiceApprovalWorkflow from "@/components/InvoiceApprovalWorkflow";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockInvoices";
+
+// Rest of the imports remain unchanged...
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -64,6 +66,14 @@ export default function InvoiceDetail() {
     });
   };
 
+  const handleDownloadPDF = () => {
+    // In a real implementation, this would download the actual PDF file
+    toast({
+      title: "Downloading PDF",
+      description: `Downloading invoice ${invoice.invoiceNumber}...`,
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -93,6 +103,7 @@ export default function InvoiceDetail() {
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 <Card>
                   <CardContent className="p-6">
+                    {/* Invoice header section */}
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <h2 className="text-xl font-semibold">{invoice.invoiceNumber}</h2>
@@ -106,17 +117,29 @@ export default function InvoiceDetail() {
                     </div>
 
                     <div className="space-y-4">
+                      {/* Customer/Issuer Information */}
                       <div>
-                        <h3 className="font-medium mb-2">Customer Information</h3>
+                        <h3 className="font-medium mb-2">
+                          {invoice.direction === 'incoming' ? 'Issuer Information' : 'Customer Information'}
+                        </h3>
                         <div className="space-y-1 text-sm">
-                          <p className="font-medium">{invoice.customer.name}</p>
-                          <p className="text-muted-foreground">Tax ID: {invoice.customer.taxId}</p>
-                          <p className="text-muted-foreground">{invoice.customer.address}</p>
+                          <p className="font-medium">
+                            {invoice.direction === 'incoming' ? invoice.issuer.name : invoice.customer.name}
+                          </p>
+                          <p className="text-muted-foreground">
+                            Tax ID: {invoice.direction === 'incoming' ? invoice.issuer.taxId : invoice.customer.taxId}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {invoice.direction === 'incoming'
+                              ? `${invoice.issuer.address}, ${invoice.issuer.postalCode} ${invoice.issuer.city}`
+                              : `${invoice.customer.address}, ${invoice.customer.postalCode} ${invoice.customer.city}`}
+                          </p>
                         </div>
                       </div>
 
                       <Separator />
 
+                      {/* Items section */}
                       <div>
                         <h3 className="font-medium mb-2">Items</h3>
                         <div className="space-y-2">
@@ -136,6 +159,7 @@ export default function InvoiceDetail() {
 
                       <Separator />
 
+                      {/* Total amount */}
                       <div className="flex justify-between items-center">
                         <p className="font-medium">Total Amount</p>
                         <p className="text-xl font-bold">€{invoice.totalAmount}</p>
@@ -144,12 +168,16 @@ export default function InvoiceDetail() {
                   </CardContent>
                 </Card>
 
-                <InvoiceApprovalWorkflow
-                  invoice={invoice}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                />
+                {/* Approval Workflow - Only show for outgoing invoices */}
+                {invoice.direction === 'outgoing' && (
+                  <InvoiceApprovalWorkflow
+                    invoice={invoice}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                  />
+                )}
 
+                {/* Audit Trail */}
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4">Audit Trail</h3>
@@ -186,6 +214,7 @@ export default function InvoiceDetail() {
               </div>
 
               <div className="col-span-12 lg:col-span-4 space-y-6">
+                {/* Digital Signature Card */}
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -205,6 +234,7 @@ export default function InvoiceDetail() {
                               </p>
                             </div>
                           </div>
+                          {/* Rest of the signature details remain unchanged */}
                           <div className="text-sm">
                             <p className="text-muted-foreground">Signed by:</p>
                             <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
@@ -265,8 +295,26 @@ export default function InvoiceDetail() {
                         </div>
                       )}
 
-                      <Separator />
+                      <div className="pt-4">
+                        {invoice.qrCode && (
+                          <img
+                            src={invoice.qrCode}
+                            alt="Invoice QR Code"
+                            className="w-32 h-32 mx-auto"
+                          />
+                        )}
+                      </div>
 
+                      {/* PDF Download Button */}
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={handleDownloadPDF}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download PDF
+                      </Button>
+                      <Separator />
                       <div>
                         <h4 className="font-medium mb-2">VERIFACTU Status</h4>
                         {invoice.submissionInfo.verificationId ? (
@@ -296,22 +344,6 @@ export default function InvoiceDetail() {
                           <p className="text-sm text-muted-foreground">Not submitted to VERIFACTU</p>
                         )}
                       </div>
-
-                      <div className="pt-4">
-                        {invoice.qrCode && (
-                          <img
-                            src={invoice.qrCode}
-                            alt="Invoice QR Code"
-                            className="w-32 h-32 mx-auto"
-                          />
-                        )}
-                      </div>
-
-                      {invoice.pdfUrl && (
-                        <Button className="w-full" variant="outline">
-                          Download PDF
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
