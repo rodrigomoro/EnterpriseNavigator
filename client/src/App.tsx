@@ -23,6 +23,7 @@ import Organization from "@/pages/Organization";
 import SkillsMatrix from "@/pages/SkillsMatrix";
 import Calendar from "@/pages/calendar";
 import Settings from "@/pages/Settings";
+import BankIntegration from "@/pages/BankIntegration";
 
 function Router() {
   return (
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/analytics" component={Analytics} />
       <Route path="/skills-matrix" component={SkillsMatrix} />
       <Route path="/settings" component={Settings} />
+      <Route path="/bank-integration" component={BankIntegration} />
       <Route component={NotFound} />
     </Switch>
   );
