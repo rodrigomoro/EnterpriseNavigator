@@ -1,6 +1,5 @@
-import { useRoute } from "wouter";
-import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle, Download, FileText } from "lucide-react";
-import { Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
+import { ArrowLeft, FileCheck, Shield, Clock, CheckCircle2, XCircle, User, Settings, Send, Lock, Key, AlertTriangle, Download, FileText, Pencil, Trash2 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import UserAvatar from "@/components/UserAvatar";
@@ -21,6 +20,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+// Status colors and action icons remain unchanged...
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -54,9 +54,11 @@ const TimelineIcon = ({ action }: { action: ActionType }) => {
 
 export default function InvoiceDetail() {
   const [, params] = useRoute('/invoices/:id');
+  const [, navigate] = useLocation();
   const invoice = mockInvoices.find(i => i.id === params?.id);
   const { toast } = useToast();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   if (!invoice) {
     return <div>Invoice not found</div>;
@@ -114,6 +116,18 @@ export default function InvoiceDetail() {
     });
   };
 
+  const handleDelete = () => {
+    toast({
+      title: "Invoice Deleted",
+      description: `Draft invoice ${invoice.invoiceNumber} has been deleted.`,
+    });
+    setShowDeleteDialog(false);
+    navigate('/invoices');
+  };
+
+  const shouldShowVerificationInfo = 
+    invoice.direction === 'outgoing' && 
+    ['submitted_to_verifactu', 'verified_by_verifactu', 'sent_to_client'].includes(invoice.status);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -139,6 +153,24 @@ export default function InvoiceDetail() {
               <div className="flex items-center gap-4">
                 {invoice.direction === 'outgoing' && (
                   <>
+                    {invoice.status === 'draft' && (
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={() => navigate(`/invoices/${invoice.id}/edit`)}
+                        >
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Invoice
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => setShowDeleteDialog(true)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Invoice
+                        </Button>
+                      </>
+                    )}
                     {invoice.status === 'ready_to_send_to_verifactu' && (
                       <>
                         <Button
@@ -300,129 +332,153 @@ export default function InvoiceDetail() {
               </div>
 
               <div className="col-span-12 lg:col-span-4 space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Shield className="h-5 w-5" />
-                      Digital Signature
-                    </h3>
+                {(shouldShowVerificationInfo || invoice.direction === 'incoming') && (
+                  <Card>
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Shield className="h-5 w-5" />
+                        Digital Signature
+                      </h3>
 
-                    <div className="space-y-4">
-                      {invoice.signatureInfo.signedAt ? (
-                        <>
-                          <div className="flex items-center gap-2 text-green-600">
-                            <FileCheck className="h-5 w-5" />
-                            <div>
-                              <p className="font-medium">Digitally Signed</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(invoice.signatureInfo.signedAt).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-sm">
-                            <p className="text-muted-foreground">Signed by:</p>
-                            <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
-                          </div>
-
-                          <Separator />
-                          <div className="space-y-2">
-                            <h4 className="font-medium flex items-center gap-2">
-                              <Lock className="h-4 w-4" />
-                              Encryption Details
-                            </h4>
-                            <div className="text-sm space-y-1">
-                              <div className="flex items-center gap-2">
-                                <Key className="h-3 w-3 text-primary" />
-                                <span>RSA-4096 Digital Signature</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Shield className="h-3 w-3 text-primary" />
-                                <span>SHA-256 Hash Algorithm</span>
+                      <div className="space-y-4">
+                        {invoice.signatureInfo.signedAt ? (
+                          <>
+                            <div className="flex items-center gap-2 text-green-600">
+                              <FileCheck className="h-5 w-5" />
+                              <div>
+                                <p className="font-medium">Digitally Signed</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(invoice.signatureInfo.signedAt).toLocaleString()}
+                                </p>
                               </div>
                             </div>
-                          </div>
+                            <div className="text-sm">
+                              <p className="text-muted-foreground">Signed by:</p>
+                              <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
+                            </div>
 
-                          <Separator />
-                          <div className="space-y-2">
-                            <h4 className="font-medium flex items-center gap-2">
-                              <FileCheck className="h-4 w-4" />
-                              Certificate Information
-                            </h4>
-                            <div className="text-sm space-y-1">
-                              <p>Issuer: Spanish Tax Authority (FNMT)</p>
-                              <p>Valid Until: 31/12/2025</p>
-                              <div className="flex items-center gap-1 text-green-600">
-                                <CheckCircle2 className="h-3 w-3" />
-                                <span>Certificate Valid</span>
+                            <Separator />
+                            <div className="space-y-2">
+                              <h4 className="font-medium flex items-center gap-2">
+                                <Lock className="h-4 w-4" />
+                                Encryption Details
+                              </h4>
+                              <div className="text-sm space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Key className="h-3 w-3 text-primary" />
+                                  <span>RSA-4096 Digital Signature</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Shield className="h-3 w-3 text-primary" />
+                                  <span>SHA-256 Hash Algorithm</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <Separator />
-                          <div className="space-y-2">
-                            <h4 className="font-medium flex items-center gap-2">
-                              <AlertTriangle className="h-4 w-4" />
-                              Security Alerts
-                            </h4>
-                            <div className="text-sm space-y-1">
-                              <div className="flex items-center gap-1 text-green-600">
-                                <CheckCircle2 className="h-3 w-3" />
-                                <span>No security issues detected</span>
+                            <Separator />
+                            <div className="space-y-2">
+                              <h4 className="font-medium flex items-center gap-2">
+                                <FileCheck className="h-4 w-4" />
+                                Certificate Information
+                              </h4>
+                              <div className="text-sm space-y-1">
+                                <p>Issuer: Spanish Tax Authority (FNMT)</p>
+                                <p>Valid Until: 31/12/2025</p>
+                                <div className="flex items-center gap-1 text-green-600">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  <span>Certificate Valid</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2 text-yellow-600">
-                          <Clock className="h-5 w-5" />
-                          <p>Pending Signature</p>
-                        </div>
-                      )}
 
-                      <div className="pt-4">
-                        {invoice.qrCode && (
-                          <img
-                            src={invoice.qrCode}
-                            alt="Invoice QR Code"
-                            className="w-32 h-32 mx-auto"
-                          />
-                        )}
-                      </div>
-
-                      <div>
-                        <h4 className="font-medium mb-2">VERIFACTU Status</h4>
-                        {invoice.submissionInfo.verificationId ? (
-                          <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">
-                              Verification ID: {invoice.submissionInfo.verificationId}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              {invoice.submissionInfo.response?.status === 'accepted' ? (
-                                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                              ) : invoice.submissionInfo.response?.status === 'rejected' ? (
-                                <XCircle className="h-5 w-5 text-red-600" />
-                              ) : (
-                                <Clock className="h-5 w-5 text-yellow-600" />
-                              )}
-                              <p className="capitalize">
-                                {invoice.submissionInfo.response?.status || 'Pending'}
-                              </p>
+                            <Separator />
+                            <div className="space-y-2">
+                              <h4 className="font-medium flex items-center gap-2">
+                                <AlertTriangle className="h-4 w-4" />
+                                Security Alerts
+                              </h4>
+                              <div className="text-sm space-y-1">
+                                <div className="flex items-center gap-1 text-green-600">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  <span>No security issues detected</span>
+                                </div>
+                              </div>
                             </div>
-                            {invoice.submissionInfo.response?.message && (
-                              <p className="text-sm text-muted-foreground">
-                                {invoice.submissionInfo.response.message}
-                              </p>
-                            )}
-                          </div>
+                          </>
                         ) : (
-                          <p className="text-sm text-muted-foreground">Not submitted to VERIFACTU</p>
+                          <div className="flex items-center gap-2 text-yellow-600">
+                            <Clock className="h-5 w-5" />
+                            <p>Pending Signature</p>
+                          </div>
                         )}
+
+                        <div className="pt-4">
+                          {invoice.qrCode && (
+                            <img
+                              src={invoice.qrCode}
+                              alt="Invoice QR Code"
+                              className="w-32 h-32 mx-auto"
+                            />
+                          )}
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium mb-2">VERIFACTU Status</h4>
+                          {invoice.submissionInfo.verificationId ? (
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground">
+                                Verification ID: {invoice.submissionInfo.verificationId}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                {invoice.submissionInfo.response?.status === 'accepted' ? (
+                                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                ) : invoice.submissionInfo.response?.status === 'rejected' ? (
+                                  <XCircle className="h-5 w-5 text-red-600" />
+                                ) : (
+                                  <Clock className="h-5 w-5 text-yellow-600" />
+                                )}
+                                <p className="capitalize">
+                                  {invoice.submissionInfo.response?.status || 'Pending'}
+                                </p>
+                              </div>
+                              {invoice.submissionInfo.response?.message && (
+                                <p className="text-sm text-muted-foreground">
+                                  {invoice.submissionInfo.response.message}
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Not submitted to VERIFACTU</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
+
+            <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Draft Invoice</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to delete this draft invoice? This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDelete}
+                  >
+                    Delete Invoice
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
               <DialogContent>

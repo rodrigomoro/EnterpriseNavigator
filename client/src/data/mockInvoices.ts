@@ -91,9 +91,98 @@ export interface Invoice {
     }[];
 }
 
-// Modify mock data - Remove draft status from incoming invoices and update outgoing invoice statuses
-export const mockInvoices: Invoice[] = [
-    // Outgoing invoice - Draft
+// Update only the sent_to_client example
+const sentToClientInvoice = {
+  id: "OUT-5",
+  direction: "outgoing",
+  operationDate: "2025-02-05",
+  type: "standard",
+  invoiceNumber: "INV-2025-005",
+  customer: {
+    name: "Educational Systems Ltd",
+    taxId: "B11111111",
+    address: "Avenida de la Innovación 789",
+    postalCode: "28042",
+    city: "Madrid"
+  },
+  issuer: {
+    name: "Educational Platform Inc",
+    taxId: "A87654321",
+    address: "Avenida Central 456",
+    postalCode: "28002",
+    city: "Madrid"
+  },
+  notes: "Annual software licenses and support services",
+  issueDate: "2025-02-05",
+  dueDate: "2025-03-07",
+  items: [
+    {
+      description: "Enterprise Learning Platform License",
+      quantity: 1,
+      price: 4500,
+      total: 4500,
+    },
+    {
+      description: "Premium Support Package",
+      quantity: 1,
+      price: 1500,
+      total: 1500,
+    }
+  ],
+  totalAmount: 6000,
+  status: "sent_to_client",
+  paymentMethod: "bank_transfer",
+  paymentStatus: "pending",
+  signatureInfo: {
+    signedAt: "2025-02-05T09:00:00Z",
+    signedBy: "Dana R.",
+  },
+  submissionInfo: {
+    submittedAt: "2025-02-05T09:05:00Z",
+    verificationId: "VF-2025-005-XYZ",
+    response: {
+      status: "accepted",
+      message: "Invoice successfully verified",
+    },
+  },
+  qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-005",
+  pdfUrl: "/invoices/INV-2025-005.pdf",
+  bankInfo: {
+    iban: "ES9121000418450200051332",
+    bic: "CAIXESBBXXX",
+    bankName: "CaixaBank"
+  },
+  auditTrail: [
+    {
+      timestamp: "2025-02-05T09:00:00Z",
+      action: "signed",
+      actor: "Dana R.",
+      details: "Digital signature applied"
+    },
+    {
+      timestamp: "2025-02-05T09:05:00Z",
+      action: "submitted",
+      actor: "System",
+      details: "Submitted to VERIFACTU",
+    },
+    {
+      timestamp: "2025-02-05T09:10:00Z",
+      action: "verified",
+      actor: "VERIFACTU",
+      details: "Invoice verified successfully",
+    },
+    {
+      timestamp: "2025-02-05T09:15:00Z",
+      action: "status_changed",
+      actor: "System",
+      details: "Invoice sent to client",
+    }
+  ],
+};
+
+// Replace the existing OUT-5 invoice in mockInvoices array with this updated version
+export const mockInvoices = [
+  // Outgoing invoice - Draft
     {
         id: "OUT-1",
         direction: "outgoing",
@@ -153,7 +242,6 @@ export const mockInvoices: Invoice[] = [
             }
         ],
     },
-
     // Outgoing invoice - Ready to Send to VERIFACTU
     {
         id: "OUT-2",
@@ -224,7 +312,6 @@ export const mockInvoices: Invoice[] = [
             }
         ],
     },
-
     // Outgoing invoice - Submitted to VERIFACTU
     {
         id: "OUT-3",
@@ -301,7 +388,6 @@ export const mockInvoices: Invoice[] = [
             }
         ],
     },
-
     // Outgoing invoice - Verified by VERIFACTU
     {
         id: "OUT-4",
@@ -384,62 +470,7 @@ export const mockInvoices: Invoice[] = [
             }
         ],
     },
-
-    // Outgoing invoice - Sent to client
-    {
-        id: "OUT-5",
-        direction: "outgoing",
-        operationDate: "2025-02-05",
-        type: "standard",
-        invoiceNumber: "INV-2025-005",
-        customer: {
-            name: "Another Customer",
-            taxId: "B11111111",
-            address: "Some Address",
-            postalCode: "11111",
-            city: "Some City"
-        },
-        issuer: {
-            name: "Educational Platform Inc",
-            taxId: "A87654321",
-            address: "Avenida Central 456",
-            postalCode: "28002",
-            city: "Madrid"
-        },
-        notes: "Some services",
-        issueDate: "2025-02-05",
-        dueDate: "2025-03-07",
-        items: [
-            {
-                description: "Service 1",
-                quantity: 1,
-                price: 1000,
-                total: 1000,
-            }
-        ],
-        totalAmount: 1000,
-        status: "sent_to_client",
-        paymentMethod: "bank_transfer",
-        paymentStatus: "pending",
-        signatureInfo: {},
-        submissionInfo: {},
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=INV-2025-005",
-        pdfUrl: "/invoices/INV-2025-005.pdf",
-        bankInfo: {
-            iban: "ES9121000418450200051332",
-            bic: "CAIXESBBXXX",
-            bankName: "CaixaBank"
-        },
-        auditTrail: [
-            {
-                timestamp: "2025-02-05T09:00:00Z",
-                action: "created",
-                actor: "Dana R.",
-                details: "Invoice created"
-            }
-        ],
-    },
-
+    sentToClientInvoice,
     // Incoming invoice - Pending Approval
     {
         id: "IN-1",
@@ -515,7 +546,6 @@ export const mockInvoices: Invoice[] = [
             }
         ],
     },
-
     // Incoming invoice - Approved
     {
         id: "IN-3",
@@ -636,7 +666,6 @@ export const mockInvoices: Invoice[] = [
             }
         ]
     },
-
     // Incoming invoice - Rejected
     {
         id: "IN-4",

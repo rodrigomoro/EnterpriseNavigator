@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
@@ -35,6 +35,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -163,17 +165,78 @@ const FilterDialog = ({
   </Popover>
 );
 
+interface RecognizedFields {
+  invoiceNumber: string;
+  date: string;
+  provider: {
+    name: string;
+    taxId: string;
+    address: string;
+  };
+  description: string;
+  amount: number;
+  taxes: number;
+  totalWithTaxes: number;
+}
+
 const ImportInvoiceDialog = () => {
   const { toast } = useToast();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [recognizedFields, setRecognizedFields] = useState<RecognizedFields | null>(null);
+
+  const processFile = useCallback((file: File) => {
+    if (file) {
+      setPreviewUrl(URL.createObjectURL(file));
+      // Mock OCR data - in a real implementation, this would come from an OCR service
+      setRecognizedFields({
+        invoiceNumber: "INV-2025-001",
+        date: "2025-02-09",
+        provider: {
+          name: "Tech Solutions Inc",
+          taxId: "B12345678",
+          address: "Calle Principal 123, Madrid"
+        },
+        description: "IT Equipment and Services",
+        amount: 1000.00,
+        taxes: 210.00,
+        totalWithTaxes: 1210.00
+      });
+      toast({
+        title: "PDF uploaded successfully",
+        description: "Processing invoice data...",
+      });
+    }
+  }, [toast]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setPreviewUrl(URL.createObjectURL(file));
+      processFile(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      processFile(file);
+    } else {
       toast({
-        title: "PDF uploaded successfully",
-        description: "Processing invoice data...",
+        title: "Invalid file",
+        description: "Please upload a PDF file",
+        variant: "destructive"
       });
     }
   };
@@ -186,46 +249,110 @@ const ImportInvoiceDialog = () => {
           Import Invoice
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle>Import Invoice</DialogTitle>
           <DialogDescription>
             Upload a PDF invoice to automatically extract its information
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="border-2 border-dashed rounded-lg p-6 text-center">
-            <Input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileUpload}
-              className="hidden"
-              id="pdf-upload"
-            />
-            <Label
-              htmlFor="pdf-upload"
-              className="flex flex-col items-center gap-2 cursor-pointer"
-            >
-              <UploadCloud className="h-8 w-8 text-muted-foreground" />
-              <span className="text-sm font-medium">
-                Click to upload or drag and drop
-              </span>
-              <span className="text-xs text-muted-foreground">
-                PDF files only
-              </span>
-            </Label>
+        <ScrollArea className="max-h-[80vh]">
+          <div className="space-y-4 pr-4">
+            {!previewUrl && (
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  isDragging ? 'border-primary bg-primary/10' : 'border-border'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <Input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="pdf-upload"
+                />
+                <Label
+                  htmlFor="pdf-upload"
+                  className="flex flex-col items-center gap-2 cursor-pointer"
+                >
+                  <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    Click to upload or drag and drop
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    PDF files only
+                  </span>
+                </Label>
+              </div>
+            )}
+
+            {previewUrl && (
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Preview</h3>
+                  <div className="border rounded-lg overflow-hidden">
+                    <iframe
+                      src={previewUrl}
+                      className="w-full h-[600px]"
+                      title="PDF Preview"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Recognized Information</h3>
+                  <Card className="p-4">
+                    {recognizedFields && (
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Invoice Number</Label>
+                          <p className="text-sm">{recognizedFields.invoiceNumber}</p>
+                        </div>
+                        <Separator />
+                        <div>
+                          <Label>Date</Label>
+                          <p className="text-sm">{recognizedFields.date}</p>
+                        </div>
+                        <Separator />
+                        <div>
+                          <Label>Provider Details</Label>
+                          <div className="space-y-1 text-sm">
+                            <p>{recognizedFields.provider.name}</p>
+                            <p className="text-muted-foreground">Tax ID: {recognizedFields.provider.taxId}</p>
+                            <p className="text-muted-foreground">{recognizedFields.provider.address}</p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div>
+                          <Label>Description</Label>
+                          <p className="text-sm">{recognizedFields.description}</p>
+                        </div>
+                        <Separator />
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <Label>Amount</Label>
+                            <p className="text-sm">€{recognizedFields.amount.toFixed(2)}</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <Label>Taxes</Label>
+                            <p className="text-sm">€{recognizedFields.taxes.toFixed(2)}</p>
+                          </div>
+                          <div className="flex justify-between font-medium">
+                            <Label>Total with Taxes</Label>
+                            <p className="text-sm">€{recognizedFields.totalWithTaxes.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                </div>
+              </div>
+            )}
           </div>
-          {previewUrl && (
-            <div className="border rounded-lg p-4">
-              <h3 className="text-sm font-medium mb-2">Preview</h3>
-              <iframe
-                src={previewUrl}
-                className="w-full h-[500px] border rounded"
-                title="PDF Preview"
-              />
-            </div>
-          )}
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
