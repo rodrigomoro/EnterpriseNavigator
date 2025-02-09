@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Download, File } from "lucide-react";
+import { Upload, File } from "lucide-react";
 
 interface FormatOption {
   value: string;
@@ -20,7 +20,6 @@ interface FormatOption {
 
 interface BankFileInterfaceProps {
   onFileUpload: (file: File, format: string) => Promise<void>;
-  onDownload?: (format: string) => Promise<void>;
   supportedFormats?: FormatOption[];
 }
 
@@ -33,7 +32,6 @@ const DEFAULT_FORMATS = [
 
 export function BankFileInterface({ 
   onFileUpload, 
-  onDownload,
   supportedFormats = DEFAULT_FORMATS 
 }: BankFileInterfaceProps) {
   const [selectedFormat, setSelectedFormat] = useState<string>('');
@@ -71,38 +69,13 @@ export function BankFileInterface({
     }
   };
 
-  const handleDownload = async () => {
-    if (!selectedFormat) {
-      toast({
-        title: "Format Required",
-        description: "Please select a file format before downloading",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await onDownload?.(selectedFormat);
-      toast({
-        title: "File Downloaded",
-        description: "Bank file has been downloaded successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Download Failed",
-        description: error instanceof Error ? error.message : "Failed to download bank file",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Card className="p-6">
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-medium mb-2">Bank File Management</h3>
           <p className="text-sm text-muted-foreground">
-            Upload or download bank files in various formats for payment processing and reconciliation.
+            Upload bank files for payment processing and reconciliation.
           </p>
         </div>
 
@@ -123,36 +96,19 @@ export function BankFileInterface({
             </Select>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="file-upload">Upload Bank File</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="file-upload"
-                  type="file"
-                  onChange={handleFileUpload}
-                  accept=".txt,.xml,.asc"
-                  disabled={isUploading || !selectedFormat}
-                  className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-                />
-                <Upload className="h-4 w-4 text-muted-foreground" />
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="file-upload">Upload Bank File</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="file-upload"
+                type="file"
+                onChange={handleFileUpload}
+                accept=".txt,.xml,.asc"
+                disabled={isUploading || !selectedFormat}
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+              />
+              <Upload className="h-4 w-4 text-muted-foreground" />
             </div>
-
-            {onDownload && (
-              <div className="space-y-2">
-                <Label>Download Generated File</Label>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleDownload}
-                  disabled={!selectedFormat}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download {selectedFormat.toUpperCase()} File
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 

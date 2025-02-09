@@ -8,51 +8,54 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Upload, Download, RefreshCw, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// File format descriptions
+// File format descriptions and info
 const fileFormatInfo = {
   norma19: {
-    title: 'Norma 19 - Direct Debit Orders',
-    description: 'Used for submitting direct debit orders to the bank. This format allows educational institutions to collect payments directly from student bank accounts.',
+    title: 'Norma 19 / SEPA XML - Direct Debit Orders',
+    description: 'Used for submitting direct debit orders to the bank. The SEPA XML format is the modern equivalent of Norma 19, both are supported by most banks.',
     workflow: [
-      'Generate SEPA direct debit file from student payments',
-      'Upload file to bank for processing',
+      'Generate SEPA XML from student enrollments (via Enrollment Manager)',
+      'Upload generated file to your bank\'s website',
       'Bank processes direct debits',
-      'Download Norma 43 for reconciliation'
+      'Download Norma 43 from bank for reconciliation',
+      'Upload Norma 43 here to update payment statuses'
     ],
-    format: 'Fixed-length text file with header (type 51), individual orders, and footer records'
+    format: 'Both formats contain similar information: debtor details, account numbers, amounts, and due dates. SEPA XML is more detailed and follows the pain.008.001.02 schema.'
   },
   norma34: {
     title: 'Norma 34 - Transfer Orders',
-    description: 'Used for issuing transfer payments. This format is typically used for refunds or payments to vendors.',
+    description: 'Used for issuing transfer payments to vendors, teachers, or service providers. Generate these files from the Financial Dashboard or Invoices section.',
     workflow: [
-      'Generate transfer orders file',
-      'Upload to bank for processing',
-      'Bank executes transfers',
-      'Download Norma 43 for reconciliation'
+      'Generate transfer orders file from vendor invoices',
+      'Upload the file to your bank\'s website',
+      'Bank executes the transfers',
+      'Download Norma 43 for reconciliation',
+      'Upload Norma 43 here to update payment statuses'
     ],
-    format: 'Text file with header (type 34), transfer records, and control totals'
+    format: 'Structured text file containing transfer recipient details, amounts, and payment concepts'
   },
   norma43: {
     title: 'Norma 43 - Account Statements',
-    description: 'Bank account statements showing all transactions. Used for reconciliation and payment tracking.',
+    description: 'Comprehensive bank account statements showing all transactions. Used for reconciliation and payment status tracking.',
     workflow: [
-      'Download daily/weekly statements',
-      'Process transactions',
-      'Match against expected payments',
-      'Update payment statuses'
+      'Download Norma 43 file from your bank\'s website',
+      'Upload the file here for processing',
+      'System automatically updates payment statuses',
+      'View reconciliation results in Financial Dashboard'
     ],
-    format: 'Account movements with detailed transaction information including dates, amounts, and concepts'
+    format: 'Contains detailed transaction records including dates, amounts, concepts, and reference numbers for both incoming (direct debits) and outgoing (transfers) transactions'
   },
   sepa: {
     title: 'SEPA XML - Direct Debit',
-    description: 'XML-based format for SEPA (Single Euro Payments Area) direct debit orders. Modern alternative to Norma 19.',
+    description: 'Modern XML-based format for SEPA (Single Euro Payments Area) direct debit orders. Functionally equivalent to Norma 19 but with more structured data.',
     workflow: [
-      'Generate XML file with payment details',
+      'Generate XML file from student enrollments',
       'Submit to bank via online banking',
-      'Track status through bank interface',
-      'Reconcile using statement downloads'
+      'Bank processes direct debits',
+      'Download Norma 43 for reconciliation',
+      'Upload Norma 43 here to update statuses'
     ],
-    format: 'Standardized XML format following pain.008.001.02 schema'
+    format: 'XML format following the pain.008.001.02 schema specification, includes detailed debtor information and payment schedules'
   }
 };
 
