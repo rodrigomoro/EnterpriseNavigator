@@ -244,30 +244,27 @@ interface Invoice {
   bankInfo?: { bankName: string };
   submissionInfo?: { verificationId: string };
   pdfUrl?: string;
+  issueDate: string;
 }
 
 
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('outgoing');
+  const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>(() => {
+    const savedTab = sessionStorage.getItem('invoicesActiveTab');
+    return (savedTab === 'incoming' || savedTab === 'outgoing') ? savedTab : 'outgoing';
+  });
   const [statusFilter, setStatusFilter] = useState('all');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [location, navigate] = useLocation();
   const { toast } = useToast();
 
-  // Restore active tab from session storage
-  useEffect(() => {
-    const savedTab = sessionStorage.getItem('invoicesActiveTab');
-    if (savedTab === 'incoming' || savedTab === 'outgoing') {
-      setActiveTab(savedTab);
-    }
-  }, []);
-
-  // Save active tab to session storage
-  useEffect(() => {
-    sessionStorage.setItem('invoicesActiveTab', activeTab);
-  }, [activeTab]);
+  const handleTabChange = (tab: string) => {
+    const newTab = tab as 'outgoing' | 'incoming';
+    setActiveTab(newTab);
+    sessionStorage.setItem('invoicesActiveTab', newTab);
+  };
 
   const filteredInvoices = mockInvoices.filter(invoice => {
     const matchesType = invoice.direction === activeTab;
@@ -291,13 +288,11 @@ export default function Invoices() {
   });
 
   const handleGenerateNorma34 = (invoiceId?: string) => {
-    // Create a dummy SEPA XML file content
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
   <!-- Generated SEPA payment file for invoice ${invoiceId || 'batch'} -->
 </Document>`;
 
-    // Create blob and download
     const blob = new Blob([xmlContent], { type: 'application/xml' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -326,19 +321,18 @@ export default function Invoices() {
       return;
     }
 
-    // In a real implementation, this would be a proper PDF file
     const dummyPdfContent = `%PDF-1.7
 1 0 obj
-<</Type/Catalog/Pages 2 0 R>>
+<<Type/Catalog/Pages 2 0 R>>
 endobj
 2 0 obj
-<</Type/Pages/Count 1/Kids[3 0 R]>>
+<<Type/Pages/Count 1/Kids[3 0 R]>>
 endobj
 3 0 obj
-<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<<>>/Contents 4 0 R>>
+<<Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<<>>/Contents 4 0 R>>
 endobj
 4 0 obj
-<</Length 51>>
+<<Length 51>>
 stream
 BT
 /F1 12 Tf
@@ -355,7 +349,7 @@ xref
 0000000102 00000 n
 0000000189 00000 n
 trailer
-<</Size 5/Root 1 0 R>>
+<<Size 5/Root 1 0 R>>
 startxref
 287
 %%EOF`;
@@ -425,7 +419,7 @@ startxref
           </header>
 
           <main className="p-6">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'outgoing' | 'incoming')} className="mb-6">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
               <TabsList className="grid w-[400px] grid-cols-2">
                 <TabsTrigger value="outgoing">Outgoing Invoices</TabsTrigger>
                 <TabsTrigger value="incoming">Incoming Invoices</TabsTrigger>
@@ -453,7 +447,7 @@ startxref
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold">{invoice.invoiceNumber}</h3>
                               <Badge className={statusColors[invoice.status as InvoiceStatus]}>
-                                {invoice.status.split('_').map(word => 
+                                {invoice.status.split('_').map(word =>
                                   word.charAt(0).toUpperCase() + word.slice(1)
                                 ).join(' ')}
                                 <StatusIcon status={invoice.status as InvoiceStatus} />

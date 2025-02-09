@@ -35,15 +35,21 @@ export default function InvoiceApprovalWorkflow({
   onReject
 }: ApprovalWorkflowProps) {
   const [comments, setComments] = useState('');
+
+  // Early return if no approval workflow exists
+  if (!invoice.approvalWorkflow) {
+    return null;
+  }
+
   const currentApprover = invoice.approvalWorkflow.approvers.find(
-    a => a.level === invoice.approvalWorkflow.currentLevel
+    a => a.level === invoice.approvalWorkflow?.currentLevel
   );
 
   return (
     <Card>
       <CardContent className="p-6">
         <h3 className="text-lg font-semibold mb-4">Approval Workflow</h3>
-        
+
         <div className="space-y-6">
           {/* Progress indicator */}
           <div className="relative pt-1">
@@ -74,7 +80,7 @@ export default function InvoiceApprovalWorkflow({
             {invoice.approvalWorkflow.approvers.map((approver, index) => (
               <div key={approver.level} className="relative">
                 {/* Connector line */}
-                {index !== invoice.approvalWorkflow.approvers.length - 1 && (
+                {index !== invoice.approvalWorkflow!.approvers.length - 1 && (
                   <div className="absolute left-4 top-8 h-full w-0.5 bg-muted" />
                 )}
 
@@ -108,7 +114,7 @@ export default function InvoiceApprovalWorkflow({
                     )}
 
                     {/* Action buttons for current level */}
-                    {approver.level === invoice.approvalWorkflow.currentLevel && 
+                    {approver.level === invoice.approvalWorkflow?.currentLevel && 
                      approver.status === 'pending' && (
                       <div className="mt-4 space-y-4">
                         <Textarea
