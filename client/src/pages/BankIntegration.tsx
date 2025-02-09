@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BankFileInterface } from '@/components/BankFileInterface';
+import { PaymentReconciliationManager } from '@/components/PaymentReconciliationManager';
 import { BankFileProcessor } from '@/lib/bankFileProcessor';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -49,8 +50,50 @@ const fileFormatInfo = {
   }
 };
 
+// Mock data for testing the reconciliation interface
+const mockPayments = [
+  {
+    id: '1',
+    reference: 'DD-2024-001',
+    amount: 500.00,
+    currency: 'EUR',
+    status: 'processed',
+    date: '2024-02-09',
+    type: 'direct-debit'
+  },
+  {
+    id: '2',
+    reference: 'DD-2024-002',
+    amount: 750.00,
+    currency: 'EUR',
+    status: 'failed',
+    date: '2024-02-09',
+    errorDetails: 'Insufficient funds',
+    type: 'direct-debit'
+  },
+  {
+    id: '3',
+    reference: 'TR-2024-001',
+    amount: 1200.00,
+    currency: 'EUR',
+    status: 'reconciled',
+    date: '2024-02-08',
+    type: 'transfer'
+  },
+  {
+    id: '4',
+    reference: 'DD-2024-003',
+    amount: 350.00,
+    currency: 'EUR',
+    status: 'pending',
+    date: '2024-02-09',
+    type: 'direct-debit'
+  }
+] as const;
+
 export default function BankIntegration() {
   const [processedFile, setProcessedFile] = useState<any>(null);
+  const [payments, setPayments] = useState(mockPayments);
   const { toast } = useToast();
 
   const handleFileUpload = async (file: File) => {
@@ -60,6 +103,8 @@ export default function BankIntegration() {
       });
       setProcessedFile(processed);
 
+      // In a real implementation, this would update the payments based on the
+      // reconciliation results from processing the Norma 43 file
       toast({
         title: 'File Processed Successfully',
         description: `Processed ${processed.metadata.recordCount || 0} records`,
@@ -73,6 +118,38 @@ export default function BankIntegration() {
       });
       throw error;
     }
+  };
+
+  const handleRetryPayment = async (paymentId: string) => {
+    // Simulate payment retry
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setPayments(prev =>
+      prev.map(p =>
+        p.id === paymentId
+          ? { ...p, status: 'processed' as const, errorDetails: undefined }
+          : p
+      )
+    );
+    toast({
+      title: 'Payment Retried',
+      description: 'Payment has been successfully retried',
+    });
+  };
+
+  const handleMarkReconciled = async (paymentId: string) => {
+    // Simulate reconciliation
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setPayments(prev =>
+      prev.map(p =>
+        p.id === paymentId
+          ? { ...p, status: 'reconciled' as const }
+          : p
+      )
+    );
+    toast({
+      title: 'Payment Reconciled',
+      description: 'Payment has been marked as reconciled',
+    });
   };
 
   return (
@@ -136,39 +213,47 @@ export default function BankIntegration() {
               </Card>
 
               <div className="grid gap-6 md:grid-cols-2">
-                <BankFileInterface onFileUpload={handleFileUpload} />
+                <div className="space-y-6">
+                  <BankFileInterface onFileUpload={handleFileUpload} />
 
-                {processedFile && (
-                  <Card className="p-6">
-                    <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
-                    <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium">Metadata</h4>
-                          <div className="mt-2 space-y-2">
-                            <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
-                            <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
-                            <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
-                            {processedFile.metadata.recordCount && (
-                              <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
-                            )}
-                            {processedFile.metadata.totalAmount && (
-                              <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
-                            )}
+                  {processedFile && (
+                    <Card className="p-6">
+                      <h3 className="text-lg font-medium mb-4">Processed File Details</h3>
+                      <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium">Metadata</h4>
+                            <div className="mt-2 space-y-2">
+                              <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
+                              <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
+                              <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
+                              {processedFile.metadata.recordCount && (
+                                <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
+                              )}
+                              {processedFile.metadata.totalAmount && (
+                                <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="font-medium">Content Preview</h4>
+                            <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
+                              {processedFile.content.substring(0, 500)}
+                              {processedFile.content.length > 500 && '...'}
+                            </pre>
                           </div>
                         </div>
+                      </ScrollArea>
+                    </Card>
+                  )}
+                </div>
 
-                        <div>
-                          <h4 className="font-medium">Content Preview</h4>
-                          <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
-                            {processedFile.content.substring(0, 500)}
-                            {processedFile.content.length > 500 && '...'}
-                          </pre>
-                        </div>
-                      </div>
-                    </ScrollArea>
-                  </Card>
-                )}
+                <PaymentReconciliationManager
+                  payments={payments}
+                  onRetryPayment={handleRetryPayment}
+                  onMarkReconciled={handleMarkReconciled}
+                />
               </div>
             </div>
           </div>
