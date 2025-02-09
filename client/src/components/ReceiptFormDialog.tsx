@@ -65,7 +65,24 @@ const payerSchema = z.object({
     accountHolder: z.string().optional(),
     mandateReference: z.string().optional(),
     mandateDate: z.string().optional(),
-  }).optional(),
+  }).optional().refine(
+    (bankAccount, ctx) => {
+      const paymentMethod = (ctx.path[0] as any)?.paymentMethod;
+      if (paymentMethod === 'direct_debit') {
+        return bankAccount && 
+               bankAccount.iban && 
+               bankAccount.bic && 
+               bankAccount.accountHolder && 
+               bankAccount.mandateReference && 
+               bankAccount.mandateDate;
+      }
+      return true;
+    },
+    {
+      message: "Bank account details are required for direct debit payments",
+      path: ["bankAccount"]
+    }
+  ),
 });
 
 const paymentSchema = z.object({
