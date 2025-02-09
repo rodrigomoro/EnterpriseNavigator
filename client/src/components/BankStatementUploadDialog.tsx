@@ -1,9 +1,11 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload } from 'lucide-react';
+import { Upload, FileText } from 'lucide-react';
 import { BankFileInterface } from './BankFileInterface';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState } from "react";
 
 interface BankStatementUploadDialogProps {
   onFileUpload: (file: File) => Promise<void>;
@@ -11,8 +13,28 @@ interface BankStatementUploadDialogProps {
 }
 
 export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankStatementUploadDialogProps) {
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleFileSelection = async (file: File) => {
+    setSelectedFile(file);
+  };
+
+  const handleProcessFile = async () => {
+    if (!selectedFile) return;
+    setIsProcessing(true);
+    try {
+      await onFileUpload(selectedFile);
+      setShowDialog(false); // Close dialog after successful processing
+    } finally {
+      setIsProcessing(false);
+      setSelectedFile(null);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <DialogTrigger asChild>
         <Button variant="default" className="gap-2">
           <Upload className="h-4 w-4" />
@@ -28,7 +50,30 @@ export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankS
         </DialogHeader>
 
         <div className="space-y-6">
-          <BankFileInterface onFileUpload={onFileUpload} />
+          <Alert>
+            <FileText className="h-4 w-4" />
+            <AlertDescription>
+              Norma 43 files are used to update payment statuses. Upload them regularly to:
+              <ul className="list-disc list-inside mt-2">
+                <li>Reconcile pending payments</li>
+                <li>Identify failed transactions</li>
+                <li>Update processed payments to reconciled status</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
+          <BankFileInterface onFileUpload={handleFileSelection} />
+
+          {selectedFile && !processedFile && (
+            <div className="flex justify-end">
+              <Button 
+                onClick={handleProcessFile} 
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Processing..." : "Process File"}
+              </Button>
+            </div>
+          )}
 
           {processedFile && (
             <Card className="p-6">
@@ -36,22 +81,17 @@ export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankS
               <ScrollArea className="h-[400px] w-full rounded-md border p-4">
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium">Metadata</h4>
+                    <h4 className="font-medium">Reconciliation Summary</h4>
                     <div className="mt-2 space-y-2">
-                      <p><span className="font-medium">Filename:</span> {processedFile.metadata.filename}</p>
-                      <p><span className="font-medium">Format:</span> {processedFile.format.toUpperCase()}</p>
-                      <p><span className="font-medium">Processed At:</span> {processedFile.metadata.processedAt}</p>
-                      {processedFile.metadata.recordCount && (
-                        <p><span className="font-medium">Record Count:</span> {processedFile.metadata.recordCount}</p>
-                      )}
-                      {processedFile.metadata.totalAmount && (
-                        <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
-                      )}
+                      <p><span className="font-medium">Total Transactions:</span> {processedFile.metadata.recordCount}</p>
+                      <p><span className="font-medium">Matched Payments:</span> {processedFile.metadata.matchedCount || 0}</p>
+                      <p><span className="font-medium">Updated Statuses:</span> {processedFile.metadata.updatedCount || 0}</p>
+                      <p><span className="font-medium">Total Amount:</span> {processedFile.metadata.totalAmount} {processedFile.metadata.currency}</p>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-medium">Content Preview</h4>
+                    <h4 className="font-medium">File Content Preview</h4>
                     <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
                       {processedFile.content.substring(0, 500)}
                       {processedFile.content.length > 500 && '...'}

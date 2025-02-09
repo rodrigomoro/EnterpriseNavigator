@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { BankFileProcessor } from '@/lib/bankFileProcessor';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { AlertCircle, Upload, Download, RefreshCw, FileText, Network, Award, Building2 } from 'lucide-react';
@@ -178,18 +177,9 @@ export default function BankIntegration() {
       // Parse transactions from Norma 43 file
       const transactions = parseNorma43(content);
 
-      // Update processed file details
-      setProcessedFile({
-        metadata: {
-          filename: file.name,
-          processedAt: new Date().toISOString(),
-          recordCount: transactions.length,
-          totalAmount: transactions.reduce((sum, t) => sum + t.amount, 0),
-          currency: 'EUR'
-        },
-        format: 'norma43',
-        content: content
-      });
+      // Track matches and updates
+      let matchedCount = 0;
+      let updatedCount = 0;
 
       // Update payment statuses based on matched transactions
       setPayments(prev => prev.map(payment => {
@@ -200,6 +190,11 @@ export default function BankIntegration() {
         );
 
         if (matchingTransaction) {
+          matchedCount++;
+          // Only count as updated if status actually changes
+          if (payment.status !== 'reconciled') {
+            updatedCount++;
+          }
           return {
             ...payment,
             status: 'reconciled' as const
@@ -208,9 +203,24 @@ export default function BankIntegration() {
         return payment;
       }));
 
+      // Update processed file details with reconciliation metrics
+      setProcessedFile({
+        metadata: {
+          filename: file.name,
+          processedAt: new Date().toISOString(),
+          recordCount: transactions.length,
+          matchedCount,
+          updatedCount,
+          totalAmount: transactions.reduce((sum, t) => sum + t.amount, 0),
+          currency: 'EUR'
+        },
+        format: 'norma43',
+        content: content
+      });
+
       toast({
         title: 'File Processed Successfully',
-        description: `Processed ${transactions.length} transactions`
+        description: `Updated ${updatedCount} payment statuses from ${matchedCount} matched transactions`
       });
     } catch (error) {
       console.error('File processing error:', error);
@@ -262,15 +272,21 @@ export default function BankIntegration() {
               </div>
             </header>
 
-            <Alert>
+            <Alert className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                This interface handles the reconciliation of payments through bank statement files (Norma 43).
-                For generating payment files, use the Enrollment Manager (for student direct debits) or Financial Dashboard (for vendor transfers).
+                <p className="mb-2">
+                  This interface handles payment reconciliation through bank statement files (Norma 43).
+                  For generating payment files:
+                </p>
+                <ul className="list-disc list-inside">
+                  <li>Use Enrollment Manager to generate SEPA XML files for student direct debits</li>
+                  <li>Use Financial Dashboard to create Norma 34 files for vendor transfers</li>
+                </ul>
               </AlertDescription>
             </Alert>
 
-            <div className="mt-6 grid gap-6">
+            <div className="space-y-6">
               <Card className="p-6">
                 <h3 className="text-lg font-medium mb-4">Banking Workflow Overview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
