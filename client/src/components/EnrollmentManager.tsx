@@ -91,6 +91,36 @@ export const EnrollmentManager = () => {
         numberOfInstallments: 12,
       };
     }
+
+    if (enrollment.studentId === "ST010") {
+      return {
+        payers: [
+          {
+            type: "student",
+            paymentMethod: "direct_debit",
+            referenceNumber: `TXN-${Date.now()}`,
+            coverageType: "percentage" as const,
+            coverage: 100, // 100% of fees via direct debit
+            bankAccount: {
+              iban: "DE89370400440532013000", // Example valid IBAN
+              bic: "COBADEFFXXX",              // Example valid BIC/SWIFT
+              accountHolder: enrollment.studentName,
+              mandateReference: `MANDATE-${enrollment.studentId}-${format(new Date(), "yyyyMMdd")}`,
+              mandateDate: format(new Date(), "yyyy-MM-dd"),
+            },
+          },
+        ],
+        selectedFees: [
+          { id: "tuition", name: "Tuition Fee", amount: moduleTotal },
+          { id: "registration", name: "Registration Fee", amount: additionalFees.registration },
+          { id: "materials", name: "Learning Materials", amount: additionalFees.materials },
+          { id: "technology", name: "Technology Fee", amount: additionalFees.technology },
+          { id: "laboratory", name: "Laboratory Fee", amount: additionalFees.laboratory },
+        ],
+        totalAmount: moduleTotal + extraFeeTotal,
+        paymentPlan: "single" as const, // Single payment (no installments)
+      };
+    }
   
     // Otherwise, return the default payment information.
     return {
@@ -214,6 +244,7 @@ export const EnrollmentManager = () => {
       description: `Successfully ${action === 'download' ? 'downloaded' : 'sent'} ${completedEnrollments.length} receipts.`,
     });
   };
+  
 
   const completedEnrollment = {
     id: "9",
@@ -232,24 +263,19 @@ export const EnrollmentManager = () => {
       { moduleId: "module-8", groupId: "GRP3", cost: 500 },
     ]
   };
-  
-  // Calculate the tuition fee by summing module costs
-  const tuitionFee = completedEnrollment.moduleAssignments.reduce(
-    (sum, assignment) => sum + (assignment.cost || 0),
-    0
-  ); // 600 + 500 + 550 + 450 + 650 + 700 + 600 + 500 = 4550
-  
-  // Additional fixed fees
-  const additionalFees = {
-    registration: 100,
-    materials: 200,
-    technology: 150,
-    laboratory: 300,
+
+  const completedEnrollmentSinglePayment = {
+    id: "10",
+    studentId: "ST010",
+    studentName: "Bob Marley",
+    enrolledAt: "2024-04-15T09:00:00Z",
+    status: "Completed",
+    moduleAssignments: [
+      { moduleId: "module-9", groupId: "GRP4", cost: 800 },
+      { moduleId: "module-10", groupId: "GRP5", cost: 700 },
+      { moduleId: "module-11", groupId: "GRP1", cost: 900 },
+    ]
   };
-  // Sum of additional fees: 100 + 200 + 150 + 300 = 750
-  
-  // Total amount payable
-  const totalAmount = tuitionFee + 750; // 4550 + 750 = 5300
 
   const enrollments = [
     {
@@ -340,7 +366,8 @@ export const EnrollmentManager = () => {
         { moduleId: "module-5", groupId: "GRP5", cost: 800 }
       ]
     },
-    completedEnrollment
+    completedEnrollment,
+    completedEnrollmentSinglePayment
   ];
 
   // Mock function to get group info (in a real app, this would come from an API)
