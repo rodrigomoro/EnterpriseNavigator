@@ -5,22 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Home, Calendar, Users, PieChart, Cog, LogOut, FolderKanban, Receipt, QrCode, BarChart, Network, Award, BookOpen, Building2 } from 'lucide-react';
 import PageTransition from "@/components/PageTransition";
 import Sidebar from "@/components/Sidebar";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationTemplateEditor from "@/components/NotificationTemplateEditor";
-import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle, RefreshCw, Key, Landmark } from "lucide-react";
+import { BellRing, Globe, Lock, UserCog, Shield, Mail, MessageSquare, Phone, AlertCircle, RefreshCw, Key } from 'lucide-react';
 import { useState } from "react";
-import BankFileInterface from "@/components/BankFileInterface";
 
-// Mock data for settings
+// Mock data for settings (removed bank-related data)
 const mockNotificationChannels = [
   { id: 1, name: "Email", icon: Mail, enabled: true },
   { id: 2, name: "SMS", icon: Phone, enabled: false },
@@ -196,7 +190,7 @@ const mockRoles = [
   }
 ];
 
-// Add new type for field mapping
+// Add new type for field mapping (unchanged)
 type FieldMapping = {
   field: string;
   source: string;
@@ -556,7 +550,7 @@ export default function Settings() {
             </header>
 
             <Tabs defaultValue="personal" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="personal" className="flex items-center gap-2">
                   <UserCog className="h-4 w-4" />
                   Personal
@@ -572,10 +566,6 @@ export default function Settings() {
                 <TabsTrigger value="security" className="flex items-center gap-2">
                   <Shield className="h-4 w-4" />
                   Security
-                </TabsTrigger>
-                <TabsTrigger value="bank" className="flex items-center gap-2">
-                  <Landmark className="h-4 w-4" />
-                  Bank Integration
                 </TabsTrigger>
               </TabsList>
 
@@ -714,45 +704,6 @@ export default function Settings() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="bank">
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Bank File Integration</CardTitle>
-                      <CardDescription>
-                        Manage bank file uploads and downloads for payment processing
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Alert className="mb-6">
-                        <Landmark className="h-4 w-4" />
-                        <AlertDescription>
-                          Upload payment files for processing or download reconciliation files. 
-                          Supports Norma 19, Norma 34, and Norma 43 file formats.
-                        </AlertDescription>
-                      </Alert>
-
-                      <BankFileInterface 
-                        onFileUpload={async (file, format) => {
-                          // Implementation for file upload
-                          console.log('File upload:', file, format);
-                        }}
-                        onDownload={async (format) => {
-                          // Implementation for file download
-                          console.log('Download requested:', format);
-                        }}
-                        supportedFormats={[
-                          { value: 'norma19', label: 'Norma 19 - Direct Debit Orders' },
-                          { value: 'norma34', label: 'Norma 34 - Transfer Orders' },
-                          { value: 'norma43', label: 'Norma 43 - Account Statements' },
-                          { value: 'sepa', label: 'SEPA XML - Direct Debit' }
-                        ]}
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
               <TabsContent value="connectors">
                 <div className="space-y-6">
                   <Card>
@@ -872,10 +823,11 @@ export default function Settings() {
                       </div>
                     </CardContent>
                   </Card>
-                </div>              </TabsContent>
+                </div>
+              </TabsContent>
 
               <TabsContent value="security">
-                <div className="grid gap-4 grid-cols-12">
+                <div className="grid gap4 grid-cols-12">
                     <Card className="col-span-12 lg:col-span-5">
                       <CardHeader>
                         <CardTitle>Roles</CardTitle>
