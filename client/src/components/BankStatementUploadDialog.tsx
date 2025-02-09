@@ -14,7 +14,7 @@ export function BankStatementUploadDialog({ onFileUpload, processedFile }: BankS
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="default" className="gap-2">
           <Upload className="h-4 w-4" />
           Upload Bank Statement
         </Button>
