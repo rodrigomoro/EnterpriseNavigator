@@ -12,8 +12,6 @@ import InvoiceApprovalWorkflow from "@/components/InvoiceApprovalWorkflow";
 import { useToast } from "@/hooks/use-toast";
 import { mockInvoices } from "@/data/mockInvoices";
 
-// Rest of the imports remain unchanged...
-
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
   pending_approval: 'bg-yellow-100 text-yellow-700',
@@ -67,7 +65,6 @@ export default function InvoiceDetail() {
   };
 
   const handleDownloadPDF = () => {
-    // In a real implementation, this would download the actual PDF file
     toast({
       title: "Downloading PDF",
       description: `Downloading invoice ${invoice.invoiceNumber}...`,
@@ -112,7 +109,9 @@ export default function InvoiceDetail() {
                         </p>
                       </div>
                       <Badge className={statusColors[invoice.status]}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        {invoice.status.split('_').map(word =>
+                          word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')}
                       </Badge>
                     </div>
 
@@ -168,8 +167,8 @@ export default function InvoiceDetail() {
                   </CardContent>
                 </Card>
 
-                {/* Approval Workflow - Only show for outgoing invoices */}
-                {invoice.direction === 'outgoing' && (
+                {/* Approval Workflow - Only show for incoming invoices */}
+                {invoice.direction === 'incoming' && (
                   <InvoiceApprovalWorkflow
                     invoice={invoice}
                     onApprove={handleApprove}
@@ -234,7 +233,6 @@ export default function InvoiceDetail() {
                               </p>
                             </div>
                           </div>
-                          {/* Rest of the signature details remain unchanged */}
                           <div className="text-sm">
                             <p className="text-muted-foreground">Signed by:</p>
                             <p className="font-medium">{invoice.signatureInfo.signedBy}</p>
