@@ -5,12 +5,29 @@ import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download } from 'lucide-react';
+import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download, Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { mockInvoices } from '@/data/mockInvoices';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-picker";
+import { type DateRange } from "react-day-picker";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -39,25 +56,67 @@ const statusIcons = {
   approved: FileCheck
 } as const;
 
+const paymentMethods = [
+  { value: 'all', label: 'All Payment Methods' },
+  { value: 'bank_transfer', label: 'Bank Transfer' },
+  { value: 'direct_debit', label: 'Direct Debit' },
+  { value: 'credit_card', label: 'Credit Card' },
+];
+
+const statuses = [
+  { value: 'all', label: 'All Statuses' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'pending_approval', label: 'Pending Approval' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'signed', label: 'Signed' },
+  { value: 'submitted', label: 'Submitted' },
+  { value: 'accepted', label: 'Accepted' },
+];
+
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('outgoing');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
   const filteredInvoices = mockInvoices.filter(invoice => {
+    // Direction filter
     const matchesType = invoice.direction === activeTab;
+    if (!matchesType) return false;
+
+    // Search filter
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      invoice.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
+      (activeTab === 'outgoing' ? invoice.customer.name : invoice.issuer.name).toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
+
+    // Status filter
+    if (statusFilter !== 'all' && invoice.status !== statusFilter) return false;
+
+    // Payment method filter
+    if (paymentMethodFilter !== 'all' && invoice.paymentMethod !== paymentMethodFilter) return false;
+
+    // Date filter
+    if (dateRange?.from || dateRange?.to) {
+      const issueDate = new Date(invoice.issueDate);
+      if (dateRange.from && issueDate < dateRange.from) return false;
+      if (dateRange.to && issueDate > dateRange.to) return false;
+    }
+
+    return true;
   });
 
-  const handleGenerateNorma34 = () => {
+  const handleGenerateNorma34 = (invoiceId?: string) => {
     // In a real implementation, this would generate the SEPA XML file
     // for the selected incoming invoices
     toast({
       title: "Norma 34 file generated",
-      description: "The SEPA payment file has been generated successfully.",
+      description: invoiceId 
+        ? `SEPA payment file generated for invoice ${invoiceId}`
+        : "SEPA payment file generated for all pending payments",
     });
   };
 
@@ -87,8 +146,71 @@ export default function Invoices() {
               </div>
 
               <div className="min-w-60 flex justify-end items-center gap-4">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Filter className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Filter Invoices</SheetTitle>
+                      <SheetDescription>
+                        Apply filters to narrow down the invoice list
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Status</label>
+                        <Select
+                          value={statusFilter}
+                          onValueChange={setStatusFilter}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {statuses.map((status) => (
+                              <SelectItem key={status.value} value={status.value}>
+                                {status.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Payment Method</label>
+                        <Select
+                          value={paymentMethodFilter}
+                          onValueChange={setPaymentMethodFilter}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select payment method" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {paymentMethods.map((method) => (
+                              <SelectItem key={method.value} value={method.value}>
+                                {method.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Date Range</label>
+                        <DatePickerWithRange
+                          date={dateRange}
+                          onDateChange={setDateRange}
+                        />
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
                 {activeTab === 'incoming' ? (
-                  <Button onClick={handleGenerateNorma34}>
+                  <Button onClick={() => handleGenerateNorma34()}>
                     <Download className="h-4 w-4 mr-2" />
                     Generate Norma 34
                   </Button>
@@ -169,20 +291,35 @@ export default function Invoices() {
                     </a>
                   </Link>
 
-                  {/* Edit button overlay */}
+                  {/* Action buttons overlay */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navigate(`/invoices/${invoice.id}/edit`);
-                      }}
-                      className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    {invoice.direction === 'outgoing' ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate(`/invoices/${invoice.id}/edit`);
+                        }}
+                        className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleGenerateNorma34(invoice.id);
+                        }}
+                        className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
