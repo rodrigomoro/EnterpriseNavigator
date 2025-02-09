@@ -5,6 +5,7 @@ import PageTransition from '@/components/PageTransition';
 import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from "@/components/ui/textarea";
 import { Search, Plus, FileCheck, Send, AlertTriangle, Pencil, Download, Filter, UploadCloud } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -209,6 +210,54 @@ const ImportInvoiceDialog = () => {
     }
   }, [toast]);
 
+  const handleUpdateField = (
+    field: keyof RecognizedFields | keyof RecognizedFields['provider'],
+    value: string | number,
+    isProvider = false
+  ) => {
+    if (!recognizedFields) return;
+
+    setRecognizedFields(prev => {
+      if (!prev) return prev;
+
+      if (isProvider) {
+        return {
+          ...prev,
+          provider: {
+            ...prev.provider,
+            [field]: value
+          }
+        };
+      }
+
+      // For amount and taxes, recalculate total
+      if (field === 'amount' || field === 'taxes') {
+        const newAmount = field === 'amount' ? Number(value) : prev.amount;
+        const newTaxes = field === 'taxes' ? Number(value) : prev.taxes;
+        return {
+          ...prev,
+          [field]: Number(value),
+          totalWithTaxes: newAmount + newTaxes
+        };
+      }
+
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
+  };
+
+  const handleImport = () => {
+    if (!recognizedFields) return;
+
+    // Here you would send the recognized fields to your backend
+    toast({
+      title: "Invoice Imported",
+      description: "Invoice has been successfully imported and is pending approval.",
+    });
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -289,7 +338,7 @@ const ImportInvoiceDialog = () => {
               </div>
             )}
 
-            {previewUrl && (
+            {previewUrl && recognizedFields && (
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">Preview</h3>
@@ -305,49 +354,87 @@ const ImportInvoiceDialog = () => {
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">Recognized Information</h3>
                   <Card className="p-4">
-                    {recognizedFields && (
-                      <div className="space-y-4">
-                        <div>
-                          <Label>Invoice Number</Label>
-                          <p className="text-sm">{recognizedFields.invoiceNumber}</p>
-                        </div>
-                        <Separator />
-                        <div>
-                          <Label>Date</Label>
-                          <p className="text-sm">{recognizedFields.date}</p>
-                        </div>
-                        <Separator />
-                        <div>
-                          <Label>Provider Details</Label>
-                          <div className="space-y-1 text-sm">
-                            <p>{recognizedFields.provider.name}</p>
-                            <p className="text-muted-foreground">Tax ID: {recognizedFields.provider.taxId}</p>
-                            <p className="text-muted-foreground">{recognizedFields.provider.address}</p>
-                          </div>
-                        </div>
-                        <Separator />
-                        <div>
-                          <Label>Description</Label>
-                          <p className="text-sm">{recognizedFields.description}</p>
-                        </div>
-                        <Separator />
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Invoice Number</Label>
+                        <Input
+                          value={recognizedFields.invoiceNumber}
+                          onChange={(e) => handleUpdateField('invoiceNumber', e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                      <Separator />
+                      <div>
+                        <Label>Date</Label>
+                        <Input
+                          type="date"
+                          value={recognizedFields.date}
+                          onChange={(e) => handleUpdateField('date', e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                      <Separator />
+                      <div className="space-y-2">
+                        <Label>Provider Details</Label>
                         <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <Label>Amount</Label>
-                            <p className="text-sm">€{recognizedFields.amount.toFixed(2)}</p>
-                          </div>
-                          <div className="flex justify-between">
-                            <Label>Taxes</Label>
-                            <p className="text-sm">€{recognizedFields.taxes.toFixed(2)}</p>
-                          </div>
-                          <div className="flex justify-between font-medium">
-                            <Label>Total with Taxes</Label>
-                            <p className="text-sm">€{recognizedFields.totalWithTaxes.toFixed(2)}</p>
-                          </div>
+                          <Input
+                            placeholder="Name"
+                            value={recognizedFields.provider.name}
+                            onChange={(e) => handleUpdateField('name', e.target.value, true)}
+                          />
+                          <Input
+                            placeholder="Tax ID"
+                            value={recognizedFields.provider.taxId}
+                            onChange={(e) => handleUpdateField('taxId', e.target.value, true)}
+                          />
+                          <Input
+                            placeholder="Address"
+                            value={recognizedFields.provider.address}
+                            onChange={(e) => handleUpdateField('address', e.target.value, true)}
+                          />
                         </div>
                       </div>
-                    )}
+                      <Separator />
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={recognizedFields.description}
+                          onChange={(e) => handleUpdateField('description', e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                      <Separator />
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Amount</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={recognizedFields.amount}
+                            onChange={(e) => handleUpdateField('amount', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label>Taxes</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={recognizedFields.taxes}
+                            onChange={(e) => handleUpdateField('taxes', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label>Total with Taxes</Label>
+                          <p className="text-sm font-medium mt-1">€{recognizedFields.totalWithTaxes.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
                   </Card>
+                  <Button onClick={handleImport} className="w-full">
+                    Import Invoice
+                  </Button>
                 </div>
               </div>
             )}
