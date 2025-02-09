@@ -6,6 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Home, Calendar, Users, PieChart, Cog, LogOut, FolderKanban, Receipt, QrCode, BarChart, Network, Award, BookOpen, Building2 } from 'lucide-react';
 import PageTransition from "@/components/PageTransition";
 import Sidebar from "@/components/Sidebar";
