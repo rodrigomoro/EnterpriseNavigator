@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { FileText } from 'lucide-react';
 
 interface FileFormat {
   title: string;
@@ -18,9 +18,9 @@ export function FileFormatGuideDialog({ formats }: FileFormatGuideDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <HelpCircle className="h-5 w-5" />
-          <span className="sr-only">View File Format Guide</span>
+        <Button variant="outline" className="gap-2">
+          <FileText className="h-4 w-4" />
+          Bank File Format Guide
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
