@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
@@ -21,23 +21,20 @@ import {
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { type DateRange } from "react-day-picker";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-
 
 const statusColors = {
   draft: 'bg-muted text-muted-foreground',
@@ -101,20 +98,21 @@ const FilterDialog = ({
   dateRange,
   setDateRange,
 }: FilterDialogProps) => (
-  <Dialog>
-    <DialogTrigger asChild>
-      <Button variant="outline" size="icon">
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button variant="outline" className="gap-2">
         <Filter className="h-4 w-4" />
+        Filters
       </Button>
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Filter Invoices</DialogTitle>
-        <DialogDescription>
-          Apply filters to narrow down the invoice list
-        </DialogDescription>
-      </DialogHeader>
-      <div className="space-y-4 py-4">
+    </PopoverTrigger>
+    <PopoverContent className="w-80" align="end">
+      <div className="grid gap-4">
+        <div className="space-y-2">
+          <h4 className="font-medium leading-none">Filter Invoices</h4>
+          <p className="text-sm text-muted-foreground">
+            Apply filters to narrow down the invoice list
+          </p>
+        </div>
         <div className="space-y-2">
           <Label>Status</Label>
           <Select
@@ -161,8 +159,8 @@ const FilterDialog = ({
           />
         </div>
       </div>
-    </DialogContent>
-  </Dialog>
+    </PopoverContent>
+  </Popover>
 );
 
 const ImportInvoiceDialog = () => {
@@ -233,14 +231,43 @@ const ImportInvoiceDialog = () => {
   );
 };
 
+interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  direction: 'outgoing' | 'incoming';
+  status: InvoiceStatus;
+  customer?: { name: string };
+  issuer?: { name: string };
+  totalAmount: number;
+  dueDate: string;
+  paymentMethod?: string;
+  bankInfo?: { bankName: string };
+  submissionInfo?: { verificationId: string };
+  pdfUrl?: string;
+}
+
+
 export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('outgoing');
   const [statusFilter, setStatusFilter] = useState('all');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const { toast } = useToast();
+
+  // Restore active tab from session storage
+  useEffect(() => {
+    const savedTab = sessionStorage.getItem('invoicesActiveTab');
+    if (savedTab === 'incoming' || savedTab === 'outgoing') {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  // Save active tab to session storage
+  useEffect(() => {
+    sessionStorage.setItem('invoicesActiveTab', activeTab);
+  }, [activeTab]);
 
   const filteredInvoices = mockInvoices.filter(invoice => {
     const matchesType = invoice.direction === activeTab;
@@ -264,11 +291,88 @@ export default function Invoices() {
   });
 
   const handleGenerateNorma34 = (invoiceId?: string) => {
+    // Create a dummy SEPA XML file content
+    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <!-- Generated SEPA payment file for invoice ${invoiceId || 'batch'} -->
+</Document>`;
+
+    // Create blob and download
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sepa-payment-${invoiceId || 'batch'}.xml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
     toast({
       title: "Norma 34 file generated",
       description: invoiceId
         ? `SEPA payment file generated for invoice ${invoiceId}`
         : "SEPA payment file generated for all pending payments",
+    });
+  };
+
+  const handleDownloadPDF = (invoice: Invoice) => {
+    if (!invoice.pdfUrl) {
+      toast({
+        title: "Error",
+        description: "PDF file not available for this invoice",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // In a real implementation, this would be a proper PDF file
+    const dummyPdfContent = `%PDF-1.7
+1 0 obj
+<</Type/Catalog/Pages 2 0 R>>
+endobj
+2 0 obj
+<</Type/Pages/Count 1/Kids[3 0 R]>>
+endobj
+3 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<<>>/Contents 4 0 R>>
+endobj
+4 0 obj
+<</Length 51>>
+stream
+BT
+/F1 12 Tf
+72 712 Td
+(Invoice ${invoice.invoiceNumber}) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f
+0000000009 00000 n
+0000000054 00000 n
+0000000102 00000 n
+0000000189 00000 n
+trailer
+<</Size 5/Root 1 0 R>>
+startxref
+287
+%%EOF`;
+
+    const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoice-${invoice.invoiceNumber}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Downloading PDF",
+      description: `Downloading invoice ${invoice.invoiceNumber}...`,
     });
   };
 
@@ -349,7 +453,9 @@ export default function Invoices() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold">{invoice.invoiceNumber}</h3>
                               <Badge className={statusColors[invoice.status as InvoiceStatus]}>
-                                {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                                {invoice.status.split('_').map(word => 
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ')}
                                 <StatusIcon status={invoice.status as InvoiceStatus} />
                               </Badge>
                               {invoice.direction === 'incoming' && (
@@ -386,7 +492,20 @@ export default function Invoices() {
                     </a>
                   </Link>
 
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDownloadPDF(invoice);
+                      }}
+                      className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+
                     {invoice.direction === 'outgoing' ? (
                       invoice.status === 'draft' && (
                         <Button
@@ -413,7 +532,7 @@ export default function Invoices() {
                         }}
                         className="h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground"
                       >
-                        <Download className="h-4 w-4" />
+                        <Send className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
