@@ -184,6 +184,7 @@ const ImportInvoiceDialog = () => {
   const { toast } = useToast();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [open, setOpen] = useState(false);
   const [recognizedFields, setRecognizedFields] = useState<RecognizedFields | null>(null);
 
   const processFile = useCallback((file: File) => {
@@ -256,6 +257,13 @@ const ImportInvoiceDialog = () => {
       title: "Invoice Imported",
       description: "Invoice has been successfully imported and is pending approval.",
     });
+    setOpen(false); // Close dialog after successful import
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setPreviewUrl(null);
+    setRecognizedFields(null);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -291,9 +299,9 @@ const ImportInvoiceDialog = () => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button onClick={() => setOpen(true)}>
           <UploadCloud className="h-4 w-4 mr-2" />
           Import Invoice
         </Button>

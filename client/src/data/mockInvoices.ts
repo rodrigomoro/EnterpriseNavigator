@@ -180,9 +180,119 @@ const sentToClientInvoice = {
   ],
 };
 
-// Replace the existing OUT-5 invoice in mockInvoices array with this updated version
+// Update the pending approval incoming invoice to include digital signature info
+const pendingApprovalInvoice = {
+    id: "IN-1",
+    direction: "incoming",
+    operationDate: "2025-02-09",
+    type: "standard",
+    invoiceNumber: "VINV-2025-001",
+    customer: {
+        name: "Educational Platform Inc",
+        taxId: "A87654321",
+        address: "Avenida Central 456",
+        postalCode: "28002",
+        city: "Madrid"
+    },
+    issuer: {
+        name: "Professional Training Services Ltd",
+        taxId: "B98765432",
+        address: "Plaza del Sol 789",
+        postalCode: "28003",
+        city: "Madrid"
+    },
+    notes: "Professional development workshops",
+    issueDate: "2025-02-09",
+    dueDate: "2025-03-11",
+    items: [
+        {
+            description: "Advanced Teaching Methods Workshop",
+            quantity: 1,
+            price: 2500,
+            total: 2500,
+        }
+    ],
+    totalAmount: 2500,
+    status: "pending_approval",
+    paymentMethod: "bank_transfer",
+    paymentStatus: "pending",
+    approvalWorkflow: {
+        currentLevel: 1,
+        maxLevels: 3,
+        approvers: [
+            {
+                level: 1,
+                role: "Department Manager",
+                status: "pending"
+            },
+            {
+                level: 2,
+                role: "Financial Controller",
+                status: "pending"
+            },
+            {
+                level: 3,
+                role: "CFO",
+                status: "pending"
+            }
+        ]
+    },
+    signatureInfo: {
+        signedAt: "2025-02-09T10:00:00Z",
+        signedBy: "Dana R."
+    },
+    submissionInfo: {
+        submittedAt: "2025-02-09T10:05:00Z",
+        verificationId: "VF-2025-001-XYZ",
+        response: {
+            status: "accepted",
+            message: "Invoice successfully verified"
+        }
+    },
+    qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-001",
+    pdfUrl: "/invoices/VINV-2025-001.pdf",
+    bankInfo: {
+        iban: "ES7100750327630600000573",
+        bic: "BSCHESMMXXX",
+        bankName: "Banco Santander"
+    },
+    auditTrail: [
+        {
+            timestamp: "2025-02-09T10:00:00Z",
+            action: "created",
+            actor: "System",
+            details: "Invoice received and registered"
+        },
+        {
+            timestamp: "2025-02-09T10:00:00Z",
+            action: "signed",
+            actor: "Dana R.",
+            details: "Digital signature verified"
+        },
+        {
+            timestamp: "2025-02-09T10:05:00Z",
+            action: "submitted",
+            actor: "System",
+            details: "Submitted to VERIFACTU"
+        },
+        {
+            timestamp: "2025-02-09T10:10:00Z",
+            action: "verified",
+            actor: "VERIFACTU",
+            details: "Invoice verified successfully"
+        },
+        {
+            timestamp: "2025-02-09T10:15:00Z",
+            action: "approval_requested",
+            actor: "System",
+            details: "Approval workflow initiated"
+        }
+    ]
+};
+
+// Update the mockInvoices array to use the updated pendingApprovalInvoice
 export const mockInvoices = [
-  // Outgoing invoice - Draft
+    // Outgoing invoice - Draft
     {
         id: "OUT-1",
         direction: "outgoing",
@@ -471,81 +581,7 @@ export const mockInvoices = [
         ],
     },
     sentToClientInvoice,
-    // Incoming invoice - Pending Approval
-    {
-        id: "IN-1",
-        direction: "incoming",
-        operationDate: "2025-02-09",
-        type: "standard",
-        invoiceNumber: "VINV-2025-001",
-        customer: {
-            name: "Educational Platform Inc",
-            taxId: "A87654321",
-            address: "Avenida Central 456",
-            postalCode: "28002",
-            city: "Madrid"
-        },
-        issuer: {
-            name: "Professional Training Services Ltd",
-            taxId: "B98765432",
-            address: "Plaza del Sol 789",
-            postalCode: "28003",
-            city: "Madrid"
-        },
-        notes: "Professional development workshops",
-        issueDate: "2025-02-09",
-        dueDate: "2025-03-11",
-        items: [
-            {
-                description: "Advanced Teaching Methods Workshop",
-                quantity: 1,
-                price: 2500,
-                total: 2500,
-            }
-        ],
-        totalAmount: 2500,
-        status: "pending_approval",
-        paymentMethod: "bank_transfer",
-        paymentStatus: "pending",
-        approvalWorkflow: {
-            currentLevel: 1,
-            maxLevels: 3,
-            approvers: [
-                {
-                    level: 1,
-                    role: "Department Manager",
-                    status: "pending"
-                },
-                {
-                    level: 2,
-                    role: "Financial Controller",
-                    status: "pending"
-                },
-                {
-                    level: 3,
-                    role: "CFO",
-                    status: "pending"
-                }
-            ]
-        },
-        signatureInfo: {},
-        submissionInfo: {},
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?data=VINV-2025-001",
-        pdfUrl: "/invoices/VINV-2025-001.pdf",
-        bankInfo: {
-            iban: "ES7100750327630600000573",
-            bic: "BSCHESMMXXX",
-            bankName: "Banco Santander"
-        },
-        auditTrail: [
-            {
-                timestamp: "2025-02-09T12:00:00Z",
-                action: "created",
-                actor: "System",
-                details: "Invoice received and registered"
-            }
-        ],
-    },
+    pendingApprovalInvoice,
     // Incoming invoice - Approved
     {
         id: "IN-3",
