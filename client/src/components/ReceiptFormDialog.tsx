@@ -33,6 +33,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Minus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { generateSEPAXML, downloadSEPAFile, generateInstallmentSEPAXMLs } from '@/lib/sepa';
+import { useToast } from '@/hooks/use-toast';
 
 const generateMandateReference = (studentId: string) => {
   const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
@@ -118,11 +119,7 @@ export function ReceiptFormDialog({
   availableFees,
 }: ReceiptFormDialogProps) {
   const [selectedFees, setSelectedFees] = useState<string[]>([]);
-
-  const tuitionFee = moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) || 0;
-  const moduleDetails = moduleAssignments?.map(module => ({
-    cost: module.cost || 500
-  })) || [];
+  const { toast } = useToast();
 
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -148,17 +145,51 @@ export function ReceiptFormDialog({
     },
   });
 
-  // Handler for payment method change
-  const handlePaymentMethodChange = (value: string, index: number) => {
-    form.setValue(`payers.${index}.paymentMethod`, value);
+  const handleFormSubmit = async (data: PaymentFormValues) => {
+    try {
+      const totalAmount = calculateTotal(data.selectedFees);
 
-    if (value === 'direct_debit') {
-      form.setValue(`payers.${index}.bankAccount`, {
-        iban: '',
-        bic: '',
-        accountHolder: '',
-        mandateReference: generateMandateReference(studentId || 'TEMP'),
-        mandateDate: new Date().toISOString().split('T')[0],
+      // Validate total coverage equals 100%
+      const totalCoverage = data.payers.reduce((sum, payer) => {
+        if (payer.coverageType === 'percentage') {
+          return sum + payer.coverage;
+        } else {
+          return sum + (payer.coverage / totalAmount * 100);
+        }
+      }, 0);
+
+      if (Math.abs(totalCoverage - 100) > 0.01) {
+        toast({
+          title: "Invalid Coverage",
+          description: "Total coverage must equal 100% of the fees",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Handle SEPA files generation if needed
+      const directDebitPayers = data.payers.filter(
+        payer => payer.paymentMethod === 'direct_debit' && payer.bankAccount
+      );
+
+      if (directDebitPayers.length > 0) {
+        await handleSEPAGeneration(directDebitPayers, totalAmount, data);
+      }
+
+      // Call the parent's onSubmit with the processed data
+      await onSubmit({
+        ...data,
+        totalAmount,
+      });
+
+      // Close the dialog after successful submission
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate receipt. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -173,29 +204,11 @@ export function ReceiptFormDialog({
     return total / installments;
   };
 
-  const handleSubmit = (data: PaymentFormValues) => {
-    const totalAmount = calculateTotal(data.selectedFees);
-
-    const totalCoverage = data.payers.reduce((sum, payer) => {
-      if (payer.coverageType === 'percentage') {
-        return sum + payer.coverage;
-      } else {
-        return sum + (payer.coverage / totalAmount * 100);
-      }
-    }, 0);
-
-    if (Math.abs(totalCoverage - 100) > 0.01) {
-      form.setError('payers', {
-        type: 'custom',
-        message: 'Total coverage must equal 100% of the fees'
-      });
-      return;
-    }
-
-    const directDebitPayers = data.payers.filter(
-      payer => payer.paymentMethod === 'direct_debit' && payer.bankAccount
-    );
-
+  const handleSEPAGeneration = async (
+    directDebitPayers: PaymentFormValues['payers'][0][],
+    totalAmount: number,
+    data: PaymentFormValues
+  ) => {
     const institutionDetails = {
       creditorId: 'ES12ZZZ12345678',
       creditorName: 'Educational Institution',
@@ -203,7 +216,7 @@ export function ReceiptFormDialog({
       creditorBIC: 'BANKESM1XXX'
     };
 
-    directDebitPayers.forEach(payer => {
+    for (const payer of directDebitPayers) {
       if (payer.bankAccount) {
         const paymentAmount = payer.coverageType === 'percentage'
           ? (totalAmount * payer.coverage / 100)
@@ -212,8 +225,7 @@ export function ReceiptFormDialog({
         const isInstallmentPlan = data.paymentPlan === 'installments' && data.numberOfInstallments;
 
         if (isInstallmentPlan && data.numberOfInstallments) {
-          // Generate SEPA XMLs for all installments
-          generateInstallmentSEPAXMLs(
+          await generateInstallmentSEPAXMLs(
             institutionDetails.creditorId,
             institutionDetails.creditorName,
             institutionDetails.creditorIBAN,
@@ -233,7 +245,6 @@ export function ReceiptFormDialog({
             }
           );
         } else {
-          // Generate single payment SEPA XML
           const sepaXML = generateSEPAXML(
             institutionDetails.creditorId,
             institutionDetails.creditorName,
@@ -256,12 +267,21 @@ export function ReceiptFormDialog({
           downloadSEPAFile(sepaXML, `sepa-direct-debit-${payer.bankAccount.mandateReference}.xml`);
         }
       }
-    });
+    }
+  };
 
-    onSubmit({
-      ...data,
-      totalAmount,
-    });
+  const handlePaymentMethodChange = (value: string, index: number) => {
+    form.setValue(`payers.${index}.paymentMethod`, value);
+
+    if (value === 'direct_debit') {
+      form.setValue(`payers.${index}.bankAccount`, {
+        iban: '',
+        bic: '',
+        accountHolder: '',
+        mandateReference: generateMandateReference(studentId || 'TEMP'),
+        mandateDate: new Date().toISOString().split('T')[0],
+      });
+    }
   };
 
   const paymentMethods = [
@@ -377,6 +397,11 @@ export function ReceiptFormDialog({
     );
   };
 
+  const tuitionFee = moduleAssignments?.reduce((sum, module) => sum + (module.cost || 500), 0) || 0;
+  const moduleDetails = moduleAssignments?.map(module => ({
+    cost: module.cost || 500
+  })) || [];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -392,7 +417,7 @@ export function ReceiptFormDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
             <ScrollArea className="h-[60vh] pr-4">
               <div className="space-y-6">
                 <FormField
@@ -710,3 +735,5 @@ export function ReceiptFormDialog({
     </Dialog>
   );
 }
+
+export default ReceiptFormDialog;
