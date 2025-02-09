@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils"
 
 interface DatePickerWithRangeProps {
   className?: string
-  date: DateRange
-  onDateChange: (date: DateRange) => void
+  date: DateRange | undefined
+  onDateChange: (date: DateRange | undefined) => void
 }
 
 export function DatePickerWithRange({

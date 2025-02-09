@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Info, AlertCircle, CheckCircle2, XCircle, ArrowDown, ArrowUp, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DatePickerWithRange } from "@/components/ui/date-picker";
+import { type DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import {
   Tooltip,
@@ -85,13 +86,7 @@ export function PaymentReconciliationManager({
 }: PaymentReconciliationManagerProps) {
   const [filter, setFilter] = useState<PaymentDirection | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
-    from: undefined,
-    to: undefined
-  });
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   const filteredPayments = payments.filter(p => {
     // Direction filter
@@ -108,9 +103,11 @@ export function PaymentReconciliationManager({
     }
 
     // Date filter (only apply if dates are defined)
-    const paymentDate = new Date(p.date);
-    if (dateRange.from && paymentDate < dateRange.from) return false;
-    if (dateRange.to && paymentDate > dateRange.to) return false;
+    if (dateRange?.from || dateRange?.to) {
+      const paymentDate = new Date(p.date);
+      if (dateRange.from && paymentDate < dateRange.from) return false;
+      if (dateRange.to && paymentDate > dateRange.to) return false;
+    }
 
     return true;
   });
