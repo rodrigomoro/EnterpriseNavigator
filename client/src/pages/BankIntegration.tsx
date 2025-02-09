@@ -1,26 +1,15 @@
-import { useState } from "react";
-import { BankFileInterface } from "@/components/BankFileInterface";
-import { PaymentReconciliationManager } from "@/components/PaymentReconciliationManager";
-import { BankFileProcessor } from "@/lib/bankFileProcessor";
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import {
-  AlertCircle,
-  Upload,
-  Download,
-  RefreshCw,
-  FileText,
-  Plus,
-} from "lucide-react";
+import { useState } from 'react';
+import { BankFileProcessor } from '@/lib/bankFileProcessor';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { AlertCircle, Upload, Download, RefreshCw, FileText, Network, Award, Building2 } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
-import { FileFormatGuideDialog } from "@/components/FileFormatGuideDialog";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { FileFormatGuideDialog } from '@/components/FileFormatGuideDialog';
+import { BankStatementUploadDialog } from '@/components/BankStatementUploadDialog';
+import { PaymentReconciliationManager } from '@/components/PaymentReconciliationManager';
 import UserAvatar from "@/components/UserAvatar";
-import BankStatementUploadDialog from "@/components/BankStatementUploadDialog";
 
 // File format descriptions and info
 const fileFormatInfo = {
@@ -70,42 +59,66 @@ const fileFormatInfo = {
 // Mock data for testing the reconciliation interface
 const mockPayments = [
   {
-    id: "1",
-    reference: "DD-2024-001",
-    amount: 500.0,
-    currency: "EUR",
-    status: "processed",
-    date: "2024-02-09",
-    type: "direct-debit",
+    id: '1',
+    reference: 'DD-2024-001',
+    amount: 500.00,
+    currency: 'EUR',
+    status: 'processed' as const,
+    date: '2024-02-09',
+    type: 'direct-debit' as const,
+    direction: 'incoming' as const,
+    source: {
+      type: 'enrollment',
+      description: 'Mark Student - Full Stack Development Program',
+      reference: 'ENR-2024-001'
+    }
   },
   {
-    id: "2",
-    reference: "DD-2024-002",
-    amount: 750.0,
-    currency: "EUR",
-    status: "failed",
-    date: "2024-02-09",
-    errorDetails: "Insufficient funds",
-    type: "direct-debit",
+    id: '2',
+    reference: 'DD-2024-002',
+    amount: 750.00,
+    currency: 'EUR',
+    status: 'failed' as const,
+    date: '2024-02-09',
+    errorDetails: 'Insufficient funds',
+    type: 'direct-debit' as const,
+    direction: 'incoming' as const,
+    source: {
+      type: 'enrollment',
+      description: 'Alice Johnson - Data Science Program',
+      reference: 'ENR-2024-002'
+    }
   },
   {
-    id: "3",
-    reference: "TR-2024-001",
-    amount: 1200.0,
-    currency: "EUR",
-    status: "reconciled",
-    date: "2024-02-08",
-    type: "transfer",
+    id: '3',
+    reference: 'TR-2024-001',
+    amount: 1200.00,
+    currency: 'EUR',
+    status: 'reconciled' as const,
+    date: '2024-02-08',
+    type: 'transfer' as const,
+    direction: 'outgoing' as const,
+    source: {
+      type: 'invoice',
+      description: 'John Smith - Teaching Services',
+      reference: 'INV-2024-001'
+    }
   },
   {
-    id: "4",
-    reference: "DD-2024-003",
-    amount: 350.0,
-    currency: "EUR",
-    status: "pending",
-    date: "2024-02-09",
-    type: "direct-debit",
-  },
+    id: '4',
+    reference: 'DD-2024-003',
+    amount: 350.00,
+    currency: 'EUR',
+    status: 'pending' as const,
+    date: '2024-02-09',
+    type: 'direct-debit' as const,
+    direction: 'incoming' as const,
+    source: {
+      type: 'module',
+      description: 'Bob Wilson - Advanced Python Module',
+      reference: 'MOD-2024-001'
+    }
+  }
 ] as const;
 
 export default function BankIntegration() {
@@ -113,58 +126,114 @@ export default function BankIntegration() {
   const [payments, setPayments] = useState(mockPayments);
   const { toast } = useToast();
 
+  const parseNorma43 = (content: string) => {
+    try {
+      const lines = content.split('\n');
+      const transactions = [];
+      let currentTransaction = null;
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+
+        const recordType = line.substring(0, 2);
+
+        switch (recordType) {
+          case '11': // Header
+            break;
+          case '22': { // Transaction
+            const date = line.substring(10, 18);
+            const amount = parseInt(line.substring(28, 40)) / 100; // Convert cents to euros
+            const isCredit = amount >= 0;
+            const concept = line.substring(52).trim();
+
+            transactions.push({
+              date,
+              amount: Math.abs(amount),
+              isCredit,
+              concept
+            });
+            break;
+          }
+          case '33': // Footer
+            break;
+          case '88': // EOF
+            break;
+          default:
+            console.warn(`Unknown record type: ${recordType}`);
+        }
+      }
+
+      return transactions;
+    } catch (error) {
+      console.error('Error parsing Norma 43 file:', error);
+      throw new Error('Invalid Norma 43 file format');
+    }
+  };
+
   const handleFileUpload = async (file: File) => {
     try {
-      const processed = await BankFileProcessor.processUpload(file, "norma43", {
-        validateContent: true,
-      });
-      setProcessedFile(processed);
+      // Read file content
+      const content = await file.text();
 
-      // In a real implementation, this would update the payments based on the
-      // reconciliation results from processing the Norma 43 file
+      // Parse transactions from Norma 43 file
+      const transactions = parseNorma43(content);
+
+      // Update processed file details
+      setProcessedFile({
+        metadata: {
+          filename: file.name,
+          processedAt: new Date().toISOString(),
+          recordCount: transactions.length,
+          totalAmount: transactions.reduce((sum, t) => sum + t.amount, 0),
+          currency: 'EUR'
+        },
+        format: 'norma43',
+        content: content
+      });
+
+      // Update payment statuses based on matched transactions
+      setPayments(prev => prev.map(payment => {
+        // Find matching transaction by amount and date
+        const matchingTransaction = transactions.find(t =>
+          t.amount === payment.amount &&
+          new Date(t.date).toISOString().substring(0, 10) === new Date(payment.date).toISOString().substring(0, 10)
+        );
+
+        if (matchingTransaction) {
+          return {
+            ...payment,
+            status: 'reconciled' as const
+          };
+        }
+        return payment;
+      }));
+
       toast({
-        title: "File Processed Successfully",
-        description: `Processed ${processed.metadata.recordCount || 0} records`,
+        title: 'File Processed Successfully',
+        description: `Processed ${transactions.length} transactions`
       });
     } catch (error) {
-      console.error("File processing error:", error);
+      console.error('File processing error:', error);
       toast({
-        title: "Processing Error",
-        description:
-          error instanceof Error ? error.message : "Failed to process file",
-        variant: "destructive",
+        title: 'Processing Error',
+        description: error instanceof Error ? error.message : 'Failed to process file',
+        variant: 'destructive'
       });
       throw error;
     }
   };
 
-  const handleRetryPayment = async (paymentId: string) => {
-    // Simulate payment retry
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setPayments((prev) =>
-      prev.map((p) =>
-        p.id === paymentId
-          ? { ...p, status: "processed" as const, errorDetails: undefined }
-          : p,
-      ),
-    );
-    toast({
-      title: "Payment Retried",
-      description: "Payment has been successfully retried",
-    });
-  };
-
   const handleMarkReconciled = async (paymentId: string) => {
-    // Simulate reconciliation
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setPayments((prev) =>
-      prev.map((p) =>
-        p.id === paymentId ? { ...p, status: "reconciled" as const } : p,
-      ),
+    setPayments(prev =>
+      prev.map(p =>
+        p.id === paymentId
+          ? { ...p, status: 'reconciled' as const }
+          : p
+      )
     );
     toast({
-      title: "Payment Reconciled",
-      description: "Payment has been marked as reconciled",
+      title: 'Payment Reconciled',
+      description: 'Payment has been marked as reconciled'
     });
   };
 
@@ -174,13 +243,12 @@ export default function BankIntegration() {
 
       <div className="flex-1">
         <PageTransition>
-          <header>
-            <div className="px-6 h-16 flex items-center justify-between gap-8 mb-6">
+          <div className="p-6">
+            <header className="flex justify-between items-center gap-8 mb-6">
               <div className="min-w-60">
                 <h1 className="text-2xl font-bold">Bank Integration</h1>
                 <p className="text-muted-foreground">
-                  Manage bank file uploads for payment processing and
-                  reconciliation.
+                  Manage bank file uploads for payment processing and reconciliation.
                 </p>
               </div>
 
@@ -192,27 +260,19 @@ export default function BankIntegration() {
                 />
                 <UserAvatar />
               </div>
-            </div>
-          </header>
+            </header>
 
-          <main className="p-6 grid gap-6">
-            <div className="gap-6">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  This interface handles the reconciliation of payments through
-                  bank statement files (Norma 43). For generating payment files,
-                  use the Enrollment Manager (for student direct debits) or
-                  Financial Dashboard (for vendor transfers).
-                </AlertDescription>
-              </Alert>
-            </div>
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                This interface handles the reconciliation of payments through bank statement files (Norma 43).
+                For generating payment files, use the Enrollment Manager (for student direct debits) or Financial Dashboard (for vendor transfers).
+              </AlertDescription>
+            </Alert>
 
-            <div className="grid gap-6">
+            <div className="mt-6 grid gap-6">
               <Card className="p-6">
-                <h3 className="text-lg font-medium mb-4">
-                  Banking Workflow Overview
-                </h3>
+                <h3 className="text-lg font-medium mb-4">Banking Workflow Overview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="flex flex-col items-center text-center p-4 border rounded-lg">
                     <Upload className="h-8 w-8 mb-2 text-primary" />
@@ -245,69 +305,12 @@ export default function BankIntegration() {
                 </div>
               </Card>
 
-              <div className="grid gap-6">
-                {processedFile && (
-                  <Card className="p-6">
-                    <h3 className="text-lg font-medium mb-4">
-                      Processed File Details
-                    </h3>
-                    <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium">Metadata</h4>
-                          <div className="mt-2 space-y-2">
-                            <p>
-                              <span className="font-medium">Filename:</span>{" "}
-                              {processedFile.metadata.filename}
-                            </p>
-                            <p>
-                              <span className="font-medium">Format:</span>{" "}
-                              {processedFile.format.toUpperCase()}
-                            </p>
-                            <p>
-                              <span className="font-medium">Processed At:</span>{" "}
-                              {processedFile.metadata.processedAt}
-                            </p>
-                            {processedFile.metadata.recordCount && (
-                              <p>
-                                <span className="font-medium">
-                                  Record Count:
-                                </span>{" "}
-                                {processedFile.metadata.recordCount}
-                              </p>
-                            )}
-                            {processedFile.metadata.totalAmount && (
-                              <p>
-                                <span className="font-medium">
-                                  Total Amount:
-                                </span>{" "}
-                                {processedFile.metadata.totalAmount}{" "}
-                                {processedFile.metadata.currency}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium">Content Preview</h4>
-                          <pre className="mt-2 whitespace-pre-wrap break-all text-sm text-muted-foreground">
-                            {processedFile.content.substring(0, 500)}
-                            {processedFile.content.length > 500 && "..."}
-                          </pre>
-                        </div>
-                      </div>
-                    </ScrollArea>
-                  </Card>
-                )}
-
-                <PaymentReconciliationManager
-                  payments={payments}
-                  onRetryPayment={handleRetryPayment}
-                  onMarkReconciled={handleMarkReconciled}
-                />
-              </div>
+              <PaymentReconciliationManager
+                payments={payments}
+                onMarkReconciled={handleMarkReconciled}
+              />
             </div>
-          </main>
+          </div>
         </PageTransition>
       </div>
     </div>
