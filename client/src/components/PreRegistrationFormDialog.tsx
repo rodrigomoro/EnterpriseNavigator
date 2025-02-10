@@ -42,6 +42,9 @@ interface PreRegistrationFormDialogProps {
   trigger?: React.ReactNode;
 }
 
+// Remove duplicates based on student ID
+const uniqueStudents = Array.from(new Map(mockStudents.map(student => [student.id, student])).values());
+
 export function PreRegistrationFormDialog({ 
   open,
   onOpenChange,
@@ -96,7 +99,7 @@ export function PreRegistrationFormDialog({
                   <FormLabel>Student</FormLabel>
                   <FormControl>
                     <PeoplePicker
-                      people={mockStudents}
+                      people={uniqueStudents}
                       selectedIds={field.value ? [field.value] : []}
                       onChange={(ids) => field.onChange(ids[0] || '')}
                       placeholder="Select a student"
