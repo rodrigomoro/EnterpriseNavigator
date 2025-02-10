@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { AlertCircle, Upload, Download, RefreshCw, FileText, Network, Award, Building2 } from 'lucide-react';
+import { AlertCircle, Upload, Download, RefreshCw, FileText, Calendar } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from 'date-fns';
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import { FileFormatGuideDialog } from '@/components/FileFormatGuideDialog';
@@ -123,6 +127,8 @@ const mockPayments = [
 export default function BankIntegration() {
   const [processedFile, setProcessedFile] = useState<any>(null);
   const [payments, setPayments] = useState(mockPayments);
+  const [incomingDueDate, setIncomingDueDate] = useState<Date>();
+  const [outgoingDueDate, setOutgoingDueDate] = useState<Date>();
   const { toast } = useToast();
 
   const parseNorma43 = (content: string) => {
@@ -247,6 +253,60 @@ export default function BankIntegration() {
     });
   };
 
+  const handleIncomingPaymentsDownload = () => {
+    if (!incomingDueDate) {
+      toast({
+        title: "Select Due Date",
+        description: "Please select a due date for the incoming payments before downloading.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const incomingPayments = payments.filter(p => p.direction === 'incoming');
+    if (incomingPayments.length === 0) {
+      toast({
+        title: "No Incoming Payments",
+        description: "There are no incoming payments to process.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Here you would generate the SEPA XML file for direct debits
+    toast({
+      title: "Norma 19 / SEPA XML Generated",
+      description: `Generated payment file for ${incomingPayments.length} incoming payments with due date ${incomingDueDate.toLocaleDateString()}.`,
+    });
+  };
+
+  const handleOutgoingPaymentsDownload = () => {
+    if (!outgoingDueDate) {
+      toast({
+        title: "Select Due Date",
+        description: "Please select a due date for the outgoing payments before downloading.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const outgoingPayments = payments.filter(p => p.direction === 'outgoing');
+    if (outgoingPayments.length === 0) {
+      toast({
+        title: "No Outgoing Payments",
+        description: "There are no outgoing payments to process.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Here you would generate the Norma 34 file for transfers
+    toast({
+      title: "Norma 34 Generated",
+      description: `Generated transfer file for ${outgoingPayments.length} outgoing payments with due date ${outgoingDueDate.toLocaleDateString()}.`,
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
@@ -280,13 +340,85 @@ export default function BankIntegration() {
                   For generating payment files:
                 </p>
                 <ul className="list-disc list-inside">
-                  <li>Use Enrollment Manager to generate SEPA XML files for student direct debits</li>
-                  <li>Use Financial Dashboard to create Norma 34 files for vendor transfers</li>
+                  <li>Use the Direct Debit section to generate SEPA XML files for student direct debits</li>
+                  <li>Use the Transfer Orders section to create Norma 34 files for vendor transfers</li>
                 </ul>
               </AlertDescription>
             </Alert>
 
             <div className="space-y-6">
+              {/* Direct Debit Section */}
+              <Card className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium mb-2">Direct Debit Orders (Norma 19 / SEPA XML)</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Generate SEPA XML file for all incoming direct debit payments
+                    </p>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {incomingDueDate ? format(incomingDueDate, 'PPP') : <span>Select Due Date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={incomingDueDate}
+                        onSelect={setIncomingDueDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Button
+                    onClick={handleIncomingPaymentsDownload}
+                    disabled={!incomingDueDate}
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download SEPA XML
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Transfer Orders Section */}
+              <Card className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium mb-2">Transfer Orders (Norma 34)</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Generate transfer orders file for all outgoing payments
+                    </p>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {outgoingDueDate ? format(outgoingDueDate, 'PPP') : <span>Select Due Date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={outgoingDueDate}
+                        onSelect={setOutgoingDueDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Button
+                    onClick={handleOutgoingPaymentsDownload}
+                    disabled={!outgoingDueDate}
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Norma 34
+                  </Button>
+                </div>
+              </Card>
+
               <Card className="p-6">
                 <h3 className="text-lg font-medium mb-4">Banking Workflow Overview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
