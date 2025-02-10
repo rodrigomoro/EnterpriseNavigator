@@ -342,15 +342,18 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
   addModule,
   removeModule,
 }) => {
-  const [moduleSearchOpen, setModuleSearchOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [moduleSearchOpen, setModuleSearchOpen] = useState<Record<number, boolean>>({});
+  const [searchValue, setSearchValue] = useState<Record<number, string>>({});
 
-  const filteredModules = mockModuleCatalog.filter(
-    (module) =>
-      !form.watch("modules")?.some(m => m.id === module.id) &&
-      (module.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        module.code.toLowerCase().includes(searchValue.toLowerCase()))
-  );
+  const getFilteredModules = (index: number) => {
+    const currentValue = searchValue[index] || '';
+    return mockModuleCatalog.filter(
+      (module) =>
+        !form.watch("modules")?.some(m => m.id === module.id) &&
+        (module.name.toLowerCase().includes(currentValue.toLowerCase()) ||
+          module.code.toLowerCase().includes(currentValue.toLowerCase()))
+    );
+  };
 
   const handleModuleSelect = (moduleId: string | null, moduleIndex: number) => {
     if (moduleId) {
@@ -368,6 +371,8 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
           credits: selectedModule.credits || 0,
           costPerCredit: selectedModule.costPerCredit || 0,
         });
+        setModuleSearchOpen(prev => ({ ...prev, [moduleIndex]: false }));
+        setSearchValue(prev => ({ ...prev, [moduleIndex]: '' }));
       }
     }
   };
@@ -405,52 +410,56 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
                 <div className="divide-y">
                   {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                     <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
-                      <div className="col-span-3">
+                      <div className="col-span-3 relative">
                         <FormField
                           control={form.control}
                           name={`modules.${moduleIndex}.name`}
                           render={({ field }) => (
                             <FormItem className="space-y-0">
                               <FormControl>
-                                <Command className="overflow-visible">
-                                  <div className="flex items-center border rounded-md px-3">
-                                    <CommandInput
-                                      placeholder="Search or enter new module name..."
-                                      value={field.value}
-                                      onValueChange={(value) => {
+                                <div className="relative">
+                                  <Input
+                                    {...field}
+                                    className="w-full pr-8"
+                                    placeholder="Search or enter new module name..."
+                                    value={module.id ? module.name : (searchValue[moduleIndex] || field.value)}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (!module.id) {
                                         field.onChange(value);
-                                        setSearchValue(value);
-                                        if (value) setModuleSearchOpen(true);
-                                      }}
-                                      className="h-9"
-                                    />
-                                  </div>
-                                  {moduleSearchOpen && searchValue && (
-                                    <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2">
-                                      <CommandList>
-                                        <CommandEmpty>No modules found</CommandEmpty>
-                                        <CommandGroup>
-                                          {filteredModules.map((module) => (
-                                            <CommandItem
-                                              key={module.id}
-                                              value={module.name}
-                                              onSelect={() => {
-                                                handleModuleSelect(module.id, moduleIndex);
-                                                setModuleSearchOpen(false);
-                                              }}
-                                              className="flex items-center gap-2"
-                                            >
-                                              <Badge variant="outline" className="text-xs">
-                                                {module.code}
-                                              </Badge>
-                                              {module.name}
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
+                                      }
+                                      setSearchValue(prev => ({ ...prev, [moduleIndex]: value }));
+                                      setModuleSearchOpen(prev => ({ ...prev, [moduleIndex]: true }));
+                                    }}
+                                    disabled={Boolean(module.id)}
+                                  />
+                                  {moduleSearchOpen[moduleIndex] && searchValue[moduleIndex] && !module.id && (
+                                    <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2 max-h-[200px] overflow-y-auto">
+                                      <Command>
+                                        <CommandList>
+                                          <CommandEmpty>No modules found</CommandEmpty>
+                                          <CommandGroup>
+                                            {getFilteredModules(moduleIndex).map((module) => (
+                                              <CommandItem
+                                                key={module.id}
+                                                value={module.name}
+                                                onSelect={() => {
+                                                  handleModuleSelect(module.id, moduleIndex);
+                                                }}
+                                                className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
+                                              >
+                                                <Badge variant="outline" className="text-xs">
+                                                  {module.code}
+                                                </Badge>
+                                                <span>{module.name}</span>
+                                              </CommandItem>
+                                            ))}
+                                          </CommandGroup>
+                                        </CommandList>
+                                      </Command>
                                     </div>
                                   )}
-                                </Command>
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
