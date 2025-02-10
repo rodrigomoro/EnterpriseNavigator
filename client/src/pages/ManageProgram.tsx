@@ -433,31 +433,30 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
                                     }}
                                     disabled={Boolean(module.id)}
                                   />
-                                  {moduleSearchOpen[moduleIndex] && searchValue[moduleIndex] && !module.id && (
+                                  {moduleSearchOpen[moduleIndex] && 
+                                   searchValue[moduleIndex] && 
+                                   !module.id && 
+                                   getFilteredModules(moduleIndex).length > 0 && (
                                     <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2">
                                       <Command>
                                         <CommandList className="max-h-[200px]">
-                                          {getFilteredModules(moduleIndex).length === 0 ? (
-                                            <CommandEmpty>No modules found</CommandEmpty>
-                                          ) : (
-                                            <CommandGroup>
-                                              {getFilteredModules(moduleIndex).map((module) => (
-                                                <CommandItem
-                                                  key={module.id}
-                                                  value={module.name}
-                                                  onSelect={() => {
-                                                    handleModuleSelect(module.id, moduleIndex);
-                                                  }}
-                                                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
-                                                >
-                                                  <Badge variant="outline" className="text-xs">
-                                                    {module.code}
-                                                  </Badge>
-                                                  <span>{module.name}</span>
-                                                </CommandItem>
-                                              ))}
-                                            </CommandGroup>
-                                          )}
+                                          <CommandGroup>
+                                            {getFilteredModules(moduleIndex).map((module) => (
+                                              <CommandItem
+                                                key={module.id}
+                                                value={module.name}
+                                                onSelect={() => {
+                                                  handleModuleSelect(module.id, moduleIndex);
+                                                }}
+                                                className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
+                                              >
+                                                <Badge variant="outline" className="text-xs">
+                                                  {module.code}
+                                                </Badge>
+                                                <span>{module.name}</span>
+                                              </CommandItem>
+                                            ))}
+                                          </CommandGroup>
                                         </CommandList>
                                       </Command>
                                     </div>
@@ -974,7 +973,7 @@ export default function ManageProgram() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: program?.name ?? "",
+      name: program?.name ??"",
       area: program?.area ?? "",
       type: program?.type ?? "",
       directorIds: program?.directors?.map(d => d.id) ?? [],
