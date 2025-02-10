@@ -150,7 +150,7 @@ export function PreRegistrationFormDialog({
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'New Pre-registration' : 'Edit Pre-registration'}</DialogTitle>
           <DialogDescription>
@@ -163,131 +163,133 @@ export function PreRegistrationFormDialog({
         <ScrollArea className="h-[600px] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="studentId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Student</FormLabel>
-                    <div className="space-y-2">
-                      <FormControl>
-                        <PeoplePicker
-                          people={students}
-                          selectedIds={field.value ? [field.value] : []}
-                          onChange={(ids) => field.onChange(ids[0] || '')}
-                          placeholder="Select a student"
-                          multiple={false}
-                        />
-                      </FormControl>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => setQuickAddOpen(true)}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add New Student
-                      </Button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="moduleIds"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Modules</FormLabel>
-                    <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                      <div className="space-y-2">
-                        {mockModules.map((module) => (
-                          <div key={module?.id} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`module-${module?.id}`}
-                              onCheckedChange={(checked) => {
-                                const currentModules = form.getValues('moduleIds');
-                                if (checked) {
-                                  if (module) {
-                                    form.setValue('moduleIds', [...currentModules, module.id]);
-                                  }
-                                } else {
-                                  form.setValue(
-                                    'moduleIds',
-                                    currentModules.filter((id) => id !== module?.id)
-                                  );
-                                }
-                              }}
-                            />
-                            <Label htmlFor={`module-${module?.id}`} className="flex-1">
-                              {module?.name}
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                ({module?.credits} credits)
-                              </span>
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Notes</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Add any additional notes" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <Label>Required Documents</Label>
+              <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label>Signed Pre-registration Form</Label>
-                    <Input type="file" onChange={handleFileUpload} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Supporting Documents</Label>
-                    <Input type="file" multiple onChange={handleFileUpload} />
-                    <p className="text-sm text-muted-foreground">
-                      Upload any additional documents (e.g., large family card, academic records)
-                    </p>
-                  </div>
-                  {files.length > 0 && (
-                    <div className="mt-2">
-                      <Label>Uploaded Files:</Label>
-                      <ul className="mt-1 space-y-1">
-                        {files.map((file, index) => (
-                          <li key={index} className="text-sm flex items-center justify-between">
-                            <span>{file.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => downloadFile(file)}
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
+                  <FormField
+                    control={form.control}
+                    name="studentId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Student</FormLabel>
+                        <div className="space-y-2">
+                          <FormControl>
+                            <PeoplePicker
+                              people={students}
+                              selectedIds={field.value ? [field.value] : []}
+                              onChange={(ids) => field.onChange(ids[0] || '')}
+                              placeholder="Select a student"
+                              multiple={false}
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => setQuickAddOpen(true)}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add New Student
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notes</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Add any additional notes" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="space-y-2">
+                    <Label>Required Documents</Label>
+                    <div className="space-y-4">
+                      <div className="grid gap-2">
+                        <Label>Signed Pre-registration Form</Label>
+                        <Input type="file" onChange={handleFileUpload} />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Supporting Documents</Label>
+                        <Input type="file" multiple onChange={handleFileUpload} />
+                        <p className="text-sm text-muted-foreground">
+                          Upload any additional documents (e.g., large family card, academic records)
+                        </p>
+                      </div>
+                      {files.length > 0 && (
+                        <div className="mt-2">
+                          <Label>Uploaded Files:</Label>
+                          <ul className="mt-1 space-y-1">
+                            {files.map((file, index) => (
+                              <li key={index} className="text-sm flex items-center justify-between">
+                                <span className="truncate">{file.name}</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => downloadFile(file)}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                </div>
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="moduleIds"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Modules</FormLabel>
+                        <ScrollArea className="h-[500px] w-full rounded-md border p-4">
+                          <div className="space-y-2">
+                            {mockModules.map((module) => (
+                              <div key={module?.id} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`module-${module?.id}`}
+                                  onCheckedChange={(checked) => {
+                                    const currentModules = form.getValues('moduleIds');
+                                    if (checked) {
+                                      if (module) {
+                                        form.setValue('moduleIds', [...currentModules, module.id]);
+                                      }
+                                    } else {
+                                      form.setValue(
+                                        'moduleIds',
+                                        currentModules.filter((id) => id !== module?.id)
+                                      );
+                                    }
+                                  }}
+                                />
+                                <Label htmlFor={`module-${module?.id}`} className="flex-1">
+                                  {module?.name}
+                                  <span className="ml-2 text-xs text-muted-foreground">
+                                    ({module?.credits} credits)
+                                  </span>
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
-
-              <DialogFooter className="flex-col sm:flex-row gap-2">
+              <DialogFooter className="flex-col sm:flex-row gap-2 pt-6">
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={downloadPDF}>
                     <Download className="h-4 w-4 mr-2" />
