@@ -420,7 +420,7 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
                                 <div className="relative">
                                   <Input
                                     {...field}
-                                    className="w-full pr-8"
+                                    className="w-full"
                                     placeholder="Search or enter new module name..."
                                     value={module.id ? module.name : (searchValue[moduleIndex] || field.value)}
                                     onChange={(e) => {
@@ -429,32 +429,35 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
                                         field.onChange(value);
                                       }
                                       setSearchValue(prev => ({ ...prev, [moduleIndex]: value }));
-                                      setModuleSearchOpen(prev => ({ ...prev, [moduleIndex]: true }));
+                                      setModuleSearchOpen(prev => ({ ...prev, [moduleIndex]: Boolean(value) }));
                                     }}
                                     disabled={Boolean(module.id)}
                                   />
                                   {moduleSearchOpen[moduleIndex] && searchValue[moduleIndex] && !module.id && (
-                                    <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2 max-h-[200px] overflow-y-auto">
+                                    <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2">
                                       <Command>
-                                        <CommandList>
-                                          <CommandEmpty>No modules found</CommandEmpty>
-                                          <CommandGroup>
-                                            {getFilteredModules(moduleIndex).map((module) => (
-                                              <CommandItem
-                                                key={module.id}
-                                                value={module.name}
-                                                onSelect={() => {
-                                                  handleModuleSelect(module.id, moduleIndex);
-                                                }}
-                                                className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
-                                              >
-                                                <Badge variant="outline" className="text-xs">
-                                                  {module.code}
-                                                </Badge>
-                                                <span>{module.name}</span>
-                                              </CommandItem>
-                                            ))}
-                                          </CommandGroup>
+                                        <CommandList className="max-h-[200px]">
+                                          {getFilteredModules(moduleIndex).length === 0 ? (
+                                            <CommandEmpty>No modules found</CommandEmpty>
+                                          ) : (
+                                            <CommandGroup>
+                                              {getFilteredModules(moduleIndex).map((module) => (
+                                                <CommandItem
+                                                  key={module.id}
+                                                  value={module.name}
+                                                  onSelect={() => {
+                                                    handleModuleSelect(module.id, moduleIndex);
+                                                  }}
+                                                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-muted"
+                                                >
+                                                  <Badge variant="outline" className="text-xs">
+                                                    {module.code}
+                                                  </Badge>
+                                                  <span>{module.name}</span>
+                                                </CommandItem>
+                                              ))}
+                                            </CommandGroup>
+                                          )}
                                         </CommandList>
                                       </Command>
                                     </div>
