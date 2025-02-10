@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Plus } from 'lucide-react';
+import { Plus, Upload, Download, Mail } from 'lucide-react';
 import PeoplePicker from '@/components/ui/PeoplePicker';
 import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -34,6 +34,11 @@ const preRegistrationSchema = z.object({
   studentId: z.string().min(1, 'Please select a student'),
   moduleIds: z.array(z.string()).min(1, 'Please select at least one module'),
   notes: z.string().optional(),
+  documents: z.array(z.object({
+    type: z.string(),
+    file: z.any(),
+    description: z.string().optional(),
+  })).optional(),
 });
 
 type PreRegistrationFormValues = z.infer<typeof preRegistrationSchema>;
@@ -43,6 +48,8 @@ interface PreRegistrationFormDialogProps {
   onOpenChange?: (open: boolean) => void;
   onPreRegister: (data: PreRegistrationFormValues & { timestamp: string }) => void;
   trigger?: React.ReactNode;
+  initialData?: PreRegistrationFormValues;
+  mode?: 'create' | 'edit';
 }
 
 // Remove duplicates based on student ID
@@ -52,24 +59,29 @@ export function PreRegistrationFormDialog({
   open,
   onOpenChange,
   onPreRegister,
-  trigger 
+  trigger,
+  initialData,
+  mode = 'create'
 }: PreRegistrationFormDialogProps) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [students, setStudents] = useState(uniqueStudents);
   const { toast } = useToast();
+  const [files, setFiles] = useState<File[]>([]);
 
   const form = useForm<PreRegistrationFormValues>({
     resolver: zodResolver(preRegistrationSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       studentId: '',
       moduleIds: [],
       notes: '',
+      documents: [],
     },
   });
 
   useEffect(() => {
     if (!open) {
       form.reset();
+      setFiles([]);
     }
   }, [open, form]);
 
@@ -78,10 +90,35 @@ export function PreRegistrationFormDialog({
       ...data,
       timestamp: new Date().toISOString(),
     });
+
+    // After successful submission, offer download/email options
+    const documentOptions = [
+      { label: 'Download PDF', action: downloadPDF },
+      { label: 'Send via Email', action: sendEmail },
+    ];
+
+    toast({
+      title: `Pre-registration ${mode === 'create' ? 'Created' : 'Updated'}`,
+      description: (
+        <div className="mt-2 space-y-2">
+          <p>Pre-registration has been {mode === 'create' ? 'created' : 'updated'} successfully.</p>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={downloadPDF} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+            <Button size="sm" onClick={sendEmail} variant="outline">
+              <Mail className="h-4 w-4 mr-2" />
+              Send via Email
+            </Button>
+          </div>
+        </div>
+      ),
+      duration: 5000,
+    });
   };
 
   const handleQuickAdd = async (data: { name: string; email: string; phone: string }) => {
-    // In a real application, this would make an API call to create the person
     const newStudent = {
       id: `temp-${Date.now()}`,
       name: data.name,
@@ -101,20 +138,38 @@ export function PreRegistrationFormDialog({
     });
   };
 
+  const downloadPDF = () => {
+    // TODO: Implement PDF generation and download
+    console.log("Downloading PDF...");
+  };
+
+  const sendEmail = () => {
+    // TODO: Implement email sending
+    console.log("Sending email...");
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = Array.from(event.target.files || []);
+    setFiles(prev => [...prev, ...newFiles]);
+    form.setValue('documents', [...files, ...newFiles.map(file => ({type: file.type, file: file, description: ''}))])
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button>
-            New Pre-registration
+            {mode === 'create' ? 'New Pre-registration' : 'Edit Pre-registration'}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Pre-registration</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'New Pre-registration' : 'Edit Pre-registration'}</DialogTitle>
           <DialogDescription>
-            Create a new pre-registration for a student. This will reserve their place in the selected modules.
+            {mode === 'create' 
+              ? 'Create a new pre-registration for a student. This will reserve their place in the selected modules.'
+              : 'Update the pre-registration details.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -206,8 +261,39 @@ export function PreRegistrationFormDialog({
               )}
             />
 
+            <div className="space-y-2">
+              <Label>Required Documents</Label>
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <Label>Signed Pre-registration Form</Label>
+                  <Input type="file" onChange={handleFileUpload} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Supporting Documents</Label>
+                  <Input type="file" multiple onChange={handleFileUpload} />
+                  <p className="text-sm text-muted-foreground">
+                    Upload any additional documents (e.g., large family card, academic records)
+                  </p>
+                </div>
+                {files.length > 0 && (
+                  <div className="mt-2">
+                    <Label>Uploaded Files:</Label>
+                    <ul className="mt-1 space-y-1">
+                      {files.map((file, index) => (
+                        <li key={index} className="text-sm">
+                          {file.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <DialogFooter>
-              <Button type="submit">Create Pre-registration</Button>
+              <Button type="submit">
+                {mode === 'create' ? 'Create Pre-registration' : 'Update Pre-registration'}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

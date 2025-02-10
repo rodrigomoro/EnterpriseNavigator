@@ -29,6 +29,7 @@ export const EnrollmentManager = () => {
   const [isBulkAction, setIsBulkAction] = useState(false);
   const [paymentInfo, setPaymentInfo] = useState<any>(null);
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
+  const [sepaDownloadDate, setSepaDownloadDate] = useState<Date>();
 
   const availableFees = [
     { id: 'tuition', name: 'Tuition Fee', amount: selectedEnrollment?.moduleAssignments.reduce((sum, assignment) => sum + (assignment.cost || 500), 0) || 0 },
@@ -38,14 +39,51 @@ export const EnrollmentManager = () => {
     { id: 'laboratory', name: 'Laboratory Fee', amount: 300 },
   ];
 
-  // Mock completed payment info
+  // Get all direct debit enrollments
+  const getDirectDebitEnrollments = () => {
+    return enrollments.filter(enrollment => {
+      const completedPaymentInfo = getCompletedPaymentInfo(enrollment);
+      return completedPaymentInfo?.payers?.some(
+        payer => payer.paymentMethod === 'direct_debit'
+      );
+    });
+  };
+
+  const handleSEPAXMLDownload = () => {
+    if (!sepaDownloadDate) {
+      toast({
+        title: "Select Due Date",
+        description: "Please select a due date for the SEPA payments before downloading.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const directDebitEnrollments = getDirectDebitEnrollments();
+    if (directDebitEnrollments.length === 0) {
+      toast({
+        title: "No Direct Debit Enrollments",
+        description: "There are no enrollments with Direct Debit payment method.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Here you would generate the SEPA XML file
+    // For now, we'll just show a success message
+    toast({
+      title: "SEPA XML Generated",
+      description: `Generated SEPA XML for ${directDebitEnrollments.length} enrollments with due date ${sepaDownloadDate.toLocaleDateString()}.`,
+    });
+  };
+
   const getCompletedPaymentInfo = (enrollment: any) => {
     // Calculate the total tuition fee by summing module costs.
     const moduleTotal = enrollment?.moduleAssignments?.reduce(
       (sum: number, assignment: any) => sum + (assignment.cost || 500),
       0
     ) || 0;
-  
+
     // Additional fixed fees.
     const additionalFees = {
       registration: 100,
@@ -58,7 +96,7 @@ export const EnrollmentManager = () => {
       additionalFees.materials +
       additionalFees.technology +
       additionalFees.laboratory;
-  
+
     // If the enrollment meets the condition for Direct Debit (for example, studentId "ST009"),
     // then return the Direct Debit payment information.
     if (enrollment.studentId === "ST009") {
@@ -121,7 +159,7 @@ export const EnrollmentManager = () => {
         paymentPlan: "single" as const, // Single payment (no installments)
       };
     }
-  
+
     // Otherwise, return the default payment information.
     return {
       payers: [
@@ -244,7 +282,7 @@ export const EnrollmentManager = () => {
       description: `Successfully ${action === 'download' ? 'downloaded' : 'sent'} ${completedEnrollments.length} receipts.`,
     });
   };
-  
+
 
   const completedEnrollment = {
     id: "9",
@@ -453,6 +491,40 @@ export const EnrollmentManager = () => {
         </Popover>
       </div>
 
+      {/* Add SEPA XML Download Section */}
+      <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+        <div className="flex-1">
+          <h3 className="text-sm font-medium">SEPA Direct Debit</h3>
+          <p className="text-sm text-muted-foreground">
+            Download SEPA XML file for all Direct Debit payments
+          </p>
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {sepaDownloadDate ? format(sepaDownloadDate, 'PPP') : <span>Select Due Date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={sepaDownloadDate}
+              onSelect={setSepaDownloadDate}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        <Button 
+          onClick={handleSEPAXMLDownload}
+          disabled={!sepaDownloadDate}
+          className="gap-2"
+        >
+          <Download className="h-4 w-4" />
+          Download SEPA XML
+        </Button>
+      </div>
+
       <div className="flex gap-4">
         <div className="flex items-center gap-2">
           <Checkbox
@@ -550,14 +622,13 @@ export const EnrollmentManager = () => {
         </div>
       </ScrollArea>
 
-      {/* Payment Form Dialog */}
       {paymentFormOpen && (
         <ReceiptFormDialog
           open={paymentFormOpen}
           onOpenChange={setPaymentFormOpen}
           onSubmit={handlePaymentSubmit}
           studentName={selectedEnrollment?.studentName}
-          studentId={selectedEnrollment?.studentId} // Add this prop
+          studentId={selectedEnrollment?.studentId} 
           moduleAssignments={selectedEnrollment?.moduleAssignments}
           isBulkAction={isBulkAction}
           selectedEnrollments={isBulkAction ? selectedEnrollments : null}
@@ -565,7 +636,6 @@ export const EnrollmentManager = () => {
         />
       )}
 
-      {/* Receipt Preview Dialog */}
       {showReceiptPreview && selectedEnrollment && paymentInfo && (
         <ReceiptPreviewDialog
           open={showReceiptPreview}
