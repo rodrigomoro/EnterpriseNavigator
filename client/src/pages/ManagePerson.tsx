@@ -31,6 +31,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { mockPeople } from '@/data/mockPeople';
+import PeoplePicker from '@/components/ui/PeoplePicker';
 
 // Status descriptions for each role type
 const statusDescriptions: Record<string, Record<string, string>> = {
@@ -519,6 +520,25 @@ export default function ManagePerson() {
                     />
                   </CardContent>
                 </Card>
+                <FormField
+                        control={form.control}
+                        name="reportsTo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Reports To</FormLabel>
+                            <FormControl>
+                              <PeoplePicker
+                                people={mockPeople.filter(p => p.isDirector || p.role === 'Staff')}
+                                selectedIds={field.value ? [field.value] : []}
+                                onChange={(ids) => field.onChange(ids[0] || '')}
+                                placeholder="Select manager"
+                                multiple={false}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
               </div>
 
               <div className="flex justify-end gap-4">

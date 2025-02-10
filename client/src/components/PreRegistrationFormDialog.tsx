@@ -12,13 +12,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -30,9 +23,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import PeoplePicker from '@/components/ui/PeoplePicker';
 import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const preRegistrationSchema = z.object({
   studentId: z.string().min(1, 'Please select a student'),
@@ -101,29 +94,15 @@ export function PreRegistrationFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Student</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a student" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <ScrollArea className="max-h-[200px]">
-                        {mockStudents.map((student) => (
-                          <SelectItem key={student.id} value={student.id} className="flex items-center gap-2 py-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={student.avatar} />
-                              <AvatarFallback>{student.name.slice(0, 2)}</AvatarFallback>
-                            </Avatar>
-                            <span>{student.name}</span>
-                          </SelectItem>
-                        ))}
-                      </ScrollArea>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PeoplePicker
+                      people={mockStudents}
+                      selectedIds={field.value ? [field.value] : []}
+                      onChange={(ids) => field.onChange(ids[0] || '')}
+                      placeholder="Select a student"
+                      multiple={false}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
