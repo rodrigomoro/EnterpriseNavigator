@@ -73,7 +73,8 @@ export default function ModulesCatalog() {
   const filteredModules = mockModuleCatalog.filter(module => {
     const matchesSearch =
       module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      module.description.toLowerCase().includes(searchQuery.toLowerCase());
+      module.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      module.code.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCredits =
       selectedCredits === "All" ||
