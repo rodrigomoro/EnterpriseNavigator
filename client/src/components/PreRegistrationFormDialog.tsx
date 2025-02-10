@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Plus, Upload, Download, Mail } from 'lucide-react';
+import { Plus, Upload, Download, Mail, Search } from 'lucide-react';
 import PeoplePicker from '@/components/ui/PeoplePicker';
 import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -67,6 +67,16 @@ export function PreRegistrationFormDialog({
   const [students, setStudents] = useState(uniqueStudents);
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
+  const [moduleSearch, setModuleSearch] = useState('');
+
+  // Filter modules based on search query
+  const filteredModules = mockModules.filter(module => {
+    const searchLower = moduleSearch.toLowerCase();
+    return (
+      module.code?.toLowerCase().includes(searchLower) ||
+      module.name?.toLowerCase().includes(searchLower)
+    );
+  });
 
   const form = useForm<PreRegistrationFormValues>({
     resolver: zodResolver(preRegistrationSchema),
@@ -253,36 +263,47 @@ export function PreRegistrationFormDialog({
                     render={() => (
                       <FormItem>
                         <FormLabel>Modules</FormLabel>
-                        <ScrollArea className="h-[500px] w-full rounded-md border p-4">
-                          <div className="space-y-2">
-                            {mockModules.map((module) => (
-                              <div key={module?.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`module-${module?.id}`}
-                                  onCheckedChange={(checked) => {
-                                    const currentModules = form.getValues('moduleIds');
-                                    if (checked) {
-                                      if (module) {
-                                        form.setValue('moduleIds', [...currentModules, module.id]);
-                                      }
-                                    } else {
-                                      form.setValue(
-                                        'moduleIds',
-                                        currentModules.filter((id) => id !== module?.id)
-                                      );
-                                    }
-                                  }}
-                                />
-                                <Label htmlFor={`module-${module?.id}`} className="flex-1">
-                                  {module?.name}
-                                  <span className="ml-2 text-xs text-muted-foreground">
-                                    ({module?.credits} credits)
-                                  </span>
-                                </Label>
-                              </div>
-                            ))}
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              placeholder="Search modules by code or name..."
+                              className="pl-8"
+                              value={moduleSearch}
+                              onChange={(e) => setModuleSearch(e.target.value)}
+                            />
                           </div>
-                        </ScrollArea>
+                          <ScrollArea className="h-[500px] w-full rounded-md border p-4">
+                            <div className="space-y-2">
+                              {filteredModules.map((module) => (
+                                <div key={module?.id} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`module-${module?.id}`}
+                                    onCheckedChange={(checked) => {
+                                      const currentModules = form.getValues('moduleIds');
+                                      if (checked) {
+                                        if (module) {
+                                          form.setValue('moduleIds', [...currentModules, module.id]);
+                                        }
+                                      } else {
+                                        form.setValue(
+                                          'moduleIds',
+                                          currentModules.filter((id) => id !== module?.id)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <Label htmlFor={`module-${module?.id}`} className="flex-1">
+                                    <span className="font-mono">{module?.code}</span> - {module?.name}
+                                    <span className="ml-2 text-xs text-muted-foreground">
+                                      ({module?.credits} credits)
+                                    </span>
+                                  </Label>
+                                </div>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
