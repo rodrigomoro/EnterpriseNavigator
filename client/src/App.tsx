@@ -16,7 +16,6 @@ import ManageModule from "@/pages/ManageModule";
 import Invoices from "@/pages/Invoices";
 import InvoiceDetail from "@/pages/InvoiceDetail";
 import CreateEditInvoice from "@/pages/CreateEditInvoice";
-import QRTrackingDashboard from "@/pages/QRTrackingDashboard";
 import FinancialDashboard from "@/pages/FinancialDashboard";
 import Analytics from "@/pages/Analytics";
 import Organization from "@/pages/Organization";
@@ -47,7 +46,6 @@ function Router() {
       <Route path="/invoices/:id/edit" component={CreateEditInvoice} />
       <Route path="/invoices/:id" component={InvoiceDetail} />
       <Route path="/invoices" component={Invoices} />
-      <Route path="/qr-tracking" component={QRTrackingDashboard} />
       <Route path="/financial-dashboard" component={FinancialDashboard} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/skills-matrix" component={SkillsMatrix} />
