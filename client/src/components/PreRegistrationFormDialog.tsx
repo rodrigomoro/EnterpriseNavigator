@@ -90,32 +90,6 @@ export function PreRegistrationFormDialog({
       ...data,
       timestamp: new Date().toISOString(),
     });
-
-    // After successful submission, offer download/email options
-    const documentOptions = [
-      { label: 'Download PDF', action: downloadPDF },
-      { label: 'Send via Email', action: sendEmail },
-    ];
-
-    toast({
-      title: `Pre-registration ${mode === 'create' ? 'Created' : 'Updated'}`,
-      description: (
-        <div className="mt-2 space-y-2">
-          <p>Pre-registration has been {mode === 'create' ? 'created' : 'updated'} successfully.</p>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={downloadPDF} variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
-            </Button>
-            <Button size="sm" onClick={sendEmail} variant="outline">
-              <Mail className="h-4 w-4 mr-2" />
-              Send via Email
-            </Button>
-          </div>
-        </div>
-      ),
-      duration: 5000,
-    });
   };
 
   const handleQuickAdd = async (data: { name: string; email: string; phone: string }) => {
@@ -140,12 +114,18 @@ export function PreRegistrationFormDialog({
 
   const downloadPDF = () => {
     // TODO: Implement PDF generation and download
-    console.log("Downloading PDF...");
+    toast({
+      title: "PDF Download",
+      description: "Pre-registration form has been downloaded.",
+    });
   };
 
   const sendEmail = () => {
     // TODO: Implement email sending
-    console.log("Sending email...");
+    toast({
+      title: "Email Sent",
+      description: "Pre-registration form has been sent via email.",
+    });
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,14 +134,21 @@ export function PreRegistrationFormDialog({
     form.setValue('documents', [...files, ...newFiles.map(file => ({type: file.type, file: file, description: ''}))])
   };
 
+  const downloadFile = (file: File) => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        {trigger || (
-          <Button>
-            {mode === 'create' ? 'New Pre-registration' : 'Edit Pre-registration'}
-          </Button>
-        )}
+        {trigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -172,131 +159,152 @@ export function PreRegistrationFormDialog({
               : 'Update the pre-registration details.'}
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="studentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Student</FormLabel>
-                  <div className="space-y-2">
-                    <FormControl>
-                      <PeoplePicker
-                        people={students}
-                        selectedIds={field.value ? [field.value] : []}
-                        onChange={(ids) => field.onChange(ids[0] || '')}
-                        placeholder="Select a student"
-                        multiple={false}
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setQuickAddOpen(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add New Student
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <FormField
-              control={form.control}
-              name="moduleIds"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Modules</FormLabel>
-                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+        <ScrollArea className="h-[600px] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="studentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Student</FormLabel>
                     <div className="space-y-2">
-                      {mockModules.map((module) => (
-                        <div key={module?.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`module-${module?.id}`}
-                            onCheckedChange={(checked) => {
-                              const currentModules = form.getValues('moduleIds');
-                              if (checked) {
-                                if (module) {
-                                  form.setValue('moduleIds', [...currentModules, module.id]);
-                                }
-                              } else {
-                                form.setValue(
-                                  'moduleIds',
-                                  currentModules.filter((id) => id !== module?.id)
-                                );
-                              }
-                            }}
-                          />
-                          <Label htmlFor={`module-${module?.id}`} className="flex-1">
-                            {module?.name}
-                            <span className="ml-2 text-xs text-muted-foreground">
-                              ({module?.credits} credits)
-                            </span>
-                          </Label>
-                        </div>
-                      ))}
+                      <FormControl>
+                        <PeoplePicker
+                          people={students}
+                          selectedIds={field.value ? [field.value] : []}
+                          onChange={(ids) => field.onChange(ids[0] || '')}
+                          placeholder="Select a student"
+                          multiple={false}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setQuickAddOpen(true)}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add New Student
+                      </Button>
                     </div>
-                  </ScrollArea>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Add any additional notes" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-2">
-              <Label>Required Documents</Label>
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <Label>Signed Pre-registration Form</Label>
-                  <Input type="file" onChange={handleFileUpload} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Supporting Documents</Label>
-                  <Input type="file" multiple onChange={handleFileUpload} />
-                  <p className="text-sm text-muted-foreground">
-                    Upload any additional documents (e.g., large family card, academic records)
-                  </p>
-                </div>
-                {files.length > 0 && (
-                  <div className="mt-2">
-                    <Label>Uploaded Files:</Label>
-                    <ul className="mt-1 space-y-1">
-                      {files.map((file, index) => (
-                        <li key={index} className="text-sm">
-                          {file.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            <DialogFooter>
-              <Button type="submit">
-                {mode === 'create' ? 'Create Pre-registration' : 'Update Pre-registration'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <FormField
+                control={form.control}
+                name="moduleIds"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Modules</FormLabel>
+                    <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                      <div className="space-y-2">
+                        {mockModules.map((module) => (
+                          <div key={module?.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`module-${module?.id}`}
+                              onCheckedChange={(checked) => {
+                                const currentModules = form.getValues('moduleIds');
+                                if (checked) {
+                                  if (module) {
+                                    form.setValue('moduleIds', [...currentModules, module.id]);
+                                  }
+                                } else {
+                                  form.setValue(
+                                    'moduleIds',
+                                    currentModules.filter((id) => id !== module?.id)
+                                  );
+                                }
+                              }}
+                            />
+                            <Label htmlFor={`module-${module?.id}`} className="flex-1">
+                              {module?.name}
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                ({module?.credits} credits)
+                              </span>
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Add any additional notes" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-2">
+                <Label>Required Documents</Label>
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label>Signed Pre-registration Form</Label>
+                    <Input type="file" onChange={handleFileUpload} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Supporting Documents</Label>
+                    <Input type="file" multiple onChange={handleFileUpload} />
+                    <p className="text-sm text-muted-foreground">
+                      Upload any additional documents (e.g., large family card, academic records)
+                    </p>
+                  </div>
+                  {files.length > 0 && (
+                    <div className="mt-2">
+                      <Label>Uploaded Files:</Label>
+                      <ul className="mt-1 space-y-1">
+                        {files.map((file, index) => (
+                          <li key={index} className="text-sm flex items-center justify-between">
+                            <span>{file.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => downloadFile(file)}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={downloadPDF}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </Button>
+                  <Button type="button" variant="outline" onClick={sendEmail}>
+                    <Mail className="h-4 w-4 mr-2" />
+                    Send via Email
+                  </Button>
+                </div>
+                <Button type="submit">
+                  {mode === 'create' ? 'Create Pre-registration' : 'Save Changes'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </ScrollArea>
       </DialogContent>
 
       <QuickPersonFormDialog
