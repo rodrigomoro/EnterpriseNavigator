@@ -26,7 +26,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { mockPreRegistrations } from '@/data/mockPreRegistrationData';
 import { ConversionDialog } from './ConversionDialog';
 import { mockModuleCatalog } from '@/data/mockModules';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Pencil } from 'lucide-react';
+import { PreRegistrationFormDialog } from './PreRegistrationFormDialog';
 
 interface PreRegistration {
   id: string;
@@ -35,11 +36,18 @@ interface PreRegistration {
   modules: string[];
   timestamp: string;
   priority: number;
+  notes?: string;
+  documents?: Array<{
+    type: string;
+    file: File;
+    description?: string;
+  }>;
 }
 
 interface PreRegistrationItemProps {
   preReg: PreRegistration;
   onConvert: (preReg: PreRegistration) => void;
+  onEdit: (preReg: PreRegistration) => void;
   selected: boolean;
   onSelect: (id: string) => void;
 }
@@ -47,6 +55,7 @@ interface PreRegistrationItemProps {
 const SortablePreRegistrationItem = ({
   preReg,
   onConvert,
+  onEdit,
   selected,
   onSelect,
 }: PreRegistrationItemProps) => {
@@ -97,6 +106,16 @@ const SortablePreRegistrationItem = ({
                 );
               })}
             </div>
+            {preReg.notes && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {preReg.notes}
+              </p>
+            )}
+            {preReg.documents && preReg.documents.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {preReg.documents.length} document(s) attached
+              </p>
+            )}
           </div>
           <div className="text-right">
             <Badge variant="outline" className="mb-2">
@@ -106,13 +125,22 @@ const SortablePreRegistrationItem = ({
               {new Date(preReg.timestamp).toLocaleDateString()}
             </div>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onConvert(preReg)}
-          >
-            Convert
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(preReg)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => onConvert(preReg)}
+            >
+              Convert
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
@@ -123,7 +151,9 @@ export const PreRegistrationManager = () => {
   const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>(mockPreRegistrations);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPreRegs, setSelectedPreRegs] = useState<PreRegistration[]>([]);
+  const [editingPreReg, setEditingPreReg] = useState<PreRegistration | null>(null);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -164,6 +194,11 @@ export const PreRegistrationManager = () => {
     setConversionDialogOpen(true);
   };
 
+  const handleEdit = (preReg: PreRegistration) => {
+    setEditingPreReg(preReg);
+    setEditDialogOpen(true);
+  };
+
   const handleConvertSelected = () => {
     const selectedPreRegs = preRegistrations.filter(p => selectedIds.has(p.id));
     if (selectedPreRegs.length > 0) {
@@ -198,6 +233,23 @@ export const PreRegistrationManager = () => {
     toast({
       title: "Pre-registrations converted",
       description: `Successfully enrolled ${data.conversions.length} student(s) in their selected groups.`,
+    });
+  };
+
+  const handlePreRegistrationUpdate = (data: any) => {
+    setPreRegistrations(prev =>
+      prev.map(preReg =>
+        preReg.id === editingPreReg?.id
+          ? { ...preReg, ...data }
+          : preReg
+      )
+    );
+    setEditDialogOpen(false);
+    setEditingPreReg(null);
+
+    toast({
+      title: "Pre-registration updated",
+      description: "The pre-registration has been updated successfully.",
     });
   };
 
@@ -249,6 +301,7 @@ export const PreRegistrationManager = () => {
                 key={preReg.id}
                 preReg={preReg}
                 onConvert={handleConvert}
+                onEdit={handleEdit}
                 selected={selectedIds.has(preReg.id)}
                 onSelect={toggleSelect}
               />
@@ -263,6 +316,21 @@ export const PreRegistrationManager = () => {
           onOpenChange={setConversionDialogOpen}
           preRegistrations={selectedPreRegs}
           onConvert={handleConversionComplete}
+        />
+      )}
+
+      {editingPreReg && (
+        <PreRegistrationFormDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onPreRegister={handlePreRegistrationUpdate}
+          initialData={{
+            studentId: editingPreReg.studentId,
+            moduleIds: editingPreReg.modules,
+            notes: editingPreReg.notes,
+            documents: editingPreReg.documents,
+          }}
+          mode="edit"
         />
       )}
     </div>
