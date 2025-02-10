@@ -23,9 +23,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Plus } from 'lucide-react';
 import PeoplePicker from '@/components/ui/PeoplePicker';
 import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { QuickPersonFormDialog } from './QuickPersonFormDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const preRegistrationSchema = z.object({
   studentId: z.string().min(1, 'Please select a student'),
@@ -51,6 +54,10 @@ export function PreRegistrationFormDialog({
   onPreRegister,
   trigger 
 }: PreRegistrationFormDialogProps) {
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [students, setStudents] = useState(uniqueStudents);
+  const { toast } = useToast();
+
   const form = useForm<PreRegistrationFormValues>({
     resolver: zodResolver(preRegistrationSchema),
     defaultValues: {
@@ -70,6 +77,27 @@ export function PreRegistrationFormDialog({
     onPreRegister({
       ...data,
       timestamp: new Date().toISOString(),
+    });
+  };
+
+  const handleQuickAdd = async (data: { name: string; email: string; phone: string }) => {
+    // In a real application, this would make an API call to create the person
+    const newStudent = {
+      id: `temp-${Date.now()}`,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      role: 'Student',
+      isStudent: true,
+    };
+
+    setStudents(prev => [...prev, newStudent]);
+    form.setValue('studentId', newStudent.id);
+    setQuickAddOpen(false);
+
+    toast({
+      title: "Student Added",
+      description: "New student has been added successfully.",
     });
   };
 
@@ -97,15 +125,27 @@ export function PreRegistrationFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Student</FormLabel>
-                  <FormControl>
-                    <PeoplePicker
-                      people={uniqueStudents}
-                      selectedIds={field.value ? [field.value] : []}
-                      onChange={(ids) => field.onChange(ids[0] || '')}
-                      placeholder="Select a student"
-                      multiple={false}
-                    />
-                  </FormControl>
+                  <div className="space-y-2">
+                    <FormControl>
+                      <PeoplePicker
+                        people={students}
+                        selectedIds={field.value ? [field.value] : []}
+                        onChange={(ids) => field.onChange(ids[0] || '')}
+                        placeholder="Select a student"
+                        multiple={false}
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setQuickAddOpen(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add New Student
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -172,6 +212,12 @@ export function PreRegistrationFormDialog({
           </form>
         </Form>
       </DialogContent>
+
+      <QuickPersonFormDialog
+        open={quickAddOpen}
+        onOpenChange={setQuickAddOpen}
+        onSubmit={handleQuickAdd}
+      />
     </Dialog>
   );
 }
