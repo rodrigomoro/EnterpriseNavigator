@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Plus, Upload, Download, Mail, Search } from 'lucide-react';
+import { Plus, Upload, Download, Mail, Search, Trash2 } from 'lucide-react';
 import PeoplePicker from '@/components/ui/PeoplePicker';
 import { mockStudents, mockModules } from '@/data/mockPreRegistrationData';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -55,7 +55,7 @@ interface PreRegistrationFormDialogProps {
 // Remove duplicates based on student ID
 const uniqueStudents = Array.from(new Map(mockStudents.map(student => [student.id, student])).values());
 
-export function PreRegistrationFormDialog({ 
+export function PreRegistrationFormDialog({
   open,
   onOpenChange,
   onPreRegister,
@@ -141,7 +141,13 @@ export function PreRegistrationFormDialog({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(event.target.files || []);
     setFiles(prev => [...prev, ...newFiles]);
-    form.setValue('documents', [...files, ...newFiles.map(file => ({type: file.type, file: file, description: ''}))])
+    form.setValue('documents', [...files, ...newFiles.map(file => ({ type: file.type, file: file, description: '' }))]);
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+    const currentDocs = form.getValues('documents') || [];
+    form.setValue('documents', currentDocs.filter((_, index) => index !== indexToRemove));
   };
 
   const downloadFile = (file: File) => {
@@ -164,7 +170,7 @@ export function PreRegistrationFormDialog({
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'New Pre-registration' : 'Edit Pre-registration'}</DialogTitle>
           <DialogDescription>
-            {mode === 'create' 
+            {mode === 'create'
               ? 'Create a new pre-registration for a student. This will reserve their place in the selected modules.'
               : 'Update the pre-registration details.'}
           </DialogDescription>
@@ -240,14 +246,24 @@ export function PreRegistrationFormDialog({
                             {files.map((file, index) => (
                               <li key={index} className="text-sm flex items-center justify-between">
                                 <span className="truncate">{file.name}</span>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => downloadFile(file)}
-                                >
-                                  <Download className="h-4 w-4" />
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => downloadFile(file)}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeFile(index)}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </div>
                               </li>
                             ))}
                           </ul>
@@ -260,7 +276,7 @@ export function PreRegistrationFormDialog({
                   <FormField
                     control={form.control}
                     name="moduleIds"
-                    render={() => (
+                    render={({ field }) => (
                       <FormItem>
                         <FormLabel>Modules</FormLabel>
                         <div className="space-y-2">
@@ -279,8 +295,9 @@ export function PreRegistrationFormDialog({
                                 <div key={module?.id} className="flex items-center space-x-2">
                                   <Checkbox
                                     id={`module-${module?.id}`}
+                                    checked={field.value.includes(module?.id)}
                                     onCheckedChange={(checked) => {
-                                      const currentModules = form.getValues('moduleIds');
+                                      const currentModules = field.value;
                                       if (checked) {
                                         if (module) {
                                           form.setValue('moduleIds', [...currentModules, module.id]);
