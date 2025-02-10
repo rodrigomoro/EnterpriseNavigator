@@ -34,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Collapsible,
@@ -45,6 +46,19 @@ import { useRoute } from 'wouter';
 import { mockModuleCatalog } from '@/data/mockModules';
 import { mockPeople } from '@/data/mockPeople';
 import { mockPrograms } from '@/data/mockPrograms';
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+
 
 // Constants for schedule
 const WEEKDAYS = [
@@ -245,173 +259,316 @@ const ModuleDetailsDialog: React.FC<{
   </DialogContent>
 );
 
-const ModulesSection: React.FC<ModulesSectionProps> = ({ form, addModule, removeModule }) => (
-  <Card>
-    <CardContent className="p-6">
-      <FormSection title="Program Modules">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-sm font-medium">Manage Modules</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addModule}
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Module
-            </Button>
-          </div>
+interface ModuleSelectionDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelectModule: (moduleId: string) => void;
+  selectedModuleIds: string[];
+}
 
-          <div className="border rounded-md">
-            <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
-              <div className="col-span-3">Module Name</div>
-              <div className="col-span-2">Sync Hours</div>
-              <div className="col-span-2">Async Hours</div>
-              <div className="col-span-2">Credits</div>
-              <div className="col-span-2">Cost/Credit</div>
-              <div className="col-span-1">Actions</div>
+const ModuleSelectionDialog: React.FC<ModuleSelectionDialogProps> = ({
+  open,
+  onOpenChange,
+  onSelectModule,
+  selectedModuleIds,
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredModules = mockModuleCatalog.filter(
+    (module) =>
+      !selectedModuleIds.includes(module.id) &&
+      (module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[800px]">
+        <DialogHeader>
+          <DialogTitle>Select Modules</DialogTitle>
+          <DialogDescription>
+            Choose from existing modules or create a new one
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col space-y-4">
+          <Input
+            placeholder="Search modules by name or code..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full"
+          />
+          <ScrollArea className="h-[400px]">
+            <div className="space-y-2">
+              {filteredModules.map((module) => (
+                <div
+                  key={module.id}
+                  className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md cursor-pointer"
+                  onClick={() => onSelectModule(module.id)}
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{module.code}</Badge>
+                      <span className="font-medium">{module.name}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {module.description}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+          <DialogFooter>
+            <Link href="/modules/new">
+              <Button variant="outline" className="gap-2">
+                <Plus className="h-4 w-4" />
+                Create New Module
+              </Button>
+            </Link>
+          </DialogFooter>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const ModulesSection: React.FC<ModulesSectionProps> = ({
+  form,
+  addModule,
+  removeModule,
+}) => {
+  const [isModuleSelectionOpen, setIsModuleSelectionOpen] = useState(false);
+
+  const handleModuleSelect = (moduleId: string) => {
+    const selectedModule = mockModuleCatalog.find((m) => m.id === moduleId);
+    if (selectedModule) {
+      const newModule = {
+        id: selectedModule.id,
+        name: selectedModule.name,
+        description: selectedModule.description,
+        competencies: selectedModule.competencies || "",
+        tools: selectedModule.tools || "",
+        syllabus: selectedModule.syllabus || "",
+        syncHours: selectedModule.syncHours || 0,
+        asyncHours: selectedModule.asyncHours || 0,
+        credits: selectedModule.credits || 0,
+        costPerCredit: selectedModule.costPerCredit || 0,
+      };
+
+      const currentModules = form.getValues("modules") || [];
+      form.setValue("modules", [...currentModules, newModule]);
+      setIsModuleSelectionOpen(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <FormSection title="Program Modules">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-medium">Manage Modules</h3>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsModuleSelectionOpen(true)}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Select from Catalog
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addModule}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add New Module
+                </Button>
+              </div>
             </div>
 
-            <ScrollArea className="h-[250px]">
-              <div className="divide-y">
-                {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
-                  <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
-                    <div className="col-span-3">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.name`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} className="bg-white" placeholder="Module name" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+            <ModuleSelectionDialog
+              open={isModuleSelectionOpen}
+              onOpenChange={setIsModuleSelectionOpen}
+              onSelectModule={handleModuleSelect}
+              selectedModuleIds={(form.watch("modules") || []).map((m) => m.id).filter(Boolean)}
+            />
 
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.syncHours`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                className="bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.asyncHours`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                className="bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.credits`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                className="bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name={`modules.${moduleIndex}.costPerCredit`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                                className="bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="col-span-1 flex justify-end gap-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="hover:bg-primary/10 hover:text-primary"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <ModuleDetailsDialog
-                          module={module}
-                          moduleIndex={moduleIndex}
-                          form={form}
-                          teachers={[]}
-                        />
-                      </Dialog>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeModule(moduleIndex)}
-                        className="hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+            <div className="border rounded-md">
+              <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
+                <div className="col-span-3">Module Info</div>
+                <div className="col-span-2">Sync Hours</div>
+                <div className="col-span-2">Async Hours</div>
+                <div className="col-span-2">Credits</div>
+                <div className="col-span-2">Cost/Credit</div>
+                <div className="col-span-1">Actions</div>
               </div>
-            </ScrollArea>
+
+              <ScrollArea className="h-[250px]">
+                <div className="divide-y">
+                  {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
+                    <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
+                      <div className="col-span-3">
+                        {module.id ? (
+                          // Existing module from catalog
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline">
+                                {mockModuleCatalog.find(m => m.id === module.id)?.code || "N/A"}
+                              </Badge>
+                            </div>
+                            <div className="font-medium truncate">{module.name}</div>
+                          </div>
+                        ) : (
+                          // New module being created
+                          <FormField
+                            control={form.control}
+                            name={`modules.${moduleIndex}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input {...field} className="bg-white" placeholder="Module name" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </div>
+
+                      <div className="col-span-2">
+                        <FormField
+                          control={form.control}
+                          name={`modules.${moduleIndex}.syncHours`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  className="bg-white"
+                                  disabled={Boolean(module.id)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <FormField
+                          control={form.control}
+                          name={`modules.${moduleIndex}.asyncHours`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  className="bg-white"
+                                  disabled={Boolean(module.id)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <FormField
+                          control={form.control}
+                          name={`modules.${moduleIndex}.credits`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                  className="bg-white"
+                                  disabled={Boolean(module.id)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <FormField
+                          control={form.control}
+                          name={`modules.${moduleIndex}.costPerCredit`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                  className="bg-white"
+                                  disabled={Boolean(module.id)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-1 flex justify-end gap-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="hover:bg-primary/10 hover:text-primary"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <ModuleDetailsDialog
+                            module={module}
+                            moduleIndex={moduleIndex}
+                            form={form}
+                            teachers={[]}
+                          />
+                        </Dialog>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeModule(moduleIndex)}
+                          className="hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
           </div>
-        </div>
-      </FormSection>
-    </CardContent>
-  </Card>
-);
+        </FormSection>
+      </CardContent>
+    </Card>
+  );
+};
 
 // Program Details Dialog
 const ProgramDetailsDialog: React.FC<{
@@ -935,7 +1092,6 @@ export default function ManageProgram() {
   };
 
   const totalDuration = calculateTotalDuration(form.watch("modules"));
-
 
   return (
     <div className="flex min-h-screen bg-background">
