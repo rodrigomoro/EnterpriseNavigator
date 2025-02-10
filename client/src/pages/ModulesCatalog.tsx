@@ -117,7 +117,12 @@ export default function ModulesCatalog() {
         <Card key={module.id}>
           <CardHeader>
             <div className="flex justify-between items-start">
-              <CardTitle className="text-xl">{module.name}</CardTitle>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge variant="outline">{module.code}</Badge>
+                </div>
+                <CardTitle className="text-xl">{module.name}</CardTitle>
+              </div>
               <div className="flex gap-2">
                 <Link href={`/modules/${module.id}/edit`}>
                   <Button variant="ghost" size="icon">
@@ -166,6 +171,7 @@ export default function ModulesCatalog() {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Code</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Sync Hours</TableHead>
           <TableHead>Async Hours</TableHead>
@@ -181,6 +187,9 @@ export default function ModulesCatalog() {
             className="cursor-pointer hover:bg-muted/50"
             onClick={() => handleCardClick(module.id)}
           >
+            <TableCell>
+              <Badge variant="outline">{module.code}</Badge>
+            </TableCell>
             <TableCell className="font-medium">
               <div className="flex items-center gap-3">
                 {module.name}
@@ -282,7 +291,7 @@ export default function ModulesCatalog() {
                             ))}
                           </SelectContent>
                         </Select>
-                    </div>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>

@@ -25,6 +25,7 @@ import Sidebar from "@/components/Sidebar";
 import { mockModuleCatalog } from "@/data/mockModules";
 
 const formSchema = z.object({
+  code: z.string().min(1, "Module code is required"),
   name: z.string().min(1, "Module name is required"),
   description: z.string().min(1, "Description is required"),
   competencies: z.string().min(1, "Competencies are required"),
@@ -41,7 +42,6 @@ export default function ManageModule() {
   const isEdit = Boolean(params?.id);
   const { toast } = useToast();
 
-  // Get the module data if in edit mode
   const module = isEdit
     ? mockModuleCatalog.find(m => m.id === params?.id)
     : null;
@@ -49,6 +49,7 @@ export default function ManageModule() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      code: module?.code ?? "",
       name: module?.name ?? "",
       description: module?.description ?? "",
       objectives: module?.objectives ?? "",
@@ -62,8 +63,7 @@ export default function ManageModule() {
     },
   });
 
-  const onSubmit = async (data: { name: any; }) => {
-    // In a real app, this would be an API call
+  const onSubmit = async (data: { name: string; }) => {
     toast({
       title: isEdit ? "Module Updated" : "Module Created",
       description: `Successfully ${isEdit ? "updated" : "created"} ${data.name}`,
@@ -99,20 +99,35 @@ export default function ManageModule() {
                 <CardTitle>Module Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Module name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Module Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter module code" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Module name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="description"
