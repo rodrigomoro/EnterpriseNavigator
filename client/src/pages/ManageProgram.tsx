@@ -259,6 +259,7 @@ const ModuleDetailsDialog: React.FC<{
   </DialogContent>
 );
 
+
 interface ModuleSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -341,27 +342,33 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
   addModule,
   removeModule,
 }) => {
-  const [isModuleSelectionOpen, setIsModuleSelectionOpen] = useState(false);
+  const [moduleSearchOpen, setModuleSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
-  const handleModuleSelect = (moduleId: string) => {
-    const selectedModule = mockModuleCatalog.find((m) => m.id === moduleId);
-    if (selectedModule) {
-      const newModule = {
-        id: selectedModule.id,
-        name: selectedModule.name,
-        description: selectedModule.description,
-        competencies: selectedModule.competencies || "",
-        tools: selectedModule.tools || "",
-        syllabus: selectedModule.syllabus || "",
-        syncHours: selectedModule.syncHours || 0,
-        asyncHours: selectedModule.asyncHours || 0,
-        credits: selectedModule.credits || 0,
-        costPerCredit: selectedModule.costPerCredit || 0,
-      };
+  const filteredModules = mockModuleCatalog.filter(
+    (module) =>
+      !form.watch("modules")?.some(m => m.id === module.id) &&
+      (module.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        module.code.toLowerCase().includes(searchValue.toLowerCase()))
+  );
 
-      const currentModules = form.getValues("modules") || [];
-      form.setValue("modules", [...currentModules, newModule]);
-      setIsModuleSelectionOpen(false);
+  const handleModuleSelect = (moduleId: string | null, moduleIndex: number) => {
+    if (moduleId) {
+      const selectedModule = mockModuleCatalog.find((m) => m.id === moduleId);
+      if (selectedModule) {
+        form.setValue(`modules.${moduleIndex}`, {
+          id: selectedModule.id,
+          name: selectedModule.name,
+          description: selectedModule.description,
+          competencies: selectedModule.competencies || "",
+          tools: selectedModule.tools || "",
+          syllabus: selectedModule.syllabus || "",
+          syncHours: selectedModule.syncHours || 0,
+          asyncHours: selectedModule.asyncHours || 0,
+          credits: selectedModule.credits || 0,
+          costPerCredit: selectedModule.costPerCredit || 0,
+        });
+      }
     }
   };
 
@@ -372,36 +379,17 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-medium">Manage Modules</h3>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsModuleSelectionOpen(true)}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Select from Catalog
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addModule}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add New Module
-                </Button>
-              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addModule}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Module
+              </Button>
             </div>
-
-            <ModuleSelectionDialog
-              open={isModuleSelectionOpen}
-              onOpenChange={setIsModuleSelectionOpen}
-              onSelectModule={handleModuleSelect}
-              selectedModuleIds={(form.watch("modules") || []).map((m) => m.id).filter(Boolean)}
-            />
 
             <div className="border rounded-md">
               <div className="bg-muted/50 p-3 grid grid-cols-12 gap-4 text-sm font-medium">
@@ -418,30 +406,62 @@ const ModulesSection: React.FC<ModulesSectionProps> = ({
                   {form.watch("modules")?.map((module: ModuleType, moduleIndex: number) => (
                     <div key={moduleIndex} className="p-3 grid grid-cols-12 gap-4 items-center hover:bg-muted/50">
                       <div className="col-span-3">
-                        {module.id ? (
-                          // Existing module from catalog
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="outline">
-                                {mockModuleCatalog.find(m => m.id === module.id)?.code || "N/A"}
-                              </Badge>
-                            </div>
-                            <div className="font-medium truncate">{module.name}</div>
+                        <FormField
+                          control={form.control}
+                          name={`modules.${moduleIndex}.name`}
+                          render={({ field }) => (
+                            <FormItem className="space-y-0">
+                              <FormControl>
+                                <Command className="overflow-visible">
+                                  <div className="flex items-center border rounded-md px-3">
+                                    <CommandInput
+                                      placeholder="Search or enter new module name..."
+                                      value={field.value}
+                                      onValueChange={(value) => {
+                                        field.onChange(value);
+                                        setSearchValue(value);
+                                        if (value) setModuleSearchOpen(true);
+                                      }}
+                                      className="h-9"
+                                    />
+                                  </div>
+                                  {moduleSearchOpen && searchValue && (
+                                    <div className="absolute top-full left-0 w-full z-50 bg-popover text-popover-foreground shadow-md rounded-md mt-2">
+                                      <CommandList>
+                                        <CommandEmpty>No modules found</CommandEmpty>
+                                        <CommandGroup>
+                                          {filteredModules.map((module) => (
+                                            <CommandItem
+                                              key={module.id}
+                                              value={module.name}
+                                              onSelect={() => {
+                                                handleModuleSelect(module.id, moduleIndex);
+                                                setModuleSearchOpen(false);
+                                              }}
+                                              className="flex items-center gap-2"
+                                            >
+                                              <Badge variant="outline" className="text-xs">
+                                                {module.code}
+                                              </Badge>
+                                              {module.name}
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </CommandList>
+                                    </div>
+                                  )}
+                                </Command>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        {module.id && (
+                          <div className="mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {mockModuleCatalog.find(m => m.id === module.id)?.code}
+                            </Badge>
                           </div>
-                        ) : (
-                          // New module being created
-                          <FormField
-                            control={form.control}
-                            name={`modules.${moduleIndex}.name`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input {...field} className="bg-white" placeholder="Module name" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
                         )}
                       </div>
 
