@@ -25,6 +25,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import PeoplePicker from '@/components/ui/PeoplePicker';
+import { mockPeople } from '@/data/mockPeople';
 
 const eventSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -33,6 +35,7 @@ const eventSchema = z.object({
   endTime: z.string().min(1, "End time is required"),
   description: z.string().optional(),
   type: z.enum(["meeting", "event"]),
+  attendeeIds: z.array(z.string()),
 });
 
 type EventFormData = z.infer<typeof eventSchema>;
@@ -54,6 +57,7 @@ export default function Calendar() {
       endTime: "",
       description: "",
       type: "event",
+      attendeeIds: [],
     },
   });
 
@@ -201,6 +205,24 @@ export default function Calendar() {
                   )}
                 />
               </div>
+              <FormField
+                control={form.control}
+                name="attendeeIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Attendees</FormLabel>
+                    <FormControl>
+                      <PeoplePicker
+                        people={mockPeople}
+                        selectedIds={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select attendees"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="description"
