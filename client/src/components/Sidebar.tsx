@@ -55,7 +55,8 @@ export default function Sidebar() {
   return (
     <aside className="w-12 md:w-48 bg-sidebar text-sidebar-foreground h-screen flex flex-col fixed left-0 top-0">
       <div className="p-3">
-        <h2 className="text-lg font-bold hidden md:block">Immune Institute ERP</h2>
+        <h2 className="text-lg font-bold hidden md:block">AcademicYa</h2>
+        <h3 className="text-md font-semibold hidden md:block">IMMUNE</h3>
       </div>
 
       <nav className="flex-1 px-2 overflow-y-auto">
