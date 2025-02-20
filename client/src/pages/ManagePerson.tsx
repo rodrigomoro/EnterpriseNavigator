@@ -124,7 +124,7 @@ const statusOptions = {
   ]
 };
 
-const formSchema = z.object({
+const baseSchema = z.object({
   name: z.string().min(1, "Name is required"),
   jobTitle: z.string().min(1, "Job title is required"),
   department: z.string().min(1, "Department is required"),
@@ -141,8 +141,55 @@ const formSchema = z.object({
   reportsTo: z.string().optional(),
   programIds: z.array(z.string()).optional(),
   startDate: z.string().optional(),
+  assistantName: z.string().optional(),
+  businessAddress: z.string().optional(),
+  businessHomePage: z.string().optional(),
+  businessPhones: z.array(z.string()).optional(),
+  categories: z.array(z.string()).optional(),
+  changeKey: z.string().optional(),
+  children: z.array(z.string()).optional(),
+  companyName: z.string().optional(),
+  createdDateTime: z.string().optional(),
+  displayName: z.string().optional(),
+  emailAddresses: z.array(z.string()).optional(),
+  fileAs: z.string().optional(),
+  generation: z.string().optional(),
+  givenName: z.string().optional(),
+  homeAddress: z.string().optional(),
+  homePhones: z.array(z.string()).optional(),
+  id: z.string().optional(),
+  imAddresses: z.array(z.string()).optional(),
+  initials: z.string().optional(),
+  lastModifiedDateTime: z.string().optional(),
+  manager: z.string().optional(),
+  middleName: z.string().optional(),
+  mobilePhone: z.string().optional(),
+  nickName: z.string().optional(),
+  otherAddress: z.string().optional(),
+  parentFolderId: z.string().optional(),
+  personalNotes: z.string().optional(),
+  profession: z.string().optional(),
+  spouseName: z.string().optional(),
+  surname: z.string().optional(),
+  title: z.string().optional(),
+  yomiCompanyName: z.string().optional(),
+  yomiGivenName: z.string().optional(),
+  yomiSurname: z.string().optional(),
 });
 
+const integrationSchema = z.object({
+  externalId: z.string().optional(),
+  entraId: z.string().optional(),
+  googleCloudId: z.string().optional(),
+  crmIds: z.object({
+    hubspot: z.string().optional(),
+    salesforce: z.string().optional(),
+    msDynamics: z.string().optional(),
+  }).optional(),
+});
+
+
+const formSchema = baseSchema.merge(integrationSchema);
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ManagePerson() {
@@ -179,6 +226,48 @@ export default function ManagePerson() {
       linkedinUrl: personData?.linkedinUrl ?? "",
       status: personData?.status ?? "",
       role: personData?.role ?? "",
+      assistantName: personData?.assistantName ?? "",
+      businessAddress: personData?.businessAddress ?? "",
+      businessHomePage: personData?.businessHomePage ?? "",
+      businessPhones: personData?.businessPhones ?? [],
+      categories: personData?.categories ?? [],
+      changeKey: personData?.changeKey ?? "",
+      children: personData?.children ?? [],
+      companyName: personData?.companyName ?? "",
+      createdDateTime: personData?.createdDateTime ?? "",
+      displayName: personData?.displayName ?? "",
+      emailAddresses: personData?.emailAddresses ?? [],
+      fileAs: personData?.fileAs ?? "",
+      generation: personData?.generation ?? "",
+      givenName: personData?.givenName ?? "",
+      homeAddress: personData?.homeAddress ?? "",
+      homePhones: personData?.homePhones ?? [],
+      id: personData?.id ?? "",
+      imAddresses: personData?.imAddresses ?? [],
+      initials: personData?.initials ?? "",
+      lastModifiedDateTime: personData?.lastModifiedDateTime ?? "",
+      manager: personData?.manager ?? "",
+      middleName: personData?.middleName ?? "",
+      mobilePhone: personData?.mobilePhone ?? "",
+      nickName: personData?.nickName ?? "",
+      otherAddress: personData?.otherAddress ?? "",
+      parentFolderId: personData?.parentFolderId ?? "",
+      personalNotes: personData?.personalNotes ?? "",
+      profession: personData?.profession ?? "",
+      spouseName: personData?.spouseName ?? "",
+      surname: personData?.surname ?? "",
+      title: personData?.title ?? "",
+      yomiCompanyName: personData?.yomiCompanyName ?? "",
+      yomiGivenName: personData?.yomiGivenName ?? "",
+      yomiSurname: personData?.yomiSurname ?? "",
+      externalId: personData?.externalId ?? "",
+      entraId: personData?.entraId ?? "",
+      googleCloudId: personData?.googleCloudId ?? "",
+      crmIds: {
+        hubspot: personData?.crmIds?.hubspot ?? "",
+        salesforce: personData?.crmIds?.salesforce ?? "",
+        msDynamics: personData?.crmIds?.msDynamics ?? "",
+      },
     },
   });
 
@@ -531,6 +620,448 @@ export default function ManagePerson() {
                               placeholder="Add internal notes..."
                               {...field}
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="assistantName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Assistant Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="businessAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="businessHomePage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Home Page</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="businessPhones"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Phones</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="categories"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categories</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="changeKey"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Change Key</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="children"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Children</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="createdDateTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Created Date Time</FormLabel>
+                          <FormControl>
+                            <Input type="datetime-local" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="displayName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Display Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="emailAddresses"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Addresses</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="fileAs"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>File As</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="generation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Generation</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="givenName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Given Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="homeAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Home Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="homePhones"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Home Phones</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ID</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="imAddresses"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>IM Addresses</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="initials"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Initials</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastModifiedDateTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Modified Date Time</FormLabel>
+                          <FormControl>
+                            <Input type="datetime-local" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="manager"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Manager</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="middleName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Middle Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="mobilePhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mobile Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="nickName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nick Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="otherAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Other Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="parentFolderId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Parent Folder ID</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="personalNotes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Personal Notes</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="profession"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Profession</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="spouseName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Spouse Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="surname"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Surname</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="yomiCompanyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Yomi Company Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="yomiGivenName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Yomi Given Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="yomiSurname"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Yomi Surname</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
