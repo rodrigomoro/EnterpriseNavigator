@@ -9,14 +9,53 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Link } from "wouter";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+const eventSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  date: z.date(),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+  description: z.string().optional(),
+  type: z.enum(["meeting", "event"]),
+});
+
+type EventFormData = z.infer<typeof eventSchema>;
 
 export default function Calendar() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [nextMonthDate, setNextMonthDate] = useState<Date | undefined>(
     addMonths(new Date(), 1),
   );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [eventType, setEventType] = useState<"meeting" | "event">("event");
+
+  const form = useForm<EventFormData>({
+    resolver: zodResolver(eventSchema),
+    defaultValues: {
+      title: "",
+      date: new Date(),
+      startTime: "",
+      endTime: "",
+      description: "",
+      type: "event",
+    },
+  });
 
   const handleDateChange = (newDate: Date | undefined) => {
     setDate(newDate);
@@ -25,9 +64,28 @@ export default function Calendar() {
     }
   };
 
+  const onSubmit = (data: EventFormData) => {
+    console.log("Form submitted:", data);
+    setIsDialogOpen(false);
+    form.reset();
+  };
+
+  const handleActionClick = (type: "meeting" | "event") => {
+    setEventType(type);
+    form.setValue("type", type);
+    form.setValue("date", date || new Date());
+    setIsDialogOpen(true);
+  };
+
   const quickActions = [
-    { name: "Schedule Meeting", link: "/calendar?action=meeting" },
-    { name: "Add Event", link: "/calendar?action=event" },
+    {
+      name: "Schedule Meeting",
+      onClick: () => handleActionClick("meeting"),
+    },
+    {
+      name: "Add Event",
+      onClick: () => handleActionClick("event"),
+    },
   ];
 
   return (
@@ -43,13 +101,11 @@ export default function Calendar() {
               key={action.name}
               variant="outline"
               size="sm"
-              asChild
+              onClick={action.onClick}
               className="gap-1"
             >
-              <Link href={action.link}>
-                <Plus className="h-4 w-4" />
-                {action.name}
-              </Link>
+              <Plus className="h-4 w-4" />
+              {action.name}
             </Button>
           ))}
         </div>
@@ -94,6 +150,88 @@ export default function Calendar() {
           }}
         />
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {eventType === "meeting" ? "Schedule Meeting" : "Add Event"}
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Time</FormLabel>
+                      <FormControl>
+                        <Input type="time" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Time</FormLabel>
+                      <FormControl>
+                        <Input type="time" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Add description"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Save</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
