@@ -28,8 +28,8 @@ const navigationGroups = [
   {
     title: 'Finance',
     items: [
-      { icon: Receipt, label: 'Invoices', href: '/invoices' },
-      { icon: Building2, label: 'Bank Integration', href: '/bank-integration' },
+      { icon: Receipt, label: 'Invoices', href: '/invoices', tourId: 'invoices' },
+      { icon: Building2, label: 'Bank Integration', href: '/bank-integration', tourId: 'bank-integration' },
     ]
   },
   {

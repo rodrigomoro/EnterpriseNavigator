@@ -29,7 +29,7 @@ export const useOnboardingTour = () => {
     tour.addSteps([
       {
         id: 'welcome',
-        title: 'Welcome to our ERP System! 👋',
+        title: 'Welcome to AcademicYa! 👋',
         text: 'Let\'s take a quick tour to help you get started.',
         buttons: [
           {
@@ -70,7 +70,13 @@ export const useOnboardingTour = () => {
       {
         id: 'program-management',
         title: 'Program Management',
-        text: 'Manage academic programs, courses, and enrollments. Create new programs and track student progress.',
+        text: `Manage academic programs, courses, and track student progress. Here you'll find:
+              <ul class="list-disc pl-4 mt-2 space-y-1">
+                <li>Pre-registration management</li>
+                <li>Enrollment workflows</li>
+                <li>Program creation and updates</li>
+                <li>Student progress tracking</li>
+              </ul>`,
         attachTo: {
           element: '[data-tour="program-management"]',
           on: 'bottom'
@@ -93,6 +99,58 @@ export const useOnboardingTour = () => {
         text: 'View and manage academic schedules, events, and important dates.',
         attachTo: {
           element: '[data-tour="calendar"]',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            text: 'Back',
+            action: () => tour.back(),
+            classes: 'shepherd-button-secondary'
+          },
+          {
+            text: 'Next',
+            action: () => tour.next()
+          }
+        ]
+      },
+      {
+        id: 'invoices',
+        title: 'Invoice Management',
+        text: `Create and manage invoices easily:
+              <ul class="list-disc pl-4 mt-2 space-y-1">
+                <li>Generate new invoices</li>
+                <li>Track payment status</li>
+                <li>Manage recurring billing</li>
+                <li>Export financial reports</li>
+              </ul>`,
+        attachTo: {
+          element: '[data-tour="invoices"]',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            text: 'Back',
+            action: () => tour.back(),
+            classes: 'shepherd-button-secondary'
+          },
+          {
+            text: 'Next',
+            action: () => tour.next()
+          }
+        ]
+      },
+      {
+        id: 'bank-integration',
+        title: 'Bank Integration',
+        text: `Streamline your financial operations:
+              <ul class="list-disc pl-4 mt-2 space-y-1">
+                <li>Automatic bank reconciliation</li>
+                <li>Payment matching</li>
+                <li>Transaction history</li>
+                <li>Financial reporting</li>
+              </ul>`,
+        attachTo: {
+          element: '[data-tour="bank-integration"]',
           on: 'bottom'
         },
         buttons: [
