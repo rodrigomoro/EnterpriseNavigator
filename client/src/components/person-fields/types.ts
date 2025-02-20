@@ -1,6 +1,13 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
+// Define CRM IDs schema separately for better organization
+const crmIdsSchema = z.object({
+  hubspot: z.string().optional(),
+  salesforce: z.string().optional(),
+  msDynamics: z.string().optional(),
+});
+
 export const personFormSchema = z.object({
   // Basic Information
   name: z.string().min(1, "Name is required"),
@@ -66,6 +73,14 @@ export const personFormSchema = z.object({
   yomiCompanyName: z.string().optional(),
   yomiGivenName: z.string().optional(),
   yomiSurname: z.string().optional(),
+
+  // External Identity Integration Fields
+  externalId: z.string().optional(),
+  entraId: z.string().optional(),
+  googleCloudId: z.string().optional(),
+
+  // CRM Integration Fields
+  crmIds: crmIdsSchema.optional(),
 });
 
 export type PersonFormValues = z.infer<typeof personFormSchema>;

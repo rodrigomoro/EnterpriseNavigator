@@ -13,7 +13,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Globe, Database, User, Building, Calendar, Phone } from "lucide-react";
+import { ArrowLeft, Globe, Database, User, Building, Calendar, Phone, Cloud } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tabs,
@@ -183,6 +183,10 @@ export default function ManagePerson() {
       personalNotes: personData?.personalNotes ?? "",
       createdDateTime: personData?.createdDateTime ?? "",
       lastModifiedDateTime: personData?.lastModifiedDateTime ?? "",
+      externalId: personData?.externalId ?? "",
+      entraId: personData?.entraId ?? "",
+      googleCloudId: personData?.googleCloudId ?? "",
+      crmIds: personData?.crmIds ?? {hubspot: '', salesforce: '', msDynamics: ''}
     },
   });
 
@@ -263,7 +267,7 @@ export default function ManagePerson() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="basic" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     Basic Info
@@ -283,6 +287,10 @@ export default function ManagePerson() {
                   <TabsTrigger value="additional" className="flex items-center gap-2">
                     <Database className="h-4 w-4" />
                     Additional
+                  </TabsTrigger>
+                  <TabsTrigger value="integrations" className="flex items-center gap-2">
+                    <Cloud className="h-4 w-4" />
+                    Integrations
                   </TabsTrigger>
                 </TabsList>
 
@@ -788,6 +796,113 @@ export default function ManagePerson() {
                               <FormLabel>Last Modified</FormLabel>
                               <FormControl>
                                 <Input {...field} disabled />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+                <TabsContent value="integrations" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Identity Provider Integration</CardTitle>
+                        <CardDescription>
+                          External identity system connections
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="externalId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>External ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Generic external identifier" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="entraId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Microsoft Entra ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Microsoft Entra identifier" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="googleCloudId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Google Cloud Identity</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Google Cloud identity identifier" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>CRM Integration</CardTitle>
+                        <CardDescription>
+                          Customer Relationship Management system connections
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="crmIds.hubspot"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>HubSpot ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="HubSpot contact identifier" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="crmIds.salesforce"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Salesforce ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Salesforce contact identifier" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="crmIds.msDynamics"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>MS Dynamics ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Microsoft Dynamics contact identifier" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
