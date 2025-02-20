@@ -24,8 +24,19 @@ import SkillsMatrix from "@/pages/SkillsMatrix";
 import Calendar from "@/pages/calendar";
 import Settings from "@/pages/Settings";
 import BankIntegration from "@/pages/BankIntegration";
+import { useOnboardingTour } from '@/components/OnboardingTour';
+import React from 'react';
 
 function Router() {
+  const { startTour, hasSeenTour } = useOnboardingTour();
+
+  // Start tour for new users
+  React.useEffect(() => {
+    if (!hasSeenTour) {
+      startTour();
+    }
+  }, [hasSeenTour, startTour]);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />

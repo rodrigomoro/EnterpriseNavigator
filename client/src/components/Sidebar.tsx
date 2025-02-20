@@ -12,15 +12,15 @@ const navigationGroups = [
   {
     title: 'Academic',
     items: [
-      { icon: FolderKanban, label: 'Programs', href: '/programs' },
+      { icon: FolderKanban, label: 'Programs', href: '/programs', tourId: 'program-management' },
       { icon: BookOpen, label: 'Modules', href: '/modules' },
-      { icon: Calendar, label: 'Calendar', href: '/calendar' },
+      { icon: Calendar, label: 'Calendar', href: '/calendar', tourId: 'calendar' },
     ]
   },
   {
     title: 'HR',
     items: [
-      { icon: Users, label: 'People', href: '/people' },
+      { icon: Users, label: 'People', href: '/people', tourId: 'people-management' },
       { icon: Network, label: 'Organization', href: '/organization' },
       { icon: Award, label: 'Skills Matrix', href: '/skills-matrix' },
     ]
@@ -77,7 +77,10 @@ export default function Sidebar() {
                 <CollapsibleContent>
                   {group.items.map((item) => (
                     <Link key={item.href} href={item.href}>
-                      <div className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer">
+                      <div 
+                        className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer"
+                        {...(item.tourId ? { 'data-tour': item.tourId } : {})}
+                      >
                         <item.icon className="h-4 w-4" />
                         <span className="hidden md:block text-sm">{item.label}</span>
                       </div>
@@ -89,7 +92,10 @@ export default function Sidebar() {
               // Non-collapsible items (Home)
               group.items.map((item) => (
                 <Link key={item.href} href={item.href}>
-                  <div className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer">
+                  <div 
+                    className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent group cursor-pointer"
+                    {...(item.tourId ? { 'data-tour': item.tourId } : {})}
+                  >
                     <item.icon className="h-4 w-4" />
                     <span className="hidden md:block text-sm">{item.label}</span>
                   </div>
@@ -102,7 +108,10 @@ export default function Sidebar() {
 
       <div className="p-3 border-t border-sidebar-border">
         <Link href="/settings">
-          <div className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full cursor-pointer">
+          <div 
+            className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent w-full cursor-pointer"
+            data-tour="settings"
+          >
             <Settings className="h-4 w-4" />
             <span className="hidden md:block text-sm">Settings</span>
           </div>
